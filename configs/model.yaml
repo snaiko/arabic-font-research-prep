@@ -1,0 +1,35 @@
+project: arabic-fewshot-font
+status: research_prototype
+baseline:
+  name: MX-Font
+  upstream: https://github.com/clovaai/mxfont
+  paper: https://openaccess.thecvf.com/content/ICCV2021/html/Park_Multiple_Heads_Are_Better_Than_One_Few-Shot_Font_Generation_With_Multiple_Localized_Experts_ICCV_2021_paper.html
+  preserve_upstream_checkpoint: true
+  fine_tune: false
+modules:
+  content_encoder:
+    source: mxfont
+  localized_style_experts:
+    source: mxfont
+    note: "Already part of MX-Font; do not count as a newly merged model."
+  arabic_context_branch:
+    enabled: false
+    inputs: [codepoint, script, language, joining_type, left_join_state, right_join_state, requested_form]
+  topology_refinement:
+    enabled: false
+    targets: [connectivity, components, dots, counters, stroke_endpoints, mark_placement]
+  confidence_gate:
+    enabled: false
+    outputs: [prediction, uncertainty, reference_ids]
+output:
+  raster:
+    channels: 1
+    size: [128, 128]
+  vectorization:
+    enabled: false
+    toolchain: [potrace_or_learned_contours, fonttools, harfbuzz]
+training:
+  seed: 2026
+  mixed_precision: true
+  freeze_baseline_first: true
+  staged_ablation: [B0, B1, B2, B3, B4, B5]

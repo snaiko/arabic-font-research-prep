@@ -1,0 +1,38 @@
+dataset:
+  name: arabic-font-corpus
+  manifest: data/manifests/fonts.jsonl
+  glyph_manifest: data/manifests/glyphs.jsonl
+  font_storage: external
+  allowed_splits: [train, validation, test]
+  split_unit: normalized_font_family
+  recommended_split:
+    train: 0.8
+    validation: 0.1
+    test: 0.1
+rendering:
+  engine: harfbuzz+freetype
+  pin_versions: true
+  grayscale: true
+  canvas: [128, 128]
+  foreground: 0
+  background: 255
+  record:
+    - font_sha256
+    - renderer_version
+    - harfbuzz_version
+    - script
+    - language
+    - direction
+    - features
+    - ppem
+    - shaping_text
+glyph_forms:
+  allowed: [isol, init, medi, fina, mark, ligature, not_applicable]
+  derive_from_shaping: true
+  assume_all_four_forms: false
+quality:
+  reject_notdef: true
+  reject_empty: true
+  reject_clipped: true
+  deduplicate_by_sha256: true
+  require_verified_license: true
