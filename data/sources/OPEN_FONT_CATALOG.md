@@ -1,27 +1,42 @@
-# Candidate Open Arabic Font Families
+# Arabic Font Corpus — Curated OFL Sources
 
-This is a discovery list for a pilot corpus, not a statement that the files have already been downloaded or validated. For every exact font version, inspect its repository and license file, record the version and SHA-256, and verify Arabic coverage before inclusion.
+This is a source catalogue, not a claim that binaries have already been downloaded. The collector downloads font files and per-family license/metadata from the official Google Fonts repository, then records SHA-256 hashes.
 
-| Candidate family | Design coverage | Primary source |
+## Pilot families
+
+| Family slug | Style coverage | Official source |
 |---|---|---|
-| Noto Naskh Arabic | Naskh | https://github.com/google/fonts |
-| Amiri | Naskh / book typography | https://github.com/alif-type/amiri |
-| Scheherazade New | Naskh / extended Arabic-script coverage | https://github.com/silnrsi/font-scheherazade |
-| Lateef | Arabic-script text | https://github.com/silnrsi/font-lateef |
-| Cairo | Sans / display | https://github.com/google/fonts |
-| Tajawal | Sans | https://github.com/google/fonts |
-| IBM Plex Sans Arabic | Sans | https://github.com/IBM/plex |
-| Mada | Sans | https://github.com/google/fonts |
-| Reem Kufi | Kufi / display | https://github.com/google/fonts |
+| amiri | Classical Naskh | https://github.com/google/fonts/tree/main/ofl/amiri |
+| noto-naskh-arabic | Naskh | https://github.com/google/fonts/tree/main/ofl/noto-naskh-arabic |
+| noto-sans-arabic | Sans | https://github.com/google/fonts/tree/main/ofl/noto-sans-arabic |
+| noto-kufi-arabic | Kufi / sans | https://github.com/google/fonts/tree/main/ofl/noto-kufi-arabic |
+| scheherazade-new | Naskh, extended Arabic-script coverage | https://github.com/google/fonts/tree/main/ofl/scheherazade-new |
+| lateef | Arabic-script text | https://github.com/google/fonts/tree/main/ofl/lateef |
+| cairo | Sans / display | https://github.com/google/fonts/tree/main/ofl/cairo |
+| tajawal | Geometric sans | https://github.com/google/fonts/tree/main/ofl/tajawal |
+| almarai | Sans | https://github.com/google/fonts/tree/main/ofl/almarai |
+| ibm-plex-sans-arabic | Sans | https://github.com/google/fonts/tree/main/ofl/ibm-plex-sans-arabic |
+| mada | Sans | https://github.com/google/fonts/tree/main/ofl/mada |
+| readex-pro | Sans | https://github.com/google/fonts/tree/main/ofl/readex-pro |
+| reem-kufi | Kufi / display | https://github.com/google/fonts/tree/main/ofl/reem-kufi |
+| el-messiri | Display / sans | https://github.com/google/fonts/tree/main/ofl/el-messiri |
+| changa | Display | https://github.com/google/fonts/tree/main/ofl/changa |
+| baloo-bhaijaan-2 | Rounded display | https://github.com/google/fonts/tree/main/ofl/baloo-bhaijaan-2 |
+| harmattan | Naskh / text | https://github.com/google/fonts/tree/main/ofl/harmattan |
+| aref-ruqaa | Ruqaa-inspired display | https://github.com/google/fonts/tree/main/ofl/aref-ruqaa |
+| markazi-text | Text serif | https://github.com/google/fonts/tree/main/ofl/markazi-text |
+| rubik | Sans; Arabic subset included | https://github.com/google/fonts/tree/main/ofl/rubik |
 
-## Inclusion checklist
+## License policy
 
-- [ ] Exact source repository and release/tag recorded.
-- [ ] License file for the exact release inspected; redistribution and derivative-work terms understood.
-- [ ] Font binary SHA-256 recorded.
-- [ ] Family/style/weight metadata extracted.
-- [ ] Arabic Unicode coverage checked from cmap and actual shaping tests.
-- [ ] Font family assigned to exactly one split.
-- [ ] No duplicate family/style file under a different filename.
+The SIL Open Font License 1.1 generally permits use, modification, and redistribution of font software subject to its conditions, including reserved font names and license retention. Keep each family's license file with its files and review it before redistribution or model release.
 
-Do not assume every family covers the same Arabic-script languages. Add a family to the manifest only after verification.
+Official references:
+- Google Fonts repository and per-family license files: https://github.com/google/fonts
+- Google Fonts repository guide: https://googlefonts.github.io/gf-guide/googlefonts.html
+- Noto Arabic project license: https://github.com/notofonts/arabic
+- Amiri project: https://github.com/aliftype/amiri
+
+## Admission gates
+
+A downloaded file remains a candidate until its exact family license is checked, upstream commit and SHA-256 are recorded, cmap coverage is inspected, and HarfBuzz shaping tests pass. Keep all files from one family in a single dataset split to prevent leakage. The collector refuses missing/non-OFL licenses.
