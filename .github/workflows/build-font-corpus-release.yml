@@ -1,0 +1,68 @@
+name: Build and publish Arabic font corpus
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "GitHub release tag for this corpus snapshot"
+        required: true
+        default: "arabic-font-corpus-v1"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  collect-validate-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install validation dependencies
+        run: python -m pip install -r requirements-font-validation.txt
+
+      - name: Collect OFL 1.1 fonts from the curated allowlist
+        run: python scripts/collect_google_fonts.py --output data/raw_fonts
+
+      - name: Validate cmap and HarfBuzz shaping
+        run: python scripts/validate_arabic_fonts.py --input data/raw_fonts --output data/validation
+
+      - name: Build corpus archive with licenses and reports
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZIP_DEFLATED, ZipFile
+          root = Path(".")
+          output = Path("arabic-font-corpus.zip")
+          with ZipFile(output, "w", ZIP_DEFLATED) as archive:
+              for folder in (Path("data/raw_fonts"), Path("data/validation")):
+                  if folder.exists():
+                      for file in sorted(folder.rglob("*")):
+                          if file.is_file():
+                              archive.write(file, file.as_posix())
+              archive.write(Path("docs/FONT_VALIDATION.md"), "docs/FONT_VALIDATION.md")
+          print(f"Created {output} ({output.stat().st_size} bytes)")
+          PY
+
+      - name: Publish corpus as a GitHub Release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          name: Arabic font corpus ${{ inputs.release_tag }}
+          body: |
+            Curated Arabic font corpus collected from Google Fonts family folders that expose a SIL Open Font License 1.1 file.
+
+            The archive includes the font files, corresponding license files, SHA-256 collection manifest, and cmap/HarfBuzz validation reports.
+            Only records with validation status "pass" should enter the training split. Other files are retained for audit and must not be treated as training-ready.
+            License review and visual-quality review remain separate acceptance gates.
+          files: arabic-font-corpus.zip
+          fail_on_unmatched_files: true
+          make_latest: true
