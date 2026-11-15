@@ -17,12 +17,13 @@ A single reference glyph does not uniquely determine a typeface. The system must
 - [Model configuration](configs/model.yaml) and [data configuration](configs/data.yaml).
 - JSONL manifest templates under `data/manifests/`.
 - A standard-library manifest validator: `python scripts/validate_manifest.py data/manifests/fonts.template.jsonl`.
+- Arabic font technical validator: `python scripts/validate_arabic_fonts.py --input data/raw_fonts --output data/validation` (requires FontTools and uharfbuzz; see [validation guide](docs/FONT_VALIDATION.md)).
 
 ## Recommended first milestone
 
 1. Collect a small, legally usable pilot corpus from distinct font families.
 2. Record source, exact license, version, SHA-256, metadata, and character coverage for every file.
-3. Render glyphs through a pinned HarfBuzz/FreeType pipeline and preserve the renderer configuration.
+3. Run the cmap/OpenType/HarfBuzz screening described in [FONT_VALIDATION.md](docs/FONT_VALIDATION.md), then render glyphs through a pinned HarfBuzz/FreeType pipeline and preserve the renderer configuration.
 4. Establish a baseline with the upstream MX-Font implementation before adding Arabic-specific modules.
 5. Evaluate on font families never seen during training.
 
