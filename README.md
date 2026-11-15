@@ -18,6 +18,7 @@ A single reference glyph does not uniquely determine a typeface. The system must
 - JSONL manifest templates under `data/manifests/`.
 - A standard-library manifest validator: `python scripts/validate_manifest.py data/manifests/fonts.template.jsonl`.
 - Arabic font technical validator: `python scripts/validate_arabic_fonts.py --input data/raw_fonts --output data/validation` (requires FontTools and uharfbuzz; see [validation guide](docs/FONT_VALIDATION.md)).
+- A manual GitHub Actions workflow to collect, validate, and publish the binary corpus as a GitHub Release asset (see [publishing guide](docs/FONT_CORPUS_RELEASE.md)).
 
 ## Recommended first milestone
 
