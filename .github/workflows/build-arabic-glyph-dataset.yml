@@ -1,0 +1,91 @@
+name: Build Arabic glyph training dataset
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build_arabic_glyph_dataset.py"
+      - "docs/ARABIC_GLYPH_DATASET.md"
+      - ".github/workflows/build-arabic-glyph-dataset.yml"
+  workflow_dispatch:
+    inputs:
+      font_release_tag:
+        description: "Existing font corpus release tag"
+        required: true
+        default: "arabic-font-corpus-v1"
+        type: string
+      dataset_release_tag:
+        description: "Release tag for the generated training dataset"
+        required: true
+        default: "arabic-glyph-dataset-v1"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  render-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-glyph-dataset.txt
+
+      - name: Install rendering dependency
+        run: python -m pip install -r requirements-glyph-dataset.txt
+
+      - name: Download the already-published font corpus
+        env:
+          FONT_RELEASE_TAG: ${{ inputs.font_release_tag || 'arabic-font-corpus-v1' }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$FONT_RELEASE_TAG" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "arabic-font-corpus.zip" \
+            --output arabic-font-corpus.zip
+          unzip -q arabic-font-corpus.zip -d .
+
+      - name: Render contextual Arabic glyph samples and create family-safe splits
+        run: |
+          python scripts/build_arabic_glyph_dataset.py \
+            --fonts data/raw_fonts \
+            --validation data/validation/font_validation.jsonl \
+            --output data/training_samples \
+            --seed 42
+
+      - name: Package generated dataset
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZIP_DEFLATED, ZipFile
+          root = Path("data/training_samples")
+          output = Path("arabic-glyph-training-dataset.zip")
+          with ZipFile(output, "w", ZIP_DEFLATED, compresslevel=6) as archive:
+              for file in sorted(root.rglob("*")):
+                  if file.is_file():
+                      archive.write(file, file.relative_to(root).as_posix())
+          print(f"Created {output}: {output.stat().st_size} bytes")
+          PY
+
+      - name: Publish generated dataset as a GitHub Release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.dataset_release_tag || 'arabic-glyph-dataset-v1' }}
+          name: Arabic glyph training dataset ${{ inputs.dataset_release_tag || 'arabic-glyph-dataset-v1' }}
+          body: |
+            Derived raster dataset generated from the existing arabic-font-corpus release.
+
+            Includes per-font Arabic glyph/context renders, phrase renders, JSONL metadata,
+            deterministic train/validation/test splits grouped by font family, and a build summary.
+            This is a data-preparation artifact, not a trained model or a visual-quality-certified dataset.
+          files: arabic-glyph-training-dataset.zip
+          fail_on_unmatched_files: true
+          overwrite_files: true
+          make_latest: false
