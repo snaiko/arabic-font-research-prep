@@ -42,13 +42,14 @@ The validator checks:
 - extended Arabic-script coverage separately (reported, not required for the core pass);
 - presence of GSUB and GPOS tables;
 - variable-font axes from fvar;
-- right-to-left HarfBuzz shaping for basic joining, lam-alef, diacritics, sentence, and Persian-extension samples;
+- right-to-left HarfBuzz shaping for basic Arabic joining, lam-alef, diacritics, and sentence samples;
+- Persian-extension shaping as a separate optional capability check; it does not fail a font that otherwise supports core Arabic.
 - SHA-256 and nearby license-file path.
 
 ## 4. Interpret statuses
 
-- `pass`: core Arabic cmap is complete and every HarfBuzz sample produced glyphs without .notdef.
-- `fail`: a font is malformed, lacks core Arabic characters, or produced .notdef in a shaping sample.
+- `pass`: core Arabic cmap is complete and every core Arabic HarfBuzz sample produced glyphs without .notdef. Persian-extension support is reported separately.
+- `fail`: a font is malformed, lacks core Arabic characters, or produced .notdef in a core Arabic shaping sample.
 - `needs_shaping_test`: cmap passed but HarfBuzz was unavailable, so shaping remains unverified.
 
 A pass is only a technical screening result. It does **not** certify the font's license, visual quality, glyph correctness, or suitability for a specific script/style. License review remains a separate gate. Do not mix Naskh, Nastaliq, Kufi, and regional Arabic-script styles into one undifferentiated evaluation pool.
