@@ -2,7 +2,7 @@
 
 Research preparation for an Arabic font-generation system that learns a visual style from a small set of reference glyphs and predicts other glyphs while preserving Arabic character identity, joining behavior, and font validity.
 
-> **Status:** research specification and data-preparation scaffolding. This repository does not yet contain a collected font corpus, trained Arabic checkpoint, or verified generation results.
+> **Status:** research specification plus reproducible font-corpus and raster-dataset preparation. No trained Arabic checkpoint or verified generation results are included.
 
 ## Research principle
 
@@ -18,7 +18,9 @@ A single reference glyph does not uniquely determine a typeface. The system must
 - JSONL manifest templates under `data/manifests/`.
 - A standard-library manifest validator: `python scripts/validate_manifest.py data/manifests/fonts.template.jsonl`.
 - Arabic font technical validator: `python scripts/validate_arabic_fonts.py --input data/raw_fonts --output data/validation` (requires FontTools and uharfbuzz; see [validation guide](docs/FONT_VALIDATION.md)).
-- A manual GitHub Actions workflow to collect, validate, and publish the binary corpus as a GitHub Release asset (see [publishing guide](docs/FONT_CORPUS_RELEASE.md)).
+- A GitHub Actions workflow to collect, validate, and publish the binary font corpus as a GitHub Release asset (see [publishing guide](docs/FONT_CORPUS_RELEASE.md)).
+- Reproducible Arabic raster-sample builder: `python scripts/build_arabic_glyph_dataset.py --fonts data/raw_fonts --validation data/validation/font_validation.jsonl --output data/training_samples` (requires Pillow with RAQM; see [dataset guide](docs/ARABIC_GLYPH_DATASET.md)).
+- Automated GitHub Actions workflow downloads the existing font-corpus Release, renders contextual Arabic glyph and phrase samples, creates family-safe train/validation/test splits, and publishes a separate dataset Release.
 
 ## Recommended first milestone
 
