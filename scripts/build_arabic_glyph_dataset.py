@@ -154,6 +154,7 @@ def main() -> int:
     counts = Counter()
     family_counts = Counter()
     output.mkdir(parents=True, exist_ok=True)
+    (output / "splits").mkdir(parents=True, exist_ok=True)
     try:
         split_handles = {
             name: (output / "splits" / f"{name}.jsonl").open("w", encoding="utf-8")
