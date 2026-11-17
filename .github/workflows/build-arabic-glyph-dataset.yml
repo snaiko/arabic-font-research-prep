@@ -57,6 +57,7 @@ jobs:
           python scripts/build_arabic_glyph_dataset.py \
             --fonts data/raw_fonts \
             --validation data/validation/font_validation.jsonl \
+            --collection data/raw_fonts/fonts.jsonl \
             --output data/training_samples \
             --seed 42
 
