@@ -24,6 +24,20 @@ FAMILIES = [
     "aref-ruqaa", "markazi-text", "rubik",
 ]
 API = "https://api.github.com/repos/" + REPO
+# Google Fonts directory slugs are compact; the human-readable IDs above stay stable.
+REMOTE_FAMILY_DIRS = {
+    "noto-naskh-arabic": "notonaskharabic",
+    "noto-sans-arabic": "notosansarabic",
+    "noto-kufi-arabic": "notokufiarabic",
+    "scheherazade-new": "scheherazadenew",
+    "ibm-plex-sans-arabic": "ibmplexsansarabic",
+    "readex-pro": "readexpro",
+    "reem-kufi": "reemkufi",
+    "el-messiri": "elmessiri",
+    "baloo-bhaijaan-2": "baloobhaijaan2",
+    "aref-ruqaa": "arefruqaa",
+    "markazi-text": "markazitext",
+}
 REVISION = None
 
 def get_bytes(url):
@@ -76,7 +90,7 @@ def main():
     rows, errors = [], []
 
     for slug in families:
-        family_path = "ofl/" + slug
+        family_path = "ofl/" + REMOTE_FAMILY_DIRS.get(slug, slug)
         try:
             entries = api_dir(family_path)
             top_files = {x["name"]: x for x in entries if x["type"] == "file"}
