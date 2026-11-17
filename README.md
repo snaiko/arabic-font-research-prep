@@ -37,3 +37,14 @@ MX-Font is a few-shot **glyph-image generation** model. It is not by itself an A
 ## License and data policy
 
 Do not commit commercial fonts, unlicensed fonts, or raw font binaries to this repository. Keep source font files in storage whose access and license terms are known. Commit manifests and derived metadata only when their licenses permit it. Check the exact license attached to every downloaded font version; a family name alone is not proof of permission.
+
+## Windows local AI-agent handoff
+
+This repository now includes a Windows preflight launcher and a handoff specification for a separate local AI agent:
+
+- Run `START_LOCAL_TRAINING.bat` on the Windows computer.
+- It invokes `scripts/preflight_local_training.py`, detects available system memory and (when installed) PyTorch/CUDA GPU details, downloads the published raster dataset if needed, and writes `reports/local/machine_preflight.json`.
+- Follow `LOCAL_AI_AGENT_GUIDE.md` for the required implementation and validation work before training.
+
+**Important:** the launcher does not start training. The current dataset consists of full-line contextual renders, not verified target-glyph crops, and this repository does not yet include an executable MX-Font training implementation. The preflight therefore marks training as blocked. The local AI agent must implement and test the dataset adapter and baseline first, inspect the detected hardware, then request approval before a long training run. Machine reports and private checkpoints must not be uploaded publicly without permission.
+
