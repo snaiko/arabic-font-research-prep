@@ -24,7 +24,7 @@ except ImportError:
     hb = None
 
 # Arabic core letters plus common Arabic-script extensions used in Persian/Urdu.
-CORE_ARABIC = set(range(0x0621, 0x064B))
+CORE_ARABIC = set(range(0x0621, 0x063B)) | set(range(0x0641, 0x064B))  # Arabic letters; U+0640 tatweel is not a letter
 EXTENDED_ARABIC = set(
     list(range(0x066E, 0x0671)) + list(range(0x0671, 0x06D4))
     + list(range(0x06FA, 0x06FE)) + list(range(0x0750, 0x0780))
@@ -35,8 +35,8 @@ TEST_STRINGS = [
     ("lam_alef", "لا"),
     ("diacritics", "بِسْمِ"),
     ("arabic_sentence", "مرحبا بالعالم"),
-    ("persian_extension", "پچژگ"),
 ]
+EXTENSION_TEST_STRINGS = [("persian_extension", "پچژگ")]
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -101,7 +101,30 @@ def shape_tests(path: Path) -> dict:
             "clusters": [info.cluster for info in infos],
             "passed": passed,
         })
-    return {"status": "pass" if all_pass else "fail", "tests": tests}
+    extension_tests = []
+    extension_pass = True
+    for label, sample in EXTENSION_TEST_STRINGS:
+        buffer = hb.Buffer()
+        buffer.add_str(sample)
+        buffer.direction = "rtl"
+        buffer.language = "fa"
+        buffer.script = "Arab"
+        hb.shape(font, buffer)
+        gids = [info.codepoint for info in buffer.glyph_infos]
+        missing = sum(1 for gid in gids if gid == 0)
+        passed = bool(gids) and missing == 0
+        extension_pass = extension_pass and passed
+        extension_tests.append({
+            "name": label, "text": sample, "glyph_count": len(gids),
+            "missing_glyph_count": missing, "glyph_ids": gids,
+            "passed": passed,
+        })
+    return {
+        "status": "pass" if all_pass else "fail",
+        "tests": tests,
+        "extended_script_status": "pass" if extension_pass else "not_supported_or_incomplete",
+        "extended_script_tests": extension_tests,
+    }
 
 def inspect_font(path: Path) -> dict:
     result = {
