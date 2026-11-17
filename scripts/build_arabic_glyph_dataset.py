@@ -42,14 +42,18 @@ def digest_file(path: Path) -> str:
             h.update(chunk)
     return h.hexdigest()
 
-def read_validation(path: Path) -> dict[str, dict]:
-    rows = {}
+def read_jsonl(path: Path) -> list[dict]:
     with path.open(encoding="utf-8") as stream:
-        for line in stream:
-            if line.strip():
-                row = json.loads(line)
-                rows[row["file"]] = row
-    return rows
+        return [json.loads(line) for line in stream if line.strip()]
+
+def read_validation(path: Path) -> dict[str, dict]:
+    return {row["file"]: row for row in read_jsonl(path)}
+
+def read_family_map(path: Path) -> dict[str, str]:
+    # The validator records a path but not the collection family. Use the
+    # collector manifest so fonts stored in nested "static/" folders do not
+    # all collapse into a single split named "static".
+    return {row["file"]: row["family"] for row in read_jsonl(path)}
 
 def render(text: str, font_path: Path, target: Path) -> None:
     font = ImageFont.truetype(
@@ -101,6 +105,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fonts", default="data/raw_fonts")
     parser.add_argument("--validation", default="data/validation/font_validation.jsonl")
+    parser.add_argument("--collection", default="data/raw_fonts/fonts.jsonl")
     parser.add_argument("--output", default="data/training_samples")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
@@ -116,6 +121,10 @@ def main() -> int:
         parser.error(f"Validation manifest not found: {validation_path}")
 
     validation = read_validation(validation_path)
+    collection_path = Path(args.collection)
+    if not collection_path.is_file():
+        parser.error(f"Collection manifest not found: {collection_path}")
+    family_map = read_family_map(collection_path)
     font_paths = sorted(
         p for p in fonts_root.rglob("*")
         if p.is_file() and p.suffix.lower() in {".ttf", ".otf"}
@@ -126,6 +135,9 @@ def main() -> int:
         key = path.as_posix()
         row = validation.get(key)
         if row and row.get("status") == "pass":
+            row = dict(row)
+            relative_path = path.relative_to(fonts_root).as_posix()
+            row["family"] = family_map.get(key, family_map.get("data/raw_fonts/" + relative_path, relative_path.split("/")[0]))
             accepted.append((path, row))
         else:
             rejected.append({
