@@ -50,7 +50,7 @@ jobs:
             --repo "${GITHUB_REPOSITORY}" \
             --pattern "arabic-font-corpus.zip" \
             --dir .
-          unzip -q arabic-font-corpus.zip -d .
+          unzip -oq arabic-font-corpus.zip -d .
 
       - name: Render contextual Arabic glyph samples and create family-safe splits
         run: |
