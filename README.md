@@ -13,7 +13,7 @@ A single reference glyph does not uniquely determine a typeface. The system must
 - [Model architecture](docs/MODEL_ARCHITECTURE.md): staged MX-Font-based design and Arabic-specific modules.
 - [Unified dual-mode specification](docs/DUAL_MODE_MODEL_SPEC.md): image, prompt, and hybrid routes sharing one generator.
 - [Prompt and geometry dataset plan](docs/PROMPT_AND_GEOMETRY_DATASET.md): paired descriptions, measurable attributes, and leakage controls.
-- [Pretraining completion plan](docs/PRETRAINING_COMPLETION_PLAN.md) and [AI agent execution contract](docs/AI_AGENT_EXECUTION_SPEC.md): mandatory work packages and stop conditions.
+- [Pretraining completion plan](docs/PRETRAINING_COMPLETION_PLAN.md), [AI agent execution contract](docs/AI_AGENT_EXECUTION_SPEC.md), and [initial readiness report](reports/PRETRAINING_READINESS.md): mandatory work packages, current blockers, and stop conditions.
 - JSON Schemas under `schemas/` for style records, source licensing, and readiness reports.
 - [Data specification](docs/DATA_SPECIFICATION.md): corpus schema, glyph labels, contextual forms, and quality controls.
 - [Open-font sources](data/sources/OPEN_FONT_CATALOG.md): candidate families and licensing checks.
