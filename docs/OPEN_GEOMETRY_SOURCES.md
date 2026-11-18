@@ -1,0 +1,75 @@
+# Open Geometry and Arabic Calligraphy Sources
+
+Research note: 2026-11-18
+
+This project aims to learn reusable geometric construction rules and generate unseen Arabic compositions. Sources below are candidates, not a blanket authorization to ingest every image or file.
+
+## High-priority candidates
+
+### 1. Calliar — Arabic calligraphy stroke dataset
+- Project: https://arbml.github.io/Calliar/
+- Repository: https://github.com/ARBML/Calliar
+- Reported contents: 2,500 annotated Arabic calligraphy sentence samples; stroke, character, word, and sentence annotations; JSON stroke point sequences and NPZ data.
+- Why it matters: this is vector-like trajectory data, not merely raster pictures. It can help train stroke order, pen trajectory, primitive strokes, and Arabic structural representations.
+- License status: repository page advertises MIT, but do not assume the code license automatically covers the dataset or every underlying contribution. Inspect the exact dataset license and paper terms / contact authors before commercial use, redistribution, or model training if the scope is unclear.
+- Recommended action: audit license and sample schema first; if cleared, ingest as a separate trajectory dataset, not as decorative word-image data.
+
+### 2. Naqsh SVG Studio — original geometric ornament assets
+- Repository: https://github.com/Omaraldeek3/naqsh-svg-studio
+- Asset license: its ASSET-LICENSE.md dedicates the 384 original ornament assets authored for the project and their generated files to CC0 1.0.
+- Why it matters: editable SVG geometry for geometric ornament construction, connected grids, parallel-band patterns, arabesque, rosettes, and borders. Useful for learning curve, symmetry, repetition, topology, and composition primitives.
+- Important scope limit: the repository also bundles third-party Tabler icons (MIT) and Material Design Icons (Apache-2.0), plus a Tajawal font (OFL). These are NOT part of the 384 CC0 original ornament assets. Do not label all 14,108 files CC0.
+- Recommended action: select only the 384 original CC0 ornament assets and preserve their source metadata.
+
+### 3. Wikimedia Commons — Arabic calligraphy SVG category
+- Category: https://commons.wikimedia.org/wiki/Category:SVG_Arabic_calligraphy
+- Reported category size: 122 SVG files at time of review.
+- Why it matters: SVG paths can provide contour and composition examples that are more useful than low-resolution raster images.
+- License status: each file has its own author and license. Review every individual file page and record its license, author, source, and attribution requirements. Category membership is not a license.
+- Recommended action: ingest only files individually confirmed as public domain, CC0, or a compatible Creative Commons license.
+
+### 4. Openclipart / FreeSVG
+- Openclipart example: https://openclipart.org/detail/303935/arabic-calligraphy
+- FreeSVG example: https://freesvg.org/islamic-calligraphy
+- Why it matters: downloadable SVG calligraphic artwork; some items are public domain / CC0.
+- License status: confirm the exact item page and provenance for each asset. Do not infer that every search result or externally sourced image has the same status.
+- Recommended action: treat as a small supplementary artwork source, not a guaranteed large dataset.
+
+## Geometry generators and historical geometry
+
+### 5. Islamic-Patterns (E. H. Hankin / girih generator)
+- Repository: https://github.com/evoluteur/islamic-patterns
+- License: repository code is MIT.
+- Capabilities: generates stars, rosettes, interlaced girih strapwork and tilings; exports SVG and PNG; exposes parameters such as tiling, contact angle, gaps, and weave.
+- Why it matters: excellent algorithmic reference for building our own procedural geometry generator and generating unlimited controlled geometric examples.
+- Important: a code license does not automatically settle the license of every generated output or third-party input. Check project terms before treating generated files as training assets. Prefer implementing the documented mathematical method independently and recording our own generator/version/parameters.
+
+### 6. Geosym — Arabic geometric patterns
+- Site: https://geosym.eu/
+- Describes historical geometric patterns from J. Bourgoin's 1879 work as public domain.
+- Important: the site advertises DWG drawing files for €25 each. Public-domain status of the historical source does not mean the site's prepared digital files are free to download. Do not scrape or bypass payment.
+- Why it matters: useful as a reference to historical geometric families and symmetry systems.
+
+## Dataset separation and learning objective
+
+Keep distinct dataset partitions:
+- arabic_trajectories: cleared Calliar-like pen stroke sequences.
+- arabic_calligraphy_vectors: individually rights-cleared Arabic calligraphy SVG paths.
+- ornament_geometry_cc0: only the verified CC0 original Naqsh assets and other individually cleared geometry.
+- procedural_geometry: original samples generated by our own documented algorithms.
+- font_glyphs: font-derived glyph samples with font license provenance.
+
+Do not mix these sources as if they teach the same task. Ornament vectors teach geometric primitives and composition; Arabic trajectories teach writing motion and stroke structure; font glyphs teach typographic glyph shapes; word-level calligraphy teaches stylized composition.
+
+## Core anti-memorization strategy
+
+The model should learn geometry as explicit representations:
+- Bézier/control points and centerlines;
+- curvature and tangent continuity;
+- stroke-width profiles and tapering;
+- connected-component and topology constraints;
+- symmetry, repetition, and controlled deformation;
+- Arabic letter identity, joining, ligatures, dots, and diacritics;
+- layout, balance, negative space, and word silhouette.
+
+Train and evaluate on held-out words and unseen combinations. A model that only reconstructs training images has not demonstrated generative generalization.
