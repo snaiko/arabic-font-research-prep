@@ -1,0 +1,63 @@
+schema_version: 1
+language_script: Arab
+normalization:
+  confidence_range: [0.0, 1.0]
+  continuous_range: [0.0, 1.0]
+  unknown_value: unknown
+attributes:
+  construction:
+    description: Overall construction logic of the letterforms.
+    values: [geometric, calligraphic, monoline, skeletal, display, unknown]
+  curvature:
+    description: Overall curvature intensity; numeric measurement should also be stored in geometry.
+    values: [very_low, low, medium, high, very_high, unknown]
+  stroke_weight:
+    description: Perceived stroke mass, not a substitute for measured width.
+    values: [thin, regular, semibold, bold, black, variable, unknown]
+  contrast:
+    description: Difference between thick and thin parts of a stroke.
+    values: [none, low, medium, high, very_high, unknown]
+  terminals:
+    description: Dominant stroke ending treatment.
+    values: [sharp, rounded, flat, tapered, hooked, calligraphic, mixed, unknown]
+  spacing:
+    description: Overall perceived spacing.
+    values: [tight, normal, open, variable, unknown]
+  proportions:
+    description: Dominant proportion tendency.
+    values: [condensed, balanced, extended, tall, wide, variable, unknown]
+  ornamentation:
+    description: Decorative treatment.
+    values: [none, minimal, geometric, floral, circular, arabesque, dense, unknown]
+  baseline:
+    description: Baseline behavior.
+    values: [stable, rising, descending, rhythmic, variable, unknown]
+  joining:
+    description: Joining character in connected Arabic text.
+    values: [smooth, angular, compact, extended, calligraphic, mixed, unknown]
+geometry_fields:
+  units:
+    advance_width: font_units
+    glyph_bounds: font_units
+    stroke_width: font_units_or_normalized
+    curvature: inverse_font_units_or_normalized
+    terminal_angle: degrees
+    negative_space_ratio: ratio_0_1
+  per_glyph_recommended: true
+  fields:
+    - advance_width
+    - glyph_bounds
+    - estimated_stroke_width
+    - curvature_mean
+    - curvature_max
+    - terminal_angle_mean
+    - negative_space_ratio
+    - connected_components
+    - contour_count
+    - baseline_offset
+    - joining_class
+conditioning:
+  modes: [reference_image, text_prompt, hybrid]
+  shared_latent_space: true
+  shared_generator: true
+  preserve_uncertainty: true
