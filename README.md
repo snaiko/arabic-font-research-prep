@@ -38,6 +38,14 @@ MX-Font is a few-shot **glyph-image generation** model. It is not by itself an A
 
 Do not commit commercial fonts, unlicensed fonts, or raw font binaries to this repository. Keep source font files in storage whose access and license terms are known. Commit manifests and derived metadata only when their licenses permit it. Check the exact license attached to every downloaded font version; a family name alone is not proof of permission.
 
+## Unified image + prompt model
+
+The intended model has reference-image, text-prompt, and optional hybrid conditioning routes. All routes must share one style/geometry latent space and one Arabic-aware generator. See [the dual-mode model specification](docs/DUAL_MODE_MODEL_SPEC.md), [the structured style schema](docs/STYLE_DESCRIPTION_SCHEMA.md), and [the pretraining completion plan](docs/PRETRAINING_COMPLETION_PLAN.md).
+
+## Pretraining is deliberately gated
+
+The repository is not yet training-ready. The local AI agent must complete the data adapter, Arabic cluster-aware crops, prompt/geometry supervision, both conditioning encoders, shared generator paths, tests, and the readiness report. Follow [the AI agent execution contract](docs/AI_AGENT_EXECUTION_SPEC.md). Do not begin a long training run until every gate passes and the user explicitly approves it.
+
 ## Windows local AI-agent handoff
 
 This repository now includes a Windows preflight launcher and a handoff specification for a separate local AI agent:
