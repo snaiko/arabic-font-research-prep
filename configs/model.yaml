@@ -1,5 +1,14 @@
 project: arabic-fewshot-font
-status: research_prototype
+status: preparation_only
+training_enabled: false
+conditioning_modes: [reference_image, text_prompt, hybrid]
+shared_style_geometry_latent:
+  enabled: true
+  dimension: 256
+  confidence_per_attribute: true
+shared_arabic_aware_generator:
+  enabled: true
+  shared_across_all_modes: true
 baseline:
   name: MX-Font
   upstream: https://github.com/clovaai/mxfont
@@ -18,6 +27,18 @@ modules:
   topology_refinement:
     enabled: false
     targets: [connectivity, components, dots, counters, stroke_endpoints, mark_placement]
+  prompt_style_encoder:
+    enabled: true
+    backbone: pretrained_arabic_capable_text_encoder
+    projection_head: trainable
+    train_large_language_model_from_scratch: false
+    languages: [ar, en]
+  shared_style_geometry_alignment:
+    enabled: true
+    objectives: [paired_image_prompt_alignment, attribute_supervision, geometry_regression]
+  hybrid_conditioning:
+    enabled: true
+    fusion: learned_confidence_aware_fusion
   confidence_gate:
     enabled: false
     outputs: [prediction, uncertainty, reference_ids]
