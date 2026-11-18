@@ -1,0 +1,68 @@
+project: unified_arabic_font_model
+schema_version: 1
+status: preparation_only
+training_enabled: false
+conditioning_modes: [reference_image, text_prompt, hybrid]
+shared_core:
+  shared_style_latent: true
+  shared_arabic_generator: true
+  latent_dim: 256
+  uncertainty_output: true
+encoders:
+  image:
+    baseline: MX-Font
+    upstream_repository: https://github.com/clovaai/fewshot-font-generation
+    upstream_commit: PINNED_BY_AGENT_BEFORE_IMPLEMENTATION
+    reference_counts: [1, 2, 4, 8]
+  prompt:
+    pretrained_text_encoder: TO_BE_SELECTED_AND_LICENSE_AUDITED
+    supports_languages: [ar, en]
+    train_projection_head: true
+    train_large_language_model_from_scratch: false
+  geometry:
+    targets: [advance_width, outline_bounds, stroke_width_profile, curvature, terminal_angle, topology, negative_space_ratio, baseline]
+    per_glyph_targets: true
+conditioning:
+  image_only: true
+  prompt_only: true
+  hybrid: true
+  paired_alignment_required: true
+data:
+  font_manifest: data/manifests/fonts.jsonl
+  glyph_manifest: data/manifests/glyphs.jsonl
+  style_description_manifest: data/manifests/style_description.template.jsonl
+  source_asset_manifest: data/manifests/source_asset.template.jsonl
+  split_unit: normalized_font_family
+  require_license_review: true
+  reject_unknown_training_permission: true
+losses:
+  pixel: 1.0
+  edge: 0.2
+  structure: 0.2
+  attribute: 0.2
+  geometry: 0.2
+  image_prompt_alignment: 0.1
+  hybrid_consistency: 0.1
+  uncertainty: 0.05
+  note: Initial weights are placeholders; agent must validate scale/gradients and tune on validation only.
+training:
+  seed: 2026
+  mixed_precision: auto_after_device_validation
+  batch_size: auto_after_device_preflight
+  num_workers: auto_after_device_preflight
+  checkpoint_every_steps: 1000
+  validate_every_steps: 500
+  resume: true
+  graceful_interrupt: true
+  full_run_requires_user_approval: true
+evaluation:
+  held_out_unit: font_family
+  reference_counts: [1, 2, 4, 8]
+  routes: [reference_image, text_prompt, hybrid]
+  report_per_family_and_style: true
+  test_split_never_used_for_tuning: true
+outputs:
+  checkpoints_dir: runs/checkpoints
+  metrics_dir: runs/metrics
+  samples_dir: runs/samples
+  readiness_report: reports/pretraining_readiness.json
