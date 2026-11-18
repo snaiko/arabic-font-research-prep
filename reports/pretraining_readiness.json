@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-18T00:00:00Z",
+  "repository_commit": "preparation-baseline-before-local-agent-audit",
+  "training_allowed": false,
+  "overall_status": "BLOCKED",
+  "gates": [
+    {
+      "id": "upstream_pin_and_license",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/MODEL_ARCHITECTURE.md",
+        "docs/AI_AGENT_EXECUTION_SPEC.md"
+      ],
+      "notes": "Exact immutable upstream commit, full license/notice audit, and reproducible baseline run are not yet recorded."
+    },
+    {
+      "id": "asset_rights_and_provenance",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/OPEN_GEOMETRY_SOURCES.md",
+        "data/manifests/source_asset.template.jsonl",
+        "schemas/source_asset.schema.json"
+      ],
+      "notes": "Candidate sources are documented, but every asset intended for training still needs an individual license and training-permission decision."
+    },
+    {
+      "id": "family_safe_data_integrity",
+      "status": "UNKNOWN",
+      "evidence": [
+        "docs/DATA_SPECIFICATION.md",
+        "docs/ARABIC_GLYPH_DATASET.md"
+      ],
+      "notes": "The repository documents family-level splits; the local agent must verify the actual downloaded release, hashes, duplicate families, and split disjointness."
+    },
+    {
+      "id": "arabic_target_glyph_crops",
+      "status": "FAIL",
+      "evidence": [
+        "scripts/build_arabic_glyph_dataset.py",
+        "docs/ARABIC_GLYPH_DATASET.md",
+        "LOCAL_AI_AGENT_GUIDE.md"
+      ],
+      "notes": "Existing samples are contextual full-line renders with logical target indices, not audited isolated target-glyph crops with verified HarfBuzz cluster mapping."
+    },
+    {
+      "id": "paired_prompt_and_geometry_supervision",
+      "status": "FAIL",
+      "evidence": [
+        "docs/DUAL_MODE_MODEL_SPEC.md",
+        "docs/PROMPT_AND_GEOMETRY_DATASET.md",
+        "data/manifests/style_description.template.jsonl"
+      ],
+      "notes": "Schemas and templates exist, but a populated, provenance-reviewed paired prompt/measurement dataset has not been demonstrated."
+    },
+    {
+      "id": "image_prompt_hybrid_model_paths",
+      "status": "FAIL",
+      "evidence": [
+        "docs/DUAL_MODE_MODEL_SPEC.md",
+        "configs/dual_mode_training.yaml",
+        "configs/model.yaml"
+      ],
+      "notes": "The unified architecture is specified, but executable image encoder, prompt encoder, shared latent alignment, shared generator, and hybrid path have not been verified in this repository."
+    },
+    {
+      "id": "tests_and_checkpoint_recovery",
+      "status": "FAIL",
+      "evidence": [
+        "docs/PRETRAINING_COMPLETION_PLAN.md",
+        "docs/AI_AGENT_EXECUTION_SPEC.md"
+      ],
+      "notes": "Required unit tests, forward/backward smoke tests, tiny-subset overfit, checkpoint round-trip, and resume tests have not been evidenced."
+    },
+    {
+      "id": "hardware_and_resource_plan",
+      "status": "UNKNOWN",
+      "evidence": [
+        "START_LOCAL_TRAINING.bat",
+        "scripts/preflight_local_training.py"
+      ],
+      "notes": "The local Windows preflight must be run on the actual machine; current GPU, VRAM, RAM, disk, backend compatibility, and runtime estimates are not established here."
+    }
+  ],
+  "upstream": {
+    "repository": "https://github.com/clovaai/fewshot-font-generation",
+    "commit": "NOT_PINNED",
+    "license_status": "REQUIRES_AUDIT"
+  },
+  "data": {
+    "existing_raster_dataset_description": "Repository handoff documentation reports 7,904 contextual raster samples; the local agent must verify the release archive and actual contents.",
+    "isolated_target_crops": "not_ready",
+    "paired_prompt_geometry_records": "not_verified",
+    "asset_level_training_permission": "not_fully_audited"
+  },
+  "tests": {
+    "repository_tests": "not_run_in_this_preparation_update",
+    "image_route": "not_verified",
+    "prompt_route": "not_verified",
+    "hybrid_route": "not_verified",
+    "checkpoint_round_trip": "not_verified"
+  },
+  "hardware": {
+    "local_preflight": "not_run_in_this_preparation_update",
+    "device": "unknown",
+    "vram_gb": null,
+    "ram_gb": null,
+    "free_disk_gb": null
+  },
+  "resource_estimate": {
+    "status": "not_estimated",
+    "reason": "Requires actual hardware and completed model/data implementation."
+  },
+  "blockers": [
+    "Pin and audit the upstream implementation and reproduce its baseline.",
+    "Complete asset-by-asset rights review and provenance manifests.",
+    "Build and visually audit target-glyph crops using actual HarfBuzz cluster mappings.",
+    "Populate paired style descriptions and measured geometry labels.",
+    "Implement image, prompt, and hybrid conditioning through one shared generator.",
+    "Pass data, model, leakage, smoke, checkpoint, and evaluation tests.",
+    "Run local hardware preflight and produce a resource/runtime estimate."
+  ],
+  "recommended_next_step": "The local AI agent should execute docs/AI_AGENT_EXECUTION_SPEC.md and docs/PRETRAINING_COMPLETION_PLAN.md in order, update this report with evidence, and stop for user review. Do not start training."
+}
