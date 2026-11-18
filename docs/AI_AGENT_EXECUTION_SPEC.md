@@ -5,7 +5,7 @@ This file is the task contract for the separate AI agent operating on the user's
 ## Required behavior
 
 1. Clone or update this repository without deleting user files or overwriting existing checkpoints.
-2. Read `LOCAL_AI_AGENT_GUIDE.md`, `docs/PRETRAINING_COMPLETION_PLAN.md`, `docs/DUAL_MODE_MODEL_SPEC.md`, `docs/MODEL_ARCHITECTURE.md`, `docs/DATA_SPECIFICATION.md`, and `docs/TRAINING_EVALUATION.md` before editing.
+2. Read `LOCAL_AI_AGENT_GUIDE.md`, `docs/UPSTREAM_BASELINE.md`, `docs/PRETRAINING_COMPLETION_PLAN.md`, `docs/DUAL_MODE_MODEL_SPEC.md`, `docs/MODEL_ARCHITECTURE.md`, `docs/DATA_SPECIFICATION.md`, and `docs/TRAINING_EVALUATION.md` before editing.
 3. Inspect the actual Windows machine and repository state. Never invent GPU, memory, disk, dataset, or package information.
 4. Work through WP0-WP5 in `docs/PRETRAINING_COMPLETION_PLAN.md`, in order. Make small, reviewable commits and preserve logs.
 5. Do not start a long training run. Finish the implementation, data audit, tests, and readiness report first.
