@@ -2,6 +2,12 @@ dataset:
   name: arabic-font-corpus
   manifest: data/manifests/fonts.jsonl
   glyph_manifest: data/manifests/glyphs.jsonl
+  style_description_manifest: data/manifests/style_description.template.jsonl
+  source_asset_manifest: data/manifests/source_asset.template.jsonl
+  geometry_manifest: data/manifests/geometry.jsonl
+  paired_image_prompt_supervision: required_for_alignment
+  synthetic_descriptions_must_be_marked: true
+  human_reviewed_descriptions_preferred: true
   font_storage: external
   allowed_splits: [train, validation, test]
   split_unit: normalized_font_family
@@ -36,3 +42,7 @@ quality:
   reject_clipped: true
   deduplicate_by_sha256: true
   require_verified_license: true
+  require_explicit_training_permission: true
+  quarantine_unknown_permission: true
+  preserve_asset_level_provenance: true
+  require_family_safe_splits: true
