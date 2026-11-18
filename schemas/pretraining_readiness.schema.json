@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://snaiko.github.io/arabic-font-research-prep/schemas/pretraining_readiness.schema.json",
+  "title": "Pretraining readiness report",
+  "type": "object",
+  "required": ["schema_version", "training_allowed", "overall_status", "gates", "upstream", "data", "tests", "hardware", "blockers"],
+  "properties": {
+    "schema_version": {"type": "integer", "minimum": 1},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "repository_commit": {"type": "string"},
+    "training_allowed": {"type": "boolean", "const": false},
+    "overall_status": {"enum": ["READY_FOR_USER_REVIEW", "BLOCKED", "INCOMPLETE"]},
+    "gates": {"type": "array", "items": {"type": "object", "required": ["id", "status", "evidence"], "properties": {"id": {"type": "string"}, "status": {"enum": ["PASS", "FAIL", "BLOCKED", "UNKNOWN"]}, "evidence": {"type": "array", "items": {"type": "string"}}, "notes": {"type": "string"}}, "additionalProperties": false}},
+    "upstream": {"type": "object"},
+    "data": {"type": "object"},
+    "tests": {"type": "object"},
+    "hardware": {"type": "object"},
+    "resource_estimate": {"type": "object"},
+    "blockers": {"type": "array", "items": {"type": "string"}},
+    "recommended_next_step": {"type": "string"}
+  },
+  "additionalProperties": true
+}
