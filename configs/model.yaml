@@ -11,7 +11,7 @@ shared_arabic_aware_generator:
   shared_across_all_modes: true
 baseline:
   name: MX-Font
-  upstream: https://github.com/clovaai/mxfont
+  upstream: https://github.com/clovaai/fewshot-font-generation
   paper: https://openaccess.thecvf.com/content/ICCV2021/html/Park_Multiple_Heads_Are_Better_Than_One_Few-Shot_Font_Generation_With_Multiple_Localized_Experts_ICCV_2021_paper.html
   preserve_upstream_checkpoint: true
   fine_tune: false
