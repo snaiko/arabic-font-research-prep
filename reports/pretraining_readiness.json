@@ -1,6 +1,5 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-18T00:00:00Z",
   "repository_commit": "preparation-baseline-before-local-agent-audit",
   "training_allowed": false,
   "overall_status": "BLOCKED",
@@ -120,5 +119,6 @@
     "Pass data, model, leakage, smoke, checkpoint, and evaluation tests.",
     "Run local hardware preflight and produce a resource/runtime estimate."
   ],
-  "recommended_next_step": "The local AI agent should execute docs/AI_AGENT_EXECUTION_SPEC.md and docs/PRETRAINING_COMPLETION_PLAN.md in order, update this report with evidence, and stop for user review. Do not start training."
+  "recommended_next_step": "The local AI agent should execute docs/AI_AGENT_EXECUTION_SPEC.md and docs/PRETRAINING_COMPLETION_PLAN.md in order, update this report with evidence, and stop for user review. Do not start training.",
+  "generated_date": "2026-11-18"
 }
