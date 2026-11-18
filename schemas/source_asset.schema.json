@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://snaiko.github.io/arabic-font-research-prep/schemas/source_asset.schema.json",
+  "title": "Training source asset provenance record",
+  "type": "object",
+  "required": ["asset_id", "asset_type", "source_page", "license_spdx", "training_permission", "sha256"],
+  "properties": {
+    "asset_id": {"type": "string", "minLength": 1},
+    "asset_type": {"enum": ["font", "arabic_trajectory", "arabic_calligraphy_svg", "ornament_svg", "procedural_geometry", "reference_image"]},
+    "title": {"type": "string"},
+    "author_or_rightsholder": {"type": "string"},
+    "source_page": {"type": "string", "format": "uri"},
+    "download_url": {"type": "string", "format": "uri"},
+    "source_revision": {"type": "string"},
+    "sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"},
+    "license_spdx": {"type": "string"},
+    "license_text_path": {"type": "string"},
+    "training_permission": {"enum": ["approved", "denied", "unclear", "permission_required"]},
+    "modification_permission": {"enum": ["approved", "denied", "unclear", "permission_required"]},
+    "redistribution_permission": {"enum": ["approved", "denied", "unclear", "permission_required"]},
+    "attribution_required": {"type": "boolean"},
+    "attribution_text": {"type": "string"},
+    "evidence_url": {"type": "string", "format": "uri"},
+    "reviewed_by": {"type": "string"},
+    "review_date": {"type": "string", "format": "date"},
+    "decision_notes": {"type": "string"}
+  },
+  "allOf": [{"if": {"properties": {"training_permission": {"const": "approved"}}, "required": ["training_permission"]}, "then": {"required": ["evidence_url", "reviewed_by", "review_date"]}}],
+  "additionalProperties": true
+}
