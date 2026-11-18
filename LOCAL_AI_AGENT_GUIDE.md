@@ -1,12 +1,12 @@
 # Handoff guide for the local AI training agent
 
 ## Mission
-Continue this repository into a reproducible Arabic few-shot font-generation research system. The local AI agent runs on the user's Windows computer, inspects its resources, implements missing code, tests it, and only then launches training.
+Prepare this repository into a reproducible unified Arabic font-generation system. The local AI agent runs on the user's Windows computer, inspects its resources, implements missing code, audits data, and tests every path. It must stop after producing the readiness report; the user will separately authorize training.
 
 **Current state is preparation, not a trained model.** The repository has a published 20-family font corpus and a 7,904-image raster dataset release. No Arabic-trained checkpoint is included.
 
 ## First actions
-1. Read README.md, docs/MODEL_ARCHITECTURE.md, docs/TRAINING_EVALUATION.md, and docs/ARABIC_GLYPH_DATASET.md.
+1. Read README.md, docs/PRETRAINING_COMPLETION_PLAN.md, docs/AI_AGENT_EXECUTION_SPEC.md, docs/DUAL_MODE_MODEL_SPEC.md, docs/MODEL_ARCHITECTURE.md, docs/TRAINING_EVALUATION.md, docs/DATA_SPECIFICATION.md, and docs/ARABIC_GLYPH_DATASET.md.
 2. Run START_LOCAL_TRAINING.bat (or python scripts/preflight_local_training.py).
 3. Read reports/local/machine_preflight.json for OS, Python, CPU, RAM, detected PyTorch/CUDA GPU details, dataset status, and blockers.
 4. Do not start training while training_allowed is false. Do not guess the GPU or silently install CPU-only PyTorch.
@@ -51,8 +51,23 @@ Never launch a long run automatically. Show device, VRAM/RAM estimate, batch siz
 - Run a short smoke test and inspect generated samples.
 - Report limitations and failures honestly.
 
+### 6. Implement the prompt and shared-style route (mandatory)
+- Implement an Arabic-capable pretrained text encoder plus a trainable projection head; do not train a large language model from scratch.
+- Consume `configs/style_attributes.yaml` and the style-description manifest schema. Preserve Arabic and English descriptions, normalized attributes, confidence, measured geometry, and source provenance.
+- Build prompt-to-style and image-to-style encoders that produce compatible vectors in one shared style/geometry latent space.
+- Use one shared Arabic-aware generator for reference-image, prompt-only, and hybrid modes. Do not create disconnected generators.
+- Train attribute and geometric supervision separately from image reconstruction. Add paired image/prompt alignment only when reliable paired labels exist.
+- Include controlled counterfactual prompt pairs to test that changing one attribute changes the intended output without damaging unrelated attributes.
+- Test all three modes with forward/backward smoke tests and checkpoint round-trip before any long run.
+
+### 7. Finish readiness, then stop
+- Follow every work package and hard acceptance gate in `docs/PRETRAINING_COMPLETION_PLAN.md`.
+- Create the required JSON and Markdown readiness reports with evidence, not assumptions.
+- If any gate is FAIL or UNKNOWN, set `training_allowed` to false and list the blocker.
+- Even if every gate passes, do not start the full training run. Present the report, resource estimate, and proposed run schedule and wait for explicit user approval.
+
 ## Required outputs
-Pinned upstream metadata/license; platform-specific environment files; dataset conversion/audit scripts; model adapter and episode sampler; train/evaluate/sample commands; Windows launcher with confirmation before long training; checkpoint, metrics, sample gallery, and run manifest.
+Pinned upstream metadata/license; platform-specific environment files; dataset conversion/audit scripts; model adapter and episode sampler; prompt encoder and shared latent/generator paths; route-specific train/evaluate/sample commands; Windows preflight; tests; readiness reports; and a proposed run plan. Do not create a trained checkpoint in this preparation phase.
 
 ## Truthfulness and safety
 - Never say training completed unless a real checkpoint and evaluation report exist.
