@@ -6,7 +6,7 @@ Prepare this repository into a reproducible unified Arabic font-generation syste
 **Current state is preparation, not a trained model.** The repository has a published 20-family font corpus and a 7,904-image raster dataset release. No Arabic-trained checkpoint is included.
 
 ## First actions
-1. Read README.md, docs/PRETRAINING_COMPLETION_PLAN.md, docs/AI_AGENT_EXECUTION_SPEC.md, docs/DUAL_MODE_MODEL_SPEC.md, docs/MODEL_ARCHITECTURE.md, docs/TRAINING_EVALUATION.md, docs/DATA_SPECIFICATION.md, and docs/ARABIC_GLYPH_DATASET.md.
+1. Read README.md, docs/PRETRAINING_COMPLETION_PLAN.md, docs/AI_AGENT_EXECUTION_SPEC.md, docs/DUAL_MODE_MODEL_SPEC.md, docs/PROMPT_AND_GEOMETRY_DATASET.md, docs/MODEL_ARCHITECTURE.md, docs/TRAINING_EVALUATION.md, docs/DATA_SPECIFICATION.md, and docs/ARABIC_GLYPH_DATASET.md.
 2. Run START_LOCAL_TRAINING.bat (or python scripts/preflight_local_training.py).
 3. Read reports/local/machine_preflight.json for OS, Python, CPU, RAM, detected PyTorch/CUDA GPU details, dataset status, and blockers.
 4. Do not start training while training_allowed is false. Do not guess the GPU or silently install CPU-only PyTorch.
@@ -62,7 +62,7 @@ Never launch a long run automatically. Show device, VRAM/RAM estimate, batch siz
 
 ### 7. Finish readiness, then stop
 - Follow every work package and hard acceptance gate in `docs/PRETRAINING_COMPLETION_PLAN.md`.
-- Create the required JSON and Markdown readiness reports with evidence, not assumptions.
+- Create the required JSON and Markdown readiness reports using `schemas/pretraining_readiness.schema.json`, with evidence, not assumptions.
 - If any gate is FAIL or UNKNOWN, set `training_allowed` to false and list the blocker.
 - Even if every gate passes, do not start the full training run. Present the report, resource estimate, and proposed run schedule and wait for explicit user approval.
 
