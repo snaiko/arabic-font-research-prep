@@ -31,7 +31,7 @@ def audit(manifest: Path, crop_root: Path, font_root: Path) -> dict:
         try:
             if not cp.startswith("U+") or int(cp[2:], 16) != ord(char) or len(char) != 1:
                 errors.append(f"row {n}: codepoint/unicode_char mismatch")
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, AttributeError):
             errors.append(f"row {n}: invalid codepoint/unicode_char")
         if row.get("sample_type") != "isolated_single_codepoint" or row.get("contextual_joining_supervision") is not False:
             errors.append(f"row {n}: crop is mislabeled as contextual supervision")
@@ -85,7 +85,7 @@ def main() -> int:
     a = p.parse_args()
     report = audit(Path(a.manifest), Path(a.crop_root), Path(a.font_root))
     out = Path(a.output); out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if report["status"] == "PASS" else 2
 
