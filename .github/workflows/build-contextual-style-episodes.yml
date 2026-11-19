@@ -49,7 +49,10 @@ jobs:
           python scripts/build_contextual_style_episodes.py --targets .audit/contextual/contextual_clusters.jsonl --references .audit/isolated/glyph_crops.jsonl --output reports/contextual_style_episodes --refs-per-episode 4 --seed 20261119
       - name: Run no-training real-data preflight
         run: |
-          python -m scripts.preflight_multimodal_training --episodes-dir reports/contextual_style_episodes --target-root .audit/contextual --reference-root .audit/isolated --rights-manifest .audit/rights/data/manifests/font_rights.json --output reports/contextual_style_episodes/preflight.json
+          RIGHTS_MANIFEST="$(find .audit/rights -name font_rights.json -type f -print -quit)"
+          test -n "$RIGHTS_MANIFEST"
+          echo "Using rights manifest: $RIGHTS_MANIFEST"
+          python -m scripts.preflight_multimodal_training --episodes-dir reports/contextual_style_episodes --target-root .audit/contextual --reference-root .audit/isolated --rights-manifest "$RIGHTS_MANIFEST" --output reports/contextual_style_episodes/preflight.json
       - name: Upload contextual episodes and no-training preflight
         uses: actions/upload-artifact@v4
         with:
