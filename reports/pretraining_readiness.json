@@ -441,7 +441,7 @@
     "local_preflight_ci": "PASS in run 44537037099: 52 approved font files/20 families; episodes 1,134/299/299; 238 multi-codepoint targets; 6,928 references; no family leakage; full no-training forward preflight. CI runner: 15.33 GB RAM, CPU-only, recommended batch 1. User Windows hardware still unmeasured."
   },
   "tests": {
-    "repository_tests": "GitHub Actions run 44535642388 passed 80 tests: 64 passed, 16 optional PyTorch tests skipped in the main data job; dedicated CPU PyTorch run 44535642258 passed 16/16 model and training-pipeline tests.",
+    "repository_tests": "Latest main CI run 44537047233 passed 80 tests: 64 passed and 16 optional PyTorch tests skipped in the main data job. Dedicated CPU PyTorch run 44535642258 passed 16/16 model and training-pipeline tests.",
     "image_route": "PASS: CPU forward/backward smoke test in run 44520250916",
     "prompt_route": "PASS: CPU forward/backward Unicode-codepoint conditioning smoke test in run 44520250916; not semantic Arabic NLP",
     "hybrid_route": "PASS: CPU forward/backward confidence-gated fusion smoke test in run 44520250916",
