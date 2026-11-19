@@ -100,7 +100,7 @@
           "minItems": 1,
           "items": {
             "type": "string",
-            "pattern": "^U\\\\+[0-9A-F]{4,6}$"
+            "pattern": "^U\\+[0-9A-F]{4,6}$"
           }
         },
         "glyph_ids": {
