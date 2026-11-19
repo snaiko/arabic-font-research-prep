@@ -1,75 +1,57 @@
 # Arabic Few-Shot Font Research
 
-Research preparation for an Arabic font-generation system that learns a visual style from a small set of reference glyphs and predicts other glyphs while preserving Arabic character identity, joining behavior, and font validity.
+Research preparation for an Arabic font-generation system that learns a visual style from reference glyphs and predicts Arabic glyphs and shaped clusters.
 
-> **Status:** research specification plus reproducible font-corpus and raster-dataset preparation. No trained Arabic checkpoint or verified generation results are included.
+> **Current status (2026-11-19):** The image-reference raster baseline now has a conditional OFL rights manifest, audited contextual episodes, a local training entry point, and a no-training data/model preflight. **No model training has been started.** Full project readiness remains BLOCKED pending the gates listed below.
 
-## Research principle
+## Verified preparation
 
-A single reference glyph does not uniquely determine a typeface. The system must accept multiple references when available, estimate uncertainty, and avoid claiming exact recovery of an original font.
+- **Source rights:** 52 exact Google Fonts files across 20 families are conditionally approved for this training pipeline under SIL OFL 1.1. Generated font software based on these sources must remain OFL 1.1, preserve notices, and avoid recorded Reserved Font Names. See [OFL AI-training policy](docs/OFL_AI_TRAINING_POLICY.md). OFL is not a NonCommercial license; downstream commercial use is not prohibited by its terms.
+- **Raster data:** 7,904 published samples from 52 font files and 20 families; family-safe split of 14 train / 3 validation / 3 test families; published corpus integrity audit passed.
+- **Isolated crops:** 1,872 single-codepoint glyph crops.
+- **Contextual targets:** 1,732 HarfBuzz-shaped cluster crops; 238 multi-codepoint clusters; independent glyph-ID mapping audit passed. Coverage is partial at 518/520 font-case pairs because two Aref Ruqaa tatweel cases do not render.
+- **Few-shot episodes:** 1,732 episodes, each pairing a contextual target with four isolated reference glyphs from the same exact font; target codepoints are excluded from references; 1,134 train / 299 validation / 299 test episodes across 20 families.
+- **Shaping regression:** 52 conditionally approved fonts × 10 cases = 520 HarfBuzz regression reports; CI passed.
+- **Experimental model:** target Unicode content is now separate from image-style and text-style conditioning. Image, text and hybrid routes share one raster decoder. Six CPU PyTorch smoke tests passed; nine model/training-pipeline tests passed in the dedicated CPU workflow.
+- **Arabeyes research:** 36 binaries downloaded and checksum-verified; all passed one shaping smoke phrase and rendered previews. They remain excluded from training because GPL+Font Exception does not expressly settle ML training or model/output distribution.
 
-## What is included
+## Training handoff
 
-- [Arabic character system v1](docs/ARABIC_CHARACTER_SYSTEM.md) and [full Arabic-script system v2](docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md): Unicode 17 registry importer, joining rules, shaping regression cases, and a per-glyph visual annotation ontology/schema.
-- [Model architecture](docs/MODEL_ARCHITECTURE.md): staged MX-Font-based design and Arabic-specific modules.
-- [Upstream baseline pinning](docs/UPSTREAM_BASELINE.md): official implementation, license boundaries, and reproducible pinning requirements.
-- [Unified dual-mode specification](docs/DUAL_MODE_MODEL_SPEC.md): image, prompt, and hybrid routes sharing one generator.
-- [Prompt and geometry dataset plan](docs/PROMPT_AND_GEOMETRY_DATASET.md): paired descriptions, measurable attributes, and leakage controls.
-- [Pretraining completion plan](docs/PRETRAINING_COMPLETION_PLAN.md), [AI agent execution contract](docs/AI_AGENT_EXECUTION_SPEC.md), and [initial readiness report](reports/PRETRAINING_READINESS.md): mandatory work packages, current blockers, and stop conditions.
-- JSON Schemas under `schemas/` for style records, source licensing, and readiness reports.
-- [Data specification](docs/DATA_SPECIFICATION.md): corpus schema, glyph labels, contextual forms, and quality controls.
-- [Open-font sources](data/sources/OPEN_FONT_CATALOG.md): candidate families and licensing checks.
-- [Training and evaluation](docs/TRAINING_EVALUATION.md): split policy, losses, baselines, and acceptance gates.
-- [Model configuration](configs/model.yaml) and [data configuration](configs/data.yaml).
-- JSONL manifest templates under `data/manifests/`.
-- HarfBuzz regression runner: `python scripts/run_shaping_regression.py --font path/to/cleared-font.otf` (requires `uharfbuzz`; records actual glyph IDs and cluster mappings for the versioned Arabic test strings).\n- A standard-library manifest validator: `python scripts/validate_manifest.py data/manifests/fonts.template.jsonl`.
-- Arabic font technical validator: `python scripts/validate_arabic_fonts.py --input data/raw_fonts --output data/validation` (requires FontTools and uharfbuzz; see [validation guide](docs/FONT_VALIDATION.md)).
-- A GitHub Actions workflow to collect, validate, and publish the binary font corpus as a GitHub Release asset (see [publishing guide](docs/FONT_CORPUS_RELEASE.md)).
-- Reproducible Arabic raster-sample builder: `python scripts/build_arabic_glyph_dataset.py --fonts data/raw_fonts --validation data/validation/font_validation.jsonl --output data/training_samples` (requires Pillow with RAQM; see [dataset guide](docs/ARABIC_GLYPH_DATASET.md)).
-- Automated GitHub Actions workflow downloads the existing font-corpus Release, renders contextual Arabic glyph and phrase samples, creates family-safe train/validation/test splits, and publishes a separate dataset Release.
+See [Local Training Handoff](docs/LOCAL_TRAINING.md) for artifact paths, Windows command syntax, explicit step-count requirements, checkpoint resume, and license conditions.
 
-## Recommended first milestone
+The trainer `scripts/train_multimodal_glyph.py` uses the image-reference route only:
+- target Unicode cluster + four same-font reference glyphs → 128×128 grayscale target raster;
+- pixel L1 plus edge loss;
+- family-held-out validation and test;
+- per-font rights and data-leakage checks before loading.
 
-1. Collect a small, legally usable pilot corpus from distinct font families.
-2. Record source, exact license, version, SHA-256, metadata, and character coverage for every file.
-3. Run the cmap/OpenType/HarfBuzz screening described in [FONT_VALIDATION.md](docs/FONT_VALIDATION.md), then render glyphs through a pinned HarfBuzz/FreeType pipeline and preserve the renderer configuration.
-4. Establish a baseline with the upstream MX-Font implementation before adding Arabic-specific modules.
-5. Evaluate on font families never seen during training.
+A separate workflow builds [contextual few-shot episodes](docs/CONTEXTUAL_EPISODE_DATASET.md) and runs a no-training real-data preflight. This preflight must report that no optimizer/backward/checkpoint operation occurred.
 
-## Important distinction
+## Remaining blockers
 
-MX-Font is a few-shot **glyph-image generation** model. It is not by itself an Arabic text shaper, SVG editor, or TTF/OTF compiler. Arabic shaping and font packaging are separate stages and must be tested independently.
+Overall readiness is still **BLOCKED**:
+1. Expert visual, spelling, readability and calligraphic validation is not complete. Machine geometry and HarfBuzz mapping are not a substitute for human ground truth.
+2. Two contextual tatweel font-case pairs remain absent.
+3. The pinned upstream MX-Font dependency closure and native Arabic data-loader adapter are not complete. The current executable trainer is a separate experimental raster baseline, not native MX-Font.
+4. The text-style route lacks reviewed semantic style prompts and a pretrained semantic Arabic text encoder.
+5. No tiny-subset overfit, convergence, held-out-family quality evaluation or full dataset training has been run.
+6. Raster output is not a TTF/OTF font. Vectorization, OpenType tables, GSUB/GPOS shaping, font compilation and final font QA remain separate work.
+7. The model-weight distribution license is separate from the font rights manifest.
+8. The user's Windows GPU/VRAM/RAM/disk preflight has not been run.
 
-## License and data policy
+## Important license distinction
 
-Do not commit commercial fonts, unlicensed fonts, or raw font binaries to this repository. Keep source font files in storage whose access and license terms are known. Commit manifests and derived metadata only when their licenses permit it. Check the exact license attached to every downloaded font version; a family name alone is not proof of permission.
+The project can distribute its own model and generated fonts for free, but SIL OFL 1.1 is not an NC license. It does not prohibit downstream commercial use of generated fonts, subject to OFL terms. If downstream non-commercial-only use is required, obtain explicit permission from the source font copyright holders to use a different license.
 
-## Unified image + prompt model
+## Core documentation
 
-The intended model has reference-image, text-prompt, and optional hybrid conditioning routes. All routes must share one style/geometry latent space and one Arabic-aware generator. See [the dual-mode model specification](docs/DUAL_MODE_MODEL_SPEC.md), [the structured style schema](docs/STYLE_DESCRIPTION_SCHEMA.md), and [the pretraining completion plan](docs/PRETRAINING_COMPLETION_PLAN.md).
+- [OFL AI-training policy](docs/OFL_AI_TRAINING_POLICY.md)
+- [Local training handoff](docs/LOCAL_TRAINING.md)
+- [Contextual episode dataset](docs/CONTEXTUAL_EPISODE_DATASET.md)
+- [Pretraining readiness report](reports/PRETRAINING_READINESS.md)
+- [Model architecture](docs/MODEL_ARCHITECTURE.md)
+- [Experimental multimodal baseline](docs/EXECUTABLE_MULTIMODAL_BASELINE.md)
+- [Upstream baseline and dependency pin](docs/UPSTREAM_BASELINE.md)
+- [Font rights and batch shaping](docs/FONT_RIGHTS_AND_BATCH_SHAPING.md)
 
-## Pretraining is deliberately gated
-
-The repository is not yet training-ready. The local AI agent must complete the data adapter, Arabic cluster-aware crops, prompt/geometry supervision, both conditioning encoders, shared generator paths, tests, and the readiness report. Follow [the AI agent execution contract](docs/AI_AGENT_EXECUTION_SPEC.md). Do not begin a long training run until every gate passes and the user explicitly approves it.
-
-## Windows local AI-agent handoff
-
-This repository now includes a Windows preflight launcher and a handoff specification for a separate local AI agent:
-
-- Run `START_LOCAL_TRAINING.bat` on the Windows computer.
-- It invokes `scripts/preflight_local_training.py`, detects available system memory and (when installed) PyTorch/CUDA GPU details, downloads the published raster dataset if needed, and writes `reports/local/machine_preflight.json`.
-- Follow `LOCAL_AI_AGENT_GUIDE.md` for the required implementation and validation work before training.
-
-**Important:** the launcher does not start training. The new crop/episode adapter is an intermediate dataset stage only; it does not yet provide MX-Font's native dataset format or Arabic component/decomposition labels. The current dataset consists of full-line contextual renders, not verified target-glyph crops, and this repository does not yet include an executable MX-Font training implementation. The preflight therefore marks training as blocked. The local AI agent must implement and test the dataset adapter and baseline first, inspect the detected hardware, then request approval before a long training run. Machine reports and private checkpoints must not be uploaded publicly without permission.
-
-
-
-## Font rights gate and batch shaping
-
-- [Font rights and batch HarfBuzz guide](docs/FONT_RIGHTS_AND_BATCH_SHAPING.md)
-- Copy `data/manifests/font_rights.template.json` to a private local `font_rights.json`, fill it only after reviewing exact per-file license evidence, and run `scripts/validate_font_rights_manifest.py`.
-- Run `scripts/run_batch_shaping_regression.py` to produce one versioned HarfBuzz report per approved font. The empty template intentionally blocks execution; no font is pre-approved by this repository.
-
-## Local corpus integrity audit
-
-Run `python scripts/audit_training_corpus.py --samples data/training_samples/samples.jsonl --font-root data/raw_fonts --image-root data/training_samples --output reports/local/dataset_audit.json` on the extracted local corpus before crop generation. See [the audit guide](docs/TRAINING_CORPUS_AUDIT.md). This checks family leakage, duplicate sample identities, file hashes and optional source-asset rights evidence; it does not itself clear legal or visual-review gates.
+**Do not start a long training run until the remaining gates are resolved and the user explicitly approves training.**
