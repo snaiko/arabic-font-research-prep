@@ -119,3 +119,47 @@ GitHub Actions run [44515674785](https://github.com/snaiko/arabic-font-research-
 The visual-supervision artifact is available from run [44515674785](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44515674785) as `arabic-visual-supervision` (artifact ID `14525941407`).
 
 **Final decision: training is still not allowed.** No model training has been started. Automated checks can verify file integrity, shaping mappings, and measurable raster geometry, but they cannot manufacture expert visual/linguistic approval or legal permission to use each font for ML training. All 1,732 machine-supervision records are currently marked `training_eligible=false` because zero font rights have been approved.
+
+
+## Verified three-part data update — 2026-11-19
+
+GitHub Actions run [44517742747](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747) completed successfully. Python compilation and all **44 unit tests** passed. The pipeline generated and uploaded the following evidence:
+
+### 1. Arabic visual and linguistic consistency
+
+- The Unicode 17 / ArabicShaping audit passed on all **1,732 contextual clusters and 2,022 codepoints**, with **zero errors**.
+- It checked canonical source spans, codepoint/category mapping, Joining_Type, combining-mark flags, and glyph cardinalities. The independent HarfBuzz audit also reproduced the glyph-ID mappings for all generated rows with zero integrity errors.
+- This is an automated metadata/shaping-integrity pass, not proof of correct spelling in arbitrary text, readable glyph appearance, or calligraphic/artistic quality. Expert visual and linguistic review remains BLOCKED.
+
+### 2. Exact font license evidence
+
+- All **52 font files** were matched to their exact SHA-256 and pinned Google Fonts source revision.
+- CI retrieved and preserved all **20 family-level license texts**, verified the SIL Open Font License 1.1 marker and selected clauses, hashed the snapshots, and extracted copyright headers and Reserved Font Name candidates.
+- None of the 20 license texts explicitly addresses machine-learning training. This does not itself prove training is prohibited or permitted; it means the proposed use has not been legally resolved.
+- **Approved fonts: 0.** The rights manifest remains empty and training remains disabled.
+
+The license evidence package is the [pinned-font-license-evidence artifact](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747/artifacts/14525643961).
+
+### 3. Component candidates and paired captions
+
+- Generated **1,732** cluster-level records.
+- Extracted **2,987** 8-connected raster component candidates with bounding boxes, area, relative area, and normalized centroids.
+- Added **1,732 Arabic and 1,732 English factual template captions**, each tied to the source text, Unicode metadata, HarfBuzz glyph mapping, and image.
+- Detached components are not semantically identified as dots, hamza, marks, or ornaments: every component's semantic identity remains `unknown`.
+- Captions are `machine_generated_unreviewed`, not expert-authored style descriptions. These records are useful auxiliary machine-derived supervision, not gold component labels or a completed style-prompt dataset.
+
+The generated data is available in the [Arabic component/caption supervision artifact](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747/artifacts/14525149976).
+
+### Updated decision
+
+| Gate | Status |
+|---|---|
+| Unicode/ArabicShaping metadata audit | PASS |
+| Pinned license text evidence retrieval | PASS |
+| Component candidate and caption generation | PASS |
+| Expert visual/spelling/calligraphic validation | BLOCKED |
+| Semantic body/dot/hamza/mark decomposition labels | PARTIAL — candidates only |
+| Per-file ML-training rights | BLOCKED — 0 approved |
+| Overall training authorization | BLOCKED |
+
+**No model training has been started.** The automation has strengthened the dataset and made the remaining uncertainties explicit; it has not fabricated legal approvals or human visual ground truth.
