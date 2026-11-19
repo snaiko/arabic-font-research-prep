@@ -41,9 +41,10 @@ cannot silently alter the baseline output.
 The adapter is **not yet wired into the MX-Font trainer**. Before wiring it,
 the data loader must prove that each target batch has the exact Unicode
 sequence corresponding to `trg_imgs`. Do not assume `trg_cids` are Unicode
-codepoints: in MX-Font they may be dataset-local class IDs. The trainer must
-also apply the bridge only to `char_facts_c` (content factors), never to
-style factors.
+codepoints: in the pinned MX-Font dataset they are dataset-local class IDs.
+The bridge must be applied only to the batch-aggregated content factors
+(`mean_char_facts`, after averaging the `n_c` cross-font content samples),
+not to raw `char_facts_c` and never to style factors.
 
 ## Required ablation
 
@@ -56,5 +57,14 @@ Run on identical family-held-out episodes and seeds:
 Keep B0 checkpoint and outputs immutable. Adopt B2 only if it improves held-out
 Arabic quality without harming character identity or joining behavior.
 No training, checkpoint merge, or baseline modification is performed by adding
-this module. Unit tests only verify tensor contract, identity initialization,
-shape preservation, and gradient flow.
+this module. Unit tests verify the synthetic factor tensor contract, identity
+initialization, shape preservation, and construction of an autograd graph.
+They do not call backward, create an optimizer, update weights, or train.
+
+
+## Current validation boundary
+
+- Unit tests use synthetic factor tensors with the expected channel/spatial shapes; they do not load the pinned upstream MX-Font checkpoint or execute its real Generator.
+- The adapter remains optional and is not connected to MX-Font's training loop or dataset loader.
+- Unicode sequences must be recovered from the original target string through a verified character-to-codepoint mapping; passing dataset-local trg_cids directly would be incorrect.
+- No backward pass, optimizer step, weight update, checkpoint merge or training is part of this branch's validation.

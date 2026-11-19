@@ -36,12 +36,11 @@ class MXFontUnicodeAdapterTests(unittest.TestCase):
         self.assertEqual(result["last"].shape, self.factors["last"].shape)
         self.assertEqual(result["skip"].shape, self.factors["skip"].shape)
 
-    def test_unicode_ids_receive_gradients(self):
-        self.adapter.train()
+    def test_unicode_branch_builds_autograd_graph_without_backward(self):
         result = self.adapter(self.factors, self.ids)
-        loss = sum(value.square().mean() for value in result.values())
-        loss.backward()
-        self.assertIsNotNone(self.adapter.content_encoder.embedding.weight.grad)
+        self.assertIsNotNone(result["last"].grad_fn)
+        self.assertTrue(self.adapter.content_encoder.embedding.weight.requires_grad)
+        self.assertIsNone(self.adapter.content_encoder.embedding.weight.grad)
 
     def test_rejects_wrong_factor_channels_and_batch(self):
         with self.assertRaisesRegex(ValueError, "channel mismatch"):
