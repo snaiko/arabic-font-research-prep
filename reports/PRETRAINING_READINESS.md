@@ -359,3 +359,26 @@ This update supersedes earlier overall readiness statements for the **standalone
 ### Non-commercial license caveat
 
 SIL OFL 1.1 is not an NC license. The project itself can publish its model and fonts for free, but the OFL does not prohibit downstream commercial use of generated fonts. If the user requires a strict prohibition on commercial use by everyone, the OFL-based source set cannot meet that requirement without explicit written permissions for a different output license.
+
+
+## Local handoff hardening — 2026-11-19
+
+The Windows preflight has been updated to match the new experimental image-route trainer rather than the older blocked MX-Font workflow.
+
+- `scripts/preflight_local_training.py` now checks the exact 52-file/20-family OFL manifest, all episode splits, same-font references, target/reference non-leakage, image-hash metadata, CPU/GPU/VRAM/RAM/disk, and runs the no-training real-data model preflight when the artifacts and PyTorch are present.
+- It recommends a batch size from actual detected VRAM/RAM and writes `reports/local/machine_preflight.json`.
+- `START_LOCAL_TRAINING.bat` reports PASS/BLOCKED and never trains.
+- `RUN_IMAGE_ROUTE_TRAINING.bat` requires typing `TRAIN` before a real training run.
+- The trainer now defaults to embedding width 32 and batch size 4, supports optimizer-state checkpoint resume, and validates the exact font family mapping plus image hashes before training.
+
+### Updated CI evidence
+
+- Main data CI [44531266058](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44531266058): **78 tests, 64 passed, 14 optional PyTorch tests skipped** in that job.
+- Dedicated CPU model workflow [44531024750](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44531024750): **14/14 tests passed**.
+- Real-data preflight [44531243357](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44531243357): all **1,732 target** and **6,928 reference** image hashes verified; 52 approved font hashes; one real 128×128 forward pass; no training.
+
+### Memory estimate
+
+The compact model has **73,604,738 parameters**. FP32 weights occupy approximately **294 MB**. Weights + gradients + AdamW moments have a lower-bound estimate of **1.18 GB**, excluding activations and runtime overhead. This is a model-side estimate only; the user's actual Windows hardware still needs inspection.
+
+**Current handoff:** the experimental image-reference raster route is prepared for a controlled run. The user's Windows preflight and explicit go-ahead are still required before training starts. Production TTF/OTF generation remains incomplete.
