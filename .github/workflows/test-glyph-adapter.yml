@@ -5,9 +5,20 @@ on:
     paths:
       - "scripts/build_isolated_glyph_crops.py"
       - "scripts/build_mxfont_episodes.py"
+      - "scripts/import_unicode_arabic_registry.py"
+      - "scripts/validate_arabic_script_registry.py"
+      - "scripts/validate_glyph_visual_annotation.py"
+      - "docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md"
+      - "schemas/glyph_visual_annotation.schema.json"
       - "scripts/validate_arabic_character_system.py"
       - "data/arabic_character_system_v1.json"
       - "docs/ARABIC_CHARACTER_SYSTEM.md"
+      - "docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md"
+      - "scripts/import_unicode_arabic_registry.py"
+      - "scripts/validate_arabic_script_registry.py"
+      - "scripts/validate_glyph_visual_annotation.py"
+      - "schemas/glyph_visual_annotation.schema.json"
+      - "data/shaping_regression_cases_v1.json"
       - "tests/**"
       - ".github/workflows/test-glyph-adapter.yml"
   pull_request:
@@ -30,8 +41,8 @@ jobs:
         with:
           python-version: "3.11"
       - name: Compile scripts
-        run: python -m py_compile scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py scripts/validate_arabic_character_system.py
+        run: python -m py_compile scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py scripts/validate_arabic_character_system.py scripts/import_unicode_arabic_registry.py scripts/validate_arabic_script_registry.py scripts/validate_glyph_visual_annotation.py
       - name: Validate Arabic character registry
         run: python scripts/validate_arabic_character_system.py
-      - name: Run episode sampler tests
-        run: python -m unittest discover -s tests -v
+      - name: Generate complete Unicode 17 Arabic registry\n        run: python scripts/import_unicode_arabic_registry.py --download\n      - name: Validate generated Unicode registry\n        run: python scripts/validate_arabic_script_registry.py\n      - name: Run episode sampler tests
+        run: python -m unittest discover -s tests -v\n      - name: Upload generated Unicode registry\n        uses: actions/upload-artifact@v4\n        with:\n          name: arabic-script-registry-unicode-17\n          path: data/arabic_script_registry_v2.json\n          if-no-files-found: error
