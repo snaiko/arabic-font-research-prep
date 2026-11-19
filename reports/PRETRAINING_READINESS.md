@@ -84,3 +84,8 @@ This PASS verifies corpus structure and file integrity only. It does not approve
 - Added tests for deterministic family-stratified selection and valid draft annotation templates.
 
 **Important:** the package is a review instrument, not evidence that a human has reviewed the samples. No visual/linguistic labels or geometry labels are approved by the build process. Human visual review, independent geometry annotation/adjudication, and exact-font legal approvals remain BLOCKED. The review-pack CI run must pass before its artifact can be used.
+
+
+**Review-pack CI verified:** GitHub Actions runs [44506507595](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44506507595) and [44506521255](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44506521255) completed successfully. The uploaded `arabic-human-review-pack` artifact contains 100 visual/linguistic samples (10 from each of the 10 shaping cases, with 10 font families represented per case) and 40 geometry-pilot samples selected from the full eligible corpus, balanced across eight cases with eligible single-codepoint/single-glyph examples. It includes separate 40-record draft annotation ledgers for annotators A and B, an adjudication tracker, source images, and an offline HTML gallery.
+
+The package-generation gate is PASS. **The human review and component-annotation gates remain BLOCKED** until qualified reviewers complete the work and adjudication records are returned. The font-rights manifest remains empty and training remains disabled.
