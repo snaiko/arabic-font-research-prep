@@ -11,7 +11,8 @@ on:
       - "data/manifests/font_rights.template.json"
       - "docs/ARABIC_CHARACTER_SYSTEM.md"
       - "docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md"
-      - "docs/FONT_RIGHTS_AND_BATCH_SHAPING.md"\n      - "docs/ARABIC_HUMAN_REVIEW_PROTOCOL.md"
+      - "docs/FONT_RIGHTS_AND_BATCH_SHAPING.md"
+      - "docs/ARABIC_HUMAN_REVIEW_PROTOCOL.md"
       - "tests/**"
       - ".github/workflows/test-glyph-adapter.yml"
   pull_request:
