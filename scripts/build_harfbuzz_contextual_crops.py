@@ -118,6 +118,29 @@ def shape_clusters(font_path: Path, text: str, case: dict, out_dir: Path, font_h
             "cluster_is_multi_codepoint":len(logical)>1,
             "font_units_per_em":face.upem
         })
+    # Preserve every source control/separator that has no corresponding
+    # rendered outline crop. This is context-level metadata copied to each
+    # cluster row; it must not be silently lost between adjacent clusters.
+    covered_rendered=set()
+    for item in results:
+        covered_rendered.update(range(item["logical_start"], item["logical_end"]))
+    context_nonrendering=[]
+    for index,char in enumerate(text):
+        if index not in covered_rendered:
+            category=unicodedata.category(char)
+            if category.startswith("C") or category.startswith("Z"):
+                context_nonrendering.append({
+                    "index": index, "char": char,
+                    "codepoint": f"U+{ord(char):04X}",
+                    "unicode_category": category
+                })
+            else:
+                raise ValueError(
+                    f"visible source character U+{ord(char):04X} at index {index} "
+                    "was not represented by a rendered cluster crop"
+                )
+    for item in results:
+        item["nonrendering_source_codepoints"]=context_nonrendering
     tt.close()
     return results
 
