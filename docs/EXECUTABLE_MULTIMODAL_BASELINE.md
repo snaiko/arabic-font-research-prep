@@ -24,3 +24,8 @@ python -m unittest tests.test_multimodal_model_smoke -v
 ```
 
 Full training remains disabled until the upstream dependency/native-loader work, data review, tiny-subset overfit, held-out-family evaluation, and hardware preflight are complete. The conditional OFL rights manifest separately requires generated font files based on the 52 approved source files to remain under SIL OFL 1.1.
+
+
+## Local memory footprint
+
+The default Unicode embedding width is 32 rather than 128 to keep the full-Unicode lookup tables practical on a consumer PC. The local trainer exposes `--embedding-dim` so the user can trade memory for capacity. This is still a codepoint embedding, not semantic language understanding.
