@@ -31,7 +31,13 @@ The current release contains full-line contextual renders with logical target in
 
 Do not treat four context labels as proof that every letter has four valid joining forms. Use Unicode joining properties and actual shaping results.
 
-### 3. Implement episodes and training
+### 3. Convert isolated crops and implement native MX-Font data adapter
+- Run `scripts/build_isolated_glyph_crops.py` and inspect `data/glyph_crops/crop_summary.json` plus contact sheets created for review. These are isolated single-codepoint crops only, not contextual word crops.
+- Run `scripts/build_mxfont_episodes.py`; verify target exclusion, family split inheritance, and exact font-file grouping.
+- Treat these episodes as an intermediate project format. Implement and test a separate adapter to the pinned upstream MX-Font native loader only after confirming its required fields.
+- MX-Font's weak component supervision requires decomposition/primals labels. Do not invent Arabic decomposition labels. Research, define, and manually audit a defensible Arabic component ontology or stop and report that the upstream objective cannot be reproduced as-is.
+
+### 4. Implement episodes and training
 - Implement style-reference/target episodes matching the upstream MX-Font protocol.
 - Target glyph pixels are supervision only and must never appear among that episode's style references.
 - Establish a baseline before adding Arabic-specific branches.
@@ -40,19 +46,19 @@ Do not treat four context labels as proof that every letter has four valid joini
 - Add resume-from-checkpoint and graceful interruption.
 - Add a small CPU/GPU smoke-test mode that verifies loss, checkpoint saving, and reload.
 
-### 4. Hardware-aware safety
+### 5. Hardware-aware safety
 Use the preflight report to choose device and conservative batch size. For NVIDIA, verify PyTorch CUDA availability and wheel/runtime compatibility. For AMD/Intel, verify exact backend support on this Windows installation; do not assume CUDA or ROCm support. If no supported accelerator exists, offer only a small CPU smoke test and explain expected slowness.
 
 Never launch a long run automatically. Show device, VRAM/RAM estimate, batch size, image size, disk estimate, and expected runtime, then ask the user for explicit approval.
 
-### 5. Validation gates
+### 6. Validation gates
 - Unit-test data indexing, crops, episode leakage, and checkpoint round-trip.
 - Verify train/validation/test family IDs are disjoint.
 - Overfit a tiny fixed subset as a pipeline sanity check.
 - Run a short smoke test and inspect generated samples.
 - Report limitations and failures honestly.
 
-### 6. Implement the prompt and shared-style route (mandatory)
+### 7. Implement the prompt and shared-style route (mandatory)
 - Implement an Arabic-capable pretrained text encoder plus a trainable projection head; do not train a large language model from scratch.
 - Consume `configs/style_attributes.yaml` and the style-description manifest schema. Preserve Arabic and English descriptions, normalized attributes, confidence, measured geometry, and source provenance.
 - Build prompt-to-style and image-to-style encoders that produce compatible vectors in one shared style/geometry latent space.
@@ -61,7 +67,7 @@ Never launch a long run automatically. Show device, VRAM/RAM estimate, batch siz
 - Include controlled counterfactual prompt pairs to test that changing one attribute changes the intended output without damaging unrelated attributes.
 - Test all three modes with forward/backward smoke tests and checkpoint round-trip before any long run.
 
-### 7. Finish readiness, then stop
+### 8. Finish readiness, then stop
 - Follow every work package and hard acceptance gate in `docs/PRETRAINING_COMPLETION_PLAN.md`.
 - Create the required JSON and Markdown readiness reports using `schemas/pretraining_readiness.schema.json`, with evidence, not assumptions.
 - If any gate is FAIL or UNKNOWN, set `training_allowed` to false and list the blocker.
