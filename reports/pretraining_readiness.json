@@ -112,7 +112,7 @@
         "scripts/import_unicode_arabic_registry.py",
         "scripts/validate_arabic_script_registry.py",
         "data/shaping_regression_cases_v1.json",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44466183288"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44466347309"
       ],
       "notes": "CI generated and validated 1,413 assigned Script=Arabic records from pinned Unicode 17.0 UCD files with source hashes. This is script-level metadata, not a language-specific gold corpus or visual decomposition dataset."
     },
@@ -135,6 +135,17 @@
         "scripts/run_shaping_regression.py"
       ],
       "notes": "Regression inputs and HarfBuzz capture runner exist, but no run against a legally cleared font has been performed yet."
+    },
+    {
+      "id": "annotation_agreement_analyzer",
+      "status": "PASS",
+      "evidence": [
+        "scripts/compare_glyph_annotations.py",
+        "tests/test_annotation_agreement.py",
+        "docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44466347309"
+      ],
+      "notes": "Per-component polygon agreement analyzer and unit tests passed. This validates the comparison tool, not actual human agreement; no real double-annotated pilot has yet been created."
     }
   ],
   "upstream": {
@@ -180,6 +191,6 @@
     "Run HarfBuzz regression suite against legally cleared font families and review cluster mappings, contextual joins, lam-alef, ZWJ/ZWNJ, and mark attachment.",
     "Create independently annotated glyph-instance samples with two annotators and adjudication; annotation schema alone is not training data."
   ],
-  "recommended_next_step": "Run the HarfBuzz regression runner on at least three legally cleared Arabic fonts, then create a small double-annotated glyph pilot and measure per-component agreement. Do not start training until data rights, model implementation, and all existing gates are resolved.",
+  "recommended_next_step": "The local agent should run HarfBuzz regression on at least three legally cleared Arabic fonts, then two independent annotators should label the same stratified pilot glyph instances. Use compare_glyph_annotations.py to measure per-component agreement and adjudicate disagreements. Training remains blocked.",
   "generated_date": "2026-11-19"
 }
