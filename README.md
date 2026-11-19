@@ -62,3 +62,10 @@ This repository now includes a Windows preflight launcher and a handoff specific
 
 **Important:** the launcher does not start training. The new crop/episode adapter is an intermediate dataset stage only; it does not yet provide MX-Font's native dataset format or Arabic component/decomposition labels. The current dataset consists of full-line contextual renders, not verified target-glyph crops, and this repository does not yet include an executable MX-Font training implementation. The preflight therefore marks training as blocked. The local AI agent must implement and test the dataset adapter and baseline first, inspect the detected hardware, then request approval before a long training run. Machine reports and private checkpoints must not be uploaded publicly without permission.
 
+
+
+## Font rights gate and batch shaping
+
+- [Font rights and batch HarfBuzz guide](docs/FONT_RIGHTS_AND_BATCH_SHAPING.md)
+- Copy `data/manifests/font_rights.template.json` to a private local `font_rights.json`, fill it only after reviewing exact per-file license evidence, and run `scripts/validate_font_rights_manifest.py`.
+- Run `scripts/run_batch_shaping_regression.py` to produce one versioned HarfBuzz report per approved font. The empty template intentionally blocks execution; no font is pre-approved by this repository.
