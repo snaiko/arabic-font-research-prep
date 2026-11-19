@@ -294,3 +294,19 @@ Overall status remains **BLOCKED** and `training_allowed=false`. Rights are cond
 7. The model-weight distribution license must be chosen separately.
 
 No model training has started.
+
+
+## Verified update — 2026-11-19 (batch HarfBuzz regression)
+
+GitHub Actions run [44527935025](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527935025) ran the new batch HarfBuzz regression after generating and validating the conditional OFL rights manifest.
+
+- **52/52** exact font files passed path and SHA-256 validation.
+- **20** distinct font families.
+- **10** shaping regression cases per font.
+- **520** font-case reports generated.
+- The batch summary status is **PASS**.
+- Evidence artifact: [approved-font-harfbuzz-regression](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527935025/artifacts/14532261639).
+
+This verifies that the pinned HarfBuzz runner executed and captured outputs for the complete approved font set. It does not prove that every shaping result is visually correct, that all Arabic text is covered, or that every cluster is linguistically/artistically correct.
+
+The overall readiness status remains **BLOCKED**. The remaining major blockers are expert visual/linguistic validation, the two missing contextual tatweel font-case pairs, the upstream MX-Font dependency/native-loader audit, dataset-level overfit/convergence and held-out-family evaluation, and local hardware/resource preflight. No model training has started.
