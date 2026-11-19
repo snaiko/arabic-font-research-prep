@@ -28,4 +28,4 @@ Full training remains disabled until the upstream dependency/native-loader work,
 
 ## Local memory footprint
 
-The default Unicode embedding width is 32 rather than 128 to keep the full-Unicode lookup tables practical on a consumer PC. The local trainer exposes `--embedding-dim` so the user can trade memory for capacity. This is still a codepoint embedding, not semantic language understanding.
+The default Unicode embedding width is 16 rather than 128 to keep the full-Unicode lookup tables practical on a consumer PC. The local trainer exposes `--embedding-dim` so the user can trade memory for capacity. This is still a codepoint embedding, not semantic language understanding.
