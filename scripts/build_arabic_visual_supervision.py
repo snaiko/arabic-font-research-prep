@@ -62,7 +62,7 @@ def measure(image_path: Path):
 def build(manifest, crop_root, output, rights_path=None):
     root=Path(crop_root).resolve(); rights=rights_index(rights_path)
     out=Path(output); out.parent.mkdir(parents=True,exist_ok=True)
-    count=0; eligible=0; seen=set()
+    count=0; eligible=0; image_hashes=set(); sample_ids=set()
     with out.open("w",encoding="utf-8") as dst:
         for row in read_jsonl(manifest):
             image=(root/row["image"]).resolve()
@@ -70,8 +70,10 @@ def build(manifest, crop_root, output, rights_path=None):
             except ValueError: raise ValueError(f"unsafe image path: {row['image']}")
             if not image.is_file(): raise FileNotFoundError(image)
             digest=sha256(image)
-            if digest in seen: raise ValueError(f"duplicate image hash: {digest}")
-            seen.add(digest)
+            sample_id = str(row['font_sha256']) + '|' + str(row['case_id']) + '|' + str(row['cluster'])
+            if sample_id in sample_ids: raise ValueError(f"duplicate sample identity: {sample_id}")
+            sample_ids.add(sample_id)
+            image_hashes.add(digest)
             logical=row["logical_text"]
             chars=list(logical)
             cps=[f"U+{ord(c):04X}" for c in chars]
@@ -105,7 +107,7 @@ def build(manifest, crop_root, output, rights_path=None):
             dst.write(json.dumps(record,ensure_ascii=False,sort_keys=True)+"\n")
             count+=1; eligible+=int(allowed)
     return {"status":"PASS" if count else "FAIL","records":count,
-            "unique_images":len(seen),"rights_approved_records":eligible,
+            "unique_images":len(image_hashes),"rights_approved_records":eligible,
             "not_rights_approved_records":count-eligible,
             "note":"Geometry fields are deterministic raster measurements, not human-verified component labels. Unapproved assets remain in the research export but are explicitly ineligible for training."}
 
