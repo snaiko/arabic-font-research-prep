@@ -65,6 +65,20 @@ The previous workflow run `44542514944` reported success, but its test-discovery
 - Adoption decision: **deferred; no evidence to keep or reject the bridge yet**.
 - Training started: **no**.
 
-## Next implementation gate
+## Pairing-data work completed after this report was drafted
 
-Build and validate the native MX-Font sample exporter from the approved isolated glyph corpus, including same-character cross-font content images, same-font style references, explicit Unicode strings, family-safe splits, and a defensible Arabic primitive/decomposition source. Until the decomposition and runtime gates pass, do not launch the ablation or merge the bridge.
+- Downloaded and inspected the actual GitHub training handoff artifact (not just its summary).
+- Confirmed 1,872 isolated glyph records across 52 font files and 20 families: 1,224 train, 324 validation, 324 test.
+- Verified every split has 36 common codepoints in all included font files: 34 train fonts, 9 validation fonts, and 9 test fonts. The corpus therefore has enough same-character cross-font examples for native MX-Font pairing.
+- Added `scripts/build_mxfont_native_pairs.py` and `tests/test_mxfont_native_pairs.py` to this PR. The exporter constructs three same-font/different-character style images and three same-character/different-font content images per target, deterministically and without crossing family splits.
+- Reproduced the pairing logic against the downloaded handoff: **1,872/1,872 targets paired**, split counts 1,224/324/324, and all same-font/cross-font/codepoint/split invariants passed.
+- The generated manifest intentionally leaves `decomposition=null`; it does not pretend connected raster components are reviewed Arabic primitives.
+
+## Remaining gates
+
+The pairing-data gate is now PASS. The experiment is still blocked by two substantive requirements:
+
+1. A defensible Arabic decomposition/primals mapping for the upstream MX-Font component-supervision objective. Existing component geometry candidates have unknown semantic identity and are explicitly not approved labels.
+2. A reproducible execution environment for the pinned upstream MX-Font model. The current analysis runtime has PyTorch CPU only, three CPU cores, and no CUDA device. GitHub CI is also CPU smoke-test infrastructure, not a suitable model-training environment. The user's Windows machine has not been accessed or used for training.
+
+Until those gates pass, running an improvised CPU model or inventing decomposition labels would not be the fair MX-Font comparison requested. Do not merge the bridge or claim an image-quality result.
