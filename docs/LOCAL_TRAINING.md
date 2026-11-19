@@ -26,7 +26,7 @@ Install a compatible PyTorch build for the machine and Pillow:
 python -m pip install torch Pillow
 ```
 
-Run `START_LOCAL_TRAINING.bat` first to record the Windows hardware/resource preflight; it does not start training. Check the resulting `reports/local/machine_preflight.json` before choosing a batch size. `--device auto` selects CUDA when PyTorch detects it; otherwise it uses CPU. The project has not yet verified the user's Windows GPU, VRAM, RAM, or runtime.
+Run `START_LOCAL_TRAINING.bat` first. It records CPU/GPU/VRAM/RAM/disk, validates the 52-file/20-family rights manifest and episode splits, verifies all 1,732 target plus 6,928 reference image hashes, and performs one no-training model forward pass. It does not start training. Check `reports/local/machine_preflight.json` and its recommended batch size before proceeding. `--device auto` selects CUDA when PyTorch detects it; otherwise it uses CPU. The project has not yet verified the user's Windows GPU, VRAM, RAM, or runtime.
 
 ## Explicit training command
 
