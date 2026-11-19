@@ -402,7 +402,7 @@ Latest real-data no-training preflight: [run 44535639834](https://github.com/sna
 
 ### Latest automated tests
 
-- Main repository CI [44535642388](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535642388): **80 tests**, 64 passed and 16 optional PyTorch tests skipped in that job.
+- Main repository CI [44537047233](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537047233): **80 tests**, 64 passed and 16 optional PyTorch tests skipped in that job.
 - Dedicated CPU PyTorch CI [44535642258](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535642258): **16/16 passed**, including shared-embedding identity, parameter budget, all conditioning routes, checkpoint/optimizer resume, rights gates, image hash rejection and four-reference episode validation.
 
 ### Single-download local dataset package
@@ -424,7 +424,7 @@ This remains an experimental **raster** training handoff, not a completed TTF/OT
 
 ### Verified combined artifact
 
-The combined data package was successfully built in [workflow run 44537037099](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099). Artifact name: **arabic-font-training-handoff**; size: **9,953,674 bytes**; SHA-256: `43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc`.
+The combined data package was successfully built in [workflow run 44537037099](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099). Artifact name: **arabic-font-training-handoff**; size: **9,953,673 bytes**; SHA-256: `43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc`.
 
 I downloaded and inspected the ZIP independently:
 - 3,619 archive entries, 18,304,447 uncompressed bytes.
