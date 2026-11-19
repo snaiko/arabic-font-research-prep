@@ -1,6 +1,7 @@
 import hashlib, tempfile, unittest
 from pathlib import Path
 from scripts.validate_font_rights_manifest import validate
+from scripts.run_batch_shaping_regression import require_minimum_families
 
 def entry(path="font.otf", allowed=True, status="approved", evidence=None):
     return {"font_file":path,"family_id":"family-a","sha256":"a"*64,"license_name":"Example License",
@@ -19,6 +20,13 @@ class FontRightsTests(unittest.TestCase):
     def test_path_traversal_is_rejected(self):
         with self.assertRaisesRegex(ValueError,"safe relative path"):
             validate({"schema_version":1,"fonts":[entry("../secret.otf")]},require_files=False)
+    def test_batch_requires_three_distinct_families(self):
+        manifest={"fonts":[entry("a.otf"),entry("b.otf"),entry("c.otf")]}
+        with self.assertRaisesRegex(ValueError,"at least 3 distinct"):
+            require_minimum_families(manifest)
+        manifest["fonts"][1]["family_id"]="family-b"
+        manifest["fonts"][2]["family_id"]="family-c"
+        self.assertEqual(len(require_minimum_families(manifest)),3)
     def test_file_hash_must_match(self):
         with tempfile.TemporaryDirectory() as tmp:
             path=Path(tmp)/"font.otf"; path.write_bytes(b"font bytes")
