@@ -92,9 +92,11 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520251086",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527935025",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530248539",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530248721"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530248721",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44531266058",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44531024750"
       ],
-      "notes": "Latest dedicated CPU PyTorch workflow run 44530248539 passed 13 model/training-pipeline tests, covering all three route forward/backward paths, target identity conditioning, checkpoint and optimizer resume, data collation, rights/family/split checks, and modified-image hash rejection. Main data CI run 44530248721 passed 73 tests (60 passed, 13 optional PyTorch tests skipped in that job). No dataset training, overfit, convergence, or held-out-family quality run has been performed."
+      "notes": "Latest main CI run 44531266058 passed 78 tests (64 passed, 14 optional PyTorch tests skipped). Dedicated CPU PyTorch run 44531024750 passed 14/14 tests. These cover model routes, target conditioning, checkpoint/optimizer resume, data loading, rights/split checks, image hash verification and model parameter budget. No actual dataset training or convergence evaluation has been run."
     },
     {
       "id": "hardware_and_resource_plan",
@@ -377,9 +379,13 @@
         "scripts/train_multimodal_glyph.py",
         "RUN_IMAGE_ROUTE_TRAINING.bat",
         "docs/LOCAL_TRAINING.md",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530248539"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530248539",
+        "scripts/preflight_local_training.py",
+        "START_LOCAL_TRAINING.bat",
+        "RUN_IMAGE_ROUTE_TRAINING.bat",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44531266058"
       ],
-      "notes": "A Windows batch launcher and Python trainer are committed. The launcher checks required artifact paths and requires typing TRAIN before execution. The trainer validates the conditional OFL manifest, family split isolation, target/reference non-leakage, and image SHA-256 values; saves model/optimizer checkpoints and evaluates held-out validation/test splits. It has not been run on the user's machine."
+      "notes": "Local trainer, checkpoint resume, and Windows launchers are committed. The hardware/data preflight now checks the exact 52-file/20-family manifest, all three episode splits, image hashes via the no-training model preflight, hardware, disk and a recommended batch size. Unit tests pass. Actual hardware inspection still needs to be run on the user's Windows PC."
     }
   ],
   "upstream": {
@@ -408,10 +414,12 @@
     "font_specific_shaping_regression": "PASS: 52/52 conditional OFL font files passed manifest/hash validation and each produced 10 HarfBuzz regression case outputs (520 records total). This is a reproducible shaping capture, not visual review.",
     "contextual_fewshot_episodes": "PASS: 1,732 episodes; four same-font isolated reference glyphs per contextual target; zero skipped; train=1,134, validation=299, test=299; 20 families; 238 multi-codepoint targets; no family leakage; all target/reference image SHA-256 values pinned.",
     "real_data_preflight": "PASS: 1,732 target image hashes and 6,928 reference image hashes verified; 52 conditional OFL-approved font hashes checked; real batch loaded; finite 128x128 forward pass; no optimizer/backward/weight update/checkpoint/training.",
-    "experimental_training_scope": "Ready for a controlled image-reference raster experiment only. Text-style prompts, native MX-Font integration, vectorization, OpenType tables and production font quality are not complete."
+    "experimental_training_scope": "Ready for a controlled image-reference raster experiment only. Text-style prompts, native MX-Font integration, vectorization, OpenType tables and production font quality are not complete.",
+    "model_memory_estimate": "73,604,738 parameters; FP32 weights 294,418,952 bytes (~294 MB); weights+gradients+AdamW moments estimated at 1,177,675,808 bytes (~1.18 GB), excluding activations and runtime overhead.",
+    "local_hardware_preflight": "Updated scripts/preflight_local_training.py records CPU/GPU/VRAM/RAM/disk, validates all required artifacts and runs the real-data no-training preflight. Logic tests pass; the user's actual Windows machine has not yet been inspected."
   },
   "tests": {
-    "repository_tests": "GitHub Actions run 44530248721 passed 73 tests (60 passed, 13 optional PyTorch tests skipped in the main job).",
+    "repository_tests": "GitHub Actions run 44531266058 passed 78 tests (64 passed, 14 optional PyTorch tests skipped in the main data job).",
     "image_route": "PASS: CPU forward/backward smoke test in run 44520250916",
     "prompt_route": "PASS: CPU forward/backward Unicode-codepoint conditioning smoke test in run 44520250916; not semantic Arabic NLP",
     "hybrid_route": "PASS: CPU forward/backward confidence-gated fusion smoke test in run 44520250916",
@@ -419,10 +427,11 @@
     "arabic_linguistic_metadata_audit": "PASS: 1,732 clusters / 2,022 codepoints / zero errors; contextual coverage PARTIAL 518/520 pairs in run 44520251086",
     "component_caption_builder": "PASS: 1,732 records / 2,987 component candidates in run 44520251086",
     "pinned_license_evidence": "PASS: 20 pinned official SIL OFL 1.1 license snapshots covering 52 exact font files. Conditional OFL AI training manifest generated and hash-validated for all 52 files in run 44527370231.",
-    "model_smoke_tests": "13/13 passed in dedicated CPU PyTorch run 44530248539.",
+    "model_smoke_tests": "14/14 passed in dedicated CPU PyTorch run 44531024750.",
     "component_caption_audit": "PASS: 1,732 records / 2,987 components / 3,464 paired captions / zero errors in run 44520251086",
     "font_specific_shaping_regression": "PASS: GitHub Actions run 44527935025 generated 52 font-specific HarfBuzz reports across 20 families; 10 shaping cases per font (520 total font-case records).",
-    "real_data_preflight": "PASS in run 44530432867: all 1,732 target and 6,928 reference image hashes verified, plus real 128x128 forward pass with no training."
+    "real_data_preflight": "PASS in run 44530432867: all 1,732 target and 6,928 reference image hashes verified, plus real 128x128 forward pass with no training.",
+    "local_hardware_preflight": "Unit-tested in main CI; actual Windows hardware/GPU/RAM/disk inspection must still be run on the user's PC using START_LOCAL_TRAINING.bat."
   },
   "hardware": {
     "local_preflight": "not_run_in_this_preparation_update",
@@ -440,14 +449,14 @@
     "The current trainer learns the image-reference route only. The text-style route lacks reviewed semantic style prompts and a pretrained semantic Arabic text encoder.",
     "The model outputs raster glyphs, not TTF/OTF fonts. Vectorization, contour cleanup, cmap/name/hmtx tables, GSUB/GPOS shaping and final font QA remain future work.",
     "No actual dataset training has started, so tiny-subset overfit, convergence, held-out-family quality, and full-run metrics are unknown.",
-    "The user's Windows hardware preflight (GPU/VRAM/RAM/disk and runtime) has not been run. START_LOCAL_TRAINING.bat is provided for this.",
     "The model-weight distribution license is separate from the OFL source-font manifest and remains unresolved.",
     "SIL OFL is not a NonCommercial license. The project can distribute its own outputs for free, but downstream commercial use is not prohibited by OFL. Strict downstream NC use requires written permissions for a different license.",
     "Contextual shaping coverage remains 518/520 font-case pairs; two Aref Ruqaa tatweel cases are explicitly absent.",
     "Expert visual/spelling/calligraphic validation and semantic component labels remain unapproved. These are required for production quality claims, not for the first self-supervised raster experiment.",
-    "Arabeyes GPL+Font Exception binaries passed technical screening but remain excluded from training pending explicit ML-training/model-output permission."
+    "Arabeyes GPL+Font Exception binaries passed technical screening but remain excluded from training pending explicit ML-training/model-output permission.",
+    "The user's actual Windows hardware/resource preflight has not yet been run. START_LOCAL_TRAINING.bat is ready; the CI memory estimate is not a substitute for the user's GPU/VRAM/RAM/disk readings."
   ],
-  "recommended_next_step": "The experimental image-reference raster pipeline is technically ready. Do not start training automatically. First run START_LOCAL_TRAINING.bat on the user's Windows machine to record hardware/resources; then the user or their local agent can start a controlled run using RUN_IMAGE_ROUTE_TRAINING.bat. Keep production font-generation work separate until vectorization/OpenType and visual-quality gates are completed.",
+  "recommended_next_step": "The experimental image-reference raster pipeline is prepared. Run START_LOCAL_TRAINING.bat on the user's Windows machine to obtain actual hardware and recommended batch size. Only after the user explicitly approves, run RUN_IMAGE_ROUTE_TRAINING.bat for a controlled experiment. Production font-generation work remains separate.",
   "generated_date": "2026-11-19",
   "experimental_image_route_ready": true,
   "training_scope": "Experimental image-reference raster baseline only: target Unicode cluster plus four same-font reference glyph images -> 128x128 raster. It is not native MX-Font, does not train semantic text prompts, and does not produce TTF/OTF files.",
