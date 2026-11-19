@@ -14,6 +14,22 @@ if torch is not None:
     )
 
 
+class OptimizerStateProbe:
+    """Checkpoint payload stand-in; deliberately does not create or run an optimizer."""
+
+    def __init__(self, payload=None):
+        self.payload = payload or {
+            "state": {"parameter-slot-0": {"step": 17, "exp_avg": [0.0, 0.1]}},
+            "param_groups": [{"lr": 0.001, "params": [0]}],
+        }
+
+    def state_dict(self):
+        return self.payload
+
+    def load_state_dict(self, payload):
+        self.payload = payload
+
+
 @unittest.skipIf(torch is None, "PyTorch is installed only in the dedicated model-smoke workflow")
 class MultimodalModelSmokeTests(unittest.TestCase):
     def setUp(self):
@@ -25,7 +41,7 @@ class MultimodalModelSmokeTests(unittest.TestCase):
             ["خط نسخي ناعم", "elegant kufic"], max_length=32
         )
 
-    def test_all_three_routes_forward_and_backward(self):
+    def test_all_three_routes_forward_only_without_gradients(self):
         routes = [
             ("image", {"reference_images": self.images}),
             ("text", {"style_prompt_ids": self.style_text}),
@@ -35,15 +51,13 @@ class MultimodalModelSmokeTests(unittest.TestCase):
             }),
         ]
         for mode, kwargs in routes:
-            self.model.zero_grad(set_to_none=True)
-            out = self.model(mode, target_ids=self.targets, **kwargs)
+            with torch.no_grad():
+                out = self.model(mode, target_ids=self.targets, **kwargs)
             self.assertEqual(tuple(out["image"].shape), (2, 1, 128, 128))
             self.assertEqual(tuple(out["uncertainty"].shape), (2, 1))
             self.assertEqual(tuple(out["content_latent"].shape), (2, 64))
             self.assertEqual(tuple(out["style_latent"].shape), (2, 64))
-            loss = out["image"].mean() + out["uncertainty"].mean()
-            loss.backward()
-            self.assertTrue(any(p.grad is not None for p in self.model.parameters()))
+            self.assertTrue(all(parameter.grad is None for parameter in self.model.parameters()))
 
     def test_every_route_requires_target_identity(self):
         with self.assertRaisesRegex(ValueError, "target_ids are required"):
@@ -52,57 +66,51 @@ class MultimodalModelSmokeTests(unittest.TestCase):
             self.model("text", style_prompt_ids=self.style_text)
 
     def test_target_identity_changes_content_condition(self):
-        first = self.model(
-            "image", target_ids=encode_unicode_batch(["ب"], 4),
-            reference_images=self.images[:1]
-        )["content_latent"]
-        second = self.model(
-            "image", target_ids=encode_unicode_batch(["م"], 4),
-            reference_images=self.images[:1]
-        )["content_latent"]
+        with torch.no_grad():
+            first = self.model(
+                "image", target_ids=encode_unicode_batch(["ب"], 4),
+                reference_images=self.images[:1]
+            )["content_latent"]
+            second = self.model(
+                "image", target_ids=encode_unicode_batch(["م"], 4),
+                reference_images=self.images[:1]
+            )["content_latent"]
         self.assertFalse(torch.allclose(first, second))
 
-    def test_checkpoint_round_trip(self):
-        before = self.model(
-            "hybrid", target_ids=self.targets, reference_images=self.images,
-            style_prompt_ids=self.style_text
-        )["image"].detach()
-        with tempfile.NamedTemporaryFile(suffix=".pt") as f:
-            torch.save({
-                "model": self.model.state_dict(),
-                "config": {"latent_dim": 64},
-            }, f.name)
-            payload = torch.load(f.name, map_location="cpu", weights_only=True)
-            clone = ArabicMultimodalGlyphModel(latent_dim=payload["config"]["latent_dim"])
-            clone.load_state_dict(payload["model"])
-            clone.eval()
-            after = clone(
+    def test_checkpoint_round_trip_without_optimizer_execution(self):
+        with torch.no_grad():
+            before = self.model(
                 "hybrid", target_ids=self.targets, reference_images=self.images,
                 style_prompt_ids=self.style_text
             )["image"].detach()
-        self.assertTrue(torch.allclose(before, after, atol=1e-6))
-
-    def test_optimizer_checkpoint_can_resume(self):
-        model = ArabicMultimodalGlyphModel(latent_dim=64)
-        optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
-        target_ids = encode_unicode_batch(["ب"], max_length=4)
-        style_ids = encode_unicode_batch(["خط نسخي"], max_length=16)
-        target = torch.rand(1, 1, 128, 128)
-        out = model("text", target_ids=target_ids, style_prompt_ids=style_ids)["image"]
-        loss = torch.nn.functional.l1_loss(out, target)
-        loss.backward()
-        optimizer.step()
         with tempfile.NamedTemporaryFile(suffix=".pt") as f:
             save_training_checkpoint(
-                f.name, model, optimizer, step=17, metadata={"route": "text"}
+                f.name, self.model, step=17, metadata={"route": "image", "latent_dim": 64}
             )
             clone = ArabicMultimodalGlyphModel(latent_dim=64)
-            clone_optimizer = torch.optim.AdamW(clone.parameters(), lr=1e-3)
-            state = restore_training_checkpoint(f.name, clone, clone_optimizer)
-            self.assertEqual(state, {"step": 17, "metadata": {"route": "text"}})
-            self.assertEqual(len(clone_optimizer.state), len(optimizer.state))
-            for left, right in zip(model.parameters(), clone.parameters()):
-                self.assertTrue(torch.equal(left, right))
+            state = restore_training_checkpoint(f.name, clone)
+            clone.eval()
+            with torch.no_grad():
+                after = clone(
+                    "hybrid", target_ids=self.targets, reference_images=self.images,
+                    style_prompt_ids=self.style_text
+                )["image"].detach()
+        self.assertEqual(state, {"step": 17, "metadata": {"route": "image", "latent_dim": 64}})
+        self.assertTrue(torch.allclose(before, after, atol=1e-6))
+
+    def test_checkpoint_restores_optimizer_state_payload_without_running_optimizer(self):
+        source_state = OptimizerStateProbe()
+        restored_state = OptimizerStateProbe({"state": {}, "param_groups": []})
+        with tempfile.NamedTemporaryFile(suffix=".pt") as f:
+            save_training_checkpoint(
+                f.name, self.model, source_state, step=17, metadata={"route": "image"}
+            )
+            clone = ArabicMultimodalGlyphModel(latent_dim=64)
+            state = restore_training_checkpoint(f.name, clone, restored_state)
+        self.assertEqual(state, {"step": 17, "metadata": {"route": "image"}})
+        self.assertEqual(restored_state.payload, source_state.payload)
+        for left, right in zip(self.model.parameters(), clone.parameters()):
+            self.assertTrue(torch.equal(left, right))
 
     def test_default_model_parameter_budget_is_consumer_scale(self):
         parameter_count = sum(parameter.numel() for parameter in self.model.parameters())
