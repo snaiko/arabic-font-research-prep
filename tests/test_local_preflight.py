@@ -106,7 +106,7 @@ class LocalPreflightTests(unittest.TestCase):
             (episodes_dir / "train.jsonl").write_text(json.dumps(episode) + "\n", encoding="utf-8")
             for split in ("validation", "test"):
                 (episodes_dir / f"{split}.jsonl").write_text(
-                    json.dumps(self.episode(f"family-{split}", split, "b" * 64)) + "\n",
+                    json.dumps(self.episode(f"family-{split}", split, ("b" if split == "validation" else "c") * 64)) + "\n",
                     encoding="utf-8",
                 )
             # Add the corresponding approved hashes for the other splits.
@@ -114,7 +114,7 @@ class LocalPreflightTests(unittest.TestCase):
             data["fonts"].extend([
                 {"sha256": "b" * 64, "family_id": "family-validation",
                  "ml_training_allowed": True, "review_status": "approved"},
-                {"sha256": "b" * 64, "family_id": "family-test",
+                {"sha256": "c" * 64, "family_id": "family-test",
                  "ml_training_allowed": True, "review_status": "approved"},
             ])
             rights.write_text(json.dumps(data), encoding="utf-8")
