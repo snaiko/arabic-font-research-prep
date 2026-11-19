@@ -16,7 +16,6 @@ def audit(manifest,cases_path,registry_path):
     errors=[]; stats={"clusters":len(rows),"codepoints":0,"marks":0,"transparent_joining_chars":0,
       "multi_codepoint_clusters":0,"multi_glyph_clusters":0,"possible_ligature_or_substitution_candidates":0,
       "codepoints_outside_script_arabic_registry":0,"contextual_joining_properties_used":0}
-      "multi_codepoint_clusters":0,"multi_glyph_clusters":0,"possible_ligature_or_substitution_candidates":0}
     seen=set()
     for n,row in enumerate(rows,1):
         p=f"row {n}"; case=cases.get(row.get("case_id"))
@@ -59,7 +58,6 @@ def audit(manifest,cases_path,registry_path):
                 errors.append(f"{p}: invalid Joining_Type at {cp}")
             if joining_type=="T": stats["transparent_joining_chars"]+=1
             if category.startswith("M"): stats["marks"]+=1
-            if unicodedata.category(ch).startswith("M"): stats["marks"]+=1
         if len(cps)>1: stats["multi_codepoint_clusters"]+=1
         if row.get("glyph_count",0)>1: stats["multi_glyph_clusters"]+=1
         if len(cps)>1 and row.get("glyph_count")==1: stats["possible_ligature_or_substitution_candidates"]+=1
