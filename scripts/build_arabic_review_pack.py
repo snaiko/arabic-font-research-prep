@@ -109,21 +109,25 @@ def main():
         })
     (out/"visual_linguistic_review.jsonl").write_text(
       "".join(json.dumps(r,ensure_ascii=False)+"\n" for r in review_rows),encoding="utf-8")
-    eligible=[(r,review_rows[i]) for i,r in enumerate(selected)
-      if len(r["logical_codepoints"])==1 and len(r["glyph_ids"])==1]
-    geometry=pick_stratified([x[0] for x in eligible],max(1,a.geometry_count//max(1,len(set(x[0]["case_id"] for x in eligible)))),a.seed+1) if a.geometry_count and eligible else []
-    # Cap exactly, maintaining the case/family-balanced order from pick_stratified.
+    eligible=[r for r in rows if len(r["logical_codepoints"])==1 and len(r["glyph_ids"])==1]
+    eligible_cases=len({r["case_id"] for r in eligible})
+    geometry=pick_stratified(eligible,max(1,(a.geometry_count+max(1,eligible_cases)-1)//max(1,eligible_cases)),a.seed+1) if a.geometry_count and eligible else []
+    # Geometry selection is drawn from the full corpus, not only the 100 visual-review rows.
     geometry=geometry[:a.geometry_count]
-    by_key={(r["image"],r["font_sha256"],r["case_id"]):v for r,v in eligible}
     gdir=out/"geometry_annotations"; gdir.mkdir()
+    gimages=gdir/"images"; gimages.mkdir()
     ann_a=[]; ann_b=[]; adjud=[]
     for n,row in enumerate(geometry,1):
-        review=by_key[(row["image"],row["font_sha256"],row["case_id"])]
-        image_hash=review["image_sha256"]
+        src=(source/row["image"]).resolve()
+        if source not in src.parents or not src.is_file(): raise ValueError(f"Unsafe/missing geometry image: {row['image']}")
+        image_hash=sha(src); image_rel=f"images/GEO-{n:03d}_{image_hash[:12]}.png"
+        shutil.copyfile(src,gimages/Path(image_rel).name)
         for ann,reviewer in ((ann_a,"REPLACE_WITH_ANNOTATOR_A"),(ann_b,"REPLACE_WITH_ANNOTATOR_B")):
             ann.append(annotation_template(row,image_hash,reviewer,f"GEO-{n:03d}-{reviewer[-1]}",created))
-        adjud.append({"review_id":f"GEO-{n:03d}","image":review["image"],
-          "image_sha256":image_hash,"annotator_a_annotation_id":ann_a[-1]["annotation_id"],
+        adjud.append({"review_id":f"GEO-{n:03d}","image":image_rel,
+          "image_sha256":image_hash,"case_id":row["case_id"],"family":row.get("family"),
+          "source_text":row["source_text"],"logical_text":row["logical_text"],
+          "annotator_a_annotation_id":ann_a[-1]["annotation_id"],
           "annotator_b_annotation_id":ann_b[-1]["annotation_id"],
           "adjudicated_annotation":None,"decision":"pending","adjudicator_notes":""})
     for name,data in (("annotator_a.jsonl",ann_a),("annotator_b.jsonl",ann_b)):
@@ -133,7 +137,7 @@ def main():
     for r in review_rows: cases[r["case_id"]]+=1; families[r["case_id"]].add(r["family"])
     summary={"schema_version":1,"status":"REVIEW_REQUIRED","seed":a.seed,
       "source_rows":len(rows),"visual_review_samples":len(review_rows),
-      "geometry_pilot_samples":len(geometry),"case_counts":dict(sorted(cases.items())),
+      "geometry_pilot_samples":len(geometry),"geometry_pilot_source":"full eligible corpus, not limited to visual-review subset","geometry_case_counts":dict(sorted(__import__("collections").Counter(r["case_id"] for r in geometry).items())),"case_counts":dict(sorted(cases.items())),
       "families_per_case":{k:len(v) for k,v in sorted(families.items())},
       "single_codepoint_single_glyph_geometry_only":True,
       "created_at":created,
