@@ -52,7 +52,7 @@ def validate_rights(episodes, rights_manifest):
     if policy.get("output_font_license") != "SIL Open Font License 1.1":
         raise ValueError("generated font output policy must be SIL OFL 1.1")
     approved = {
-        item["sha256"]
+        item["sha256"]: item.get("family_id")
         for item in rights_manifest.get("fonts", [])
         if item.get("ml_training_allowed") is True and item.get("review_status") == "approved"
     }
@@ -65,6 +65,8 @@ def validate_rights(episodes, rights_manifest):
         if font_hash not in approved:
             raise ValueError(f"episode uses a font hash not approved by the rights manifest: {font_hash}")
         family = episode.get("family")
+        if approved[font_hash] != family:
+            raise ValueError(f"episode family does not match rights manifest for {font_hash}")
         split = episode.get("split")
         if split not in {"train", "validation", "test"} or not family:
             raise ValueError("episode is missing a valid family split")
@@ -72,9 +74,12 @@ def validate_rights(episodes, rights_manifest):
         if previous != split:
             raise ValueError(f"family split leakage detected for {family}")
         target = episode["target"]
-        if target.get("font_sha256") != font_hash or target.get("family") != family:
-            raise ValueError("target font provenance does not match episode")
-        target_codepoints = {f"U+{ord(char):04X}" for char in target.get("logical_text", "")}
+        if target.get("font_sha256") != font_hash or target.get("family") != family or target.get("split") != split:
+            raise ValueError("target font provenance or split does not match episode")
+        logical_text = target.get("logical_text")
+        if not isinstance(logical_text, str) or not logical_text:
+            raise ValueError("target logical_text must be a non-empty Unicode string")
+        target_codepoints = {f"U+{ord(char):04X}" for char in logical_text}
         refs = episode.get("style_references", [])
         if not refs or len(refs) != episode.get("reference_count"):
             raise ValueError("episode has missing or inconsistent style references")
@@ -87,7 +92,7 @@ def validate_rights(episodes, rights_manifest):
             raise ValueError("duplicate codepoints in style references")
         if target_codepoints.intersection(ref_cps):
             raise ValueError("target codepoint leaked into style references")
-    return approved
+    return set(approved)
 
 
 class ContextualEpisodeDataset(Dataset):
