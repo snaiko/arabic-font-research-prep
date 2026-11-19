@@ -311,7 +311,7 @@ def main():
 
     save_training_checkpoint(
         checkpoint_path, model, optimizer, step,
-        metadata={"route": "image", "latent_dim": args.latent_dim, "seed": args.seed}
+        metadata={"route": "image", "latent_dim": args.latent_dim, "embedding_dim": args.embedding_dim, "seed": args.seed}
     )
     validation = evaluate(model, val_loader, device, args.eval_batches, args.edge_weight)
     testing = evaluate(model, test_loader, device, args.eval_batches, args.edge_weight)
