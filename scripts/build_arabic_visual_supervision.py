@@ -36,26 +36,25 @@ def measure(image_path: Path):
         w,h=mask.size
         pixels=list(mask.getdata())
         ink=[1 if p else 0 for p in pixels]
-        count=sum(ink)
-        xs=[]; ys=[]
-        for y in range(h):
-            for x in range(w):
-                if ink[y*w+x]: xs.append(x); ys.append(y)
+        row_sums=[sum(ink[y*w:(y+1)*w]) for y in range(h)]
+        col_sums=[sum(ink[y*w+x] for y in range(h)) for x in range(w)]
+        count=sum(row_sums)
+        if not count: raise ValueError("blank_image")
         x0,y0,x1,y1=bbox
-        # Fixed-length normalized row/column occupancy profiles.
+        # Fixed-length normalized row/column occupancy profiles in O(width*height).
         row=[]; col=[]
         for i in range(16):
             ya=i*h//16; yb=(i+1)*h//16
-            row.append(round(sum(ink[yy*w+x] for yy in range(ya,yb) for x in range(w))/max(1,(yb-ya)*w),6))
+            row.append(round(sum(row_sums[ya:yb])/max(1,(yb-ya)*w),6))
         for i in range(16):
             xa=i*w//16; xb=(i+1)*w//16
-            col.append(round(sum(ink[y*w+x] for y in range(h) for x in range(xa,xb))/max(1,h*(xb-xa)),6))
+            col.append(round(sum(col_sums[xa:xb])/max(1,h*(xb-xa)),6))
         return {
             "canvas_width":w,"canvas_height":h,
             "ink_bbox_xyxy":[x0,y0,x1,y1],
             "ink_bbox_normalized":[round(x0/w,6),round(y0/h,6),round(x1/w,6),round(y1/h,6)],
             "ink_pixel_ratio":round(count/(w*h),8),
-            "ink_centroid_normalized":[round(sum(xs)/count/w,6),round(sum(ys)/count/h,6)],
+            "ink_centroid_normalized":[round(sum(x*n for x,n in enumerate(col_sums))/count/w,6),round(sum(y*n for y,n in enumerate(row_sums))/count/h,6)],
             "row_occupancy_16":row,"column_occupancy_16":col
         }
 
