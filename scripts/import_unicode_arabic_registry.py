@@ -6,7 +6,7 @@ from pathlib import Path
 
 VERSION = "17.0.0"
 BASE = f"https://www.unicode.org/Public/{VERSION}/ucd/"
-FILES = ("UnicodeData.txt", "Scripts.txt", "extracted/DerivedJoiningType.txt", "ArabicShaping.txt")
+FILES = ("UnicodeData.txt", "Scripts.txt", "ArabicShaping.txt")
 JOINING = {"R", "L", "D", "C", "U", "T"}
 FORM_MAP = {"R": ["isol", "fina"], "L": ["isol", "init"],
             "D": ["isol", "init", "medi", "fina"], "U": ["isol"],
@@ -82,7 +82,7 @@ def build(data_dir):
         if cp not in names:
             continue
         name, category = names[cp]
-        jt = derived.get(cp, "T" if category in {"Mn", "Me", "Cf"} else "U")
+        # Unicode ArabicShaping.txt explicitly defines all non-default joining types;\n        # unlisted Mn/Me/Cf are Transparent (T), all other unlisted code points are Non_Joining (U).\n        jt = joining_types.get(cp, "T" if category in {"Mn", "Me", "Cf"} else "U")
         if jt not in JOINING:
             raise ValueError(f"Unexpected Joining_Type {jt} at U+{cp:04X}")
         role = ("letter" if category.startswith("L") else
@@ -105,7 +105,7 @@ def build(data_dir):
         "unicode_version": VERSION, "coverage": "all assigned code points with Script=Arabic in Unicode 17.0",
         "source_files_sha256": hashes, "records": records,
         "policy": {
-            "joining_type_and_group": "normative Unicode Character Database properties",
+            "joining_type_and_group": "normative Unicode Character Database properties; unlisted Mn/Me/Cf default to T and other unlisted code points to U per ArabicShaping.txt",
             "schematic_name": "descriptive comment only; not a formal Unicode property",
             "visual_decomposition": "not supplied; requires separately reviewed glyph-instance annotations",
             "contextual_forms": "possible_forms_by_joining_type is a constraint, not the actual form of a rendered glyph",
