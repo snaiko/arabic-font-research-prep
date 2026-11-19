@@ -10,7 +10,7 @@ A single reference glyph does not uniquely determine a typeface. The system must
 
 ## What is included
 
-- [Arabic character system v1](docs/ARABIC_CHARACTER_SYSTEM.md) and its machine-readable registry: Unicode joining metadata, provisional visual families, and strict validation.
+- [Arabic character system v1](docs/ARABIC_CHARACTER_SYSTEM.md) and [full Arabic-script system v2](docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md): Unicode 17 registry importer, joining rules, shaping regression cases, and a per-glyph visual annotation ontology/schema.
 - [Model architecture](docs/MODEL_ARCHITECTURE.md): staged MX-Font-based design and Arabic-specific modules.
 - [Upstream baseline pinning](docs/UPSTREAM_BASELINE.md): official implementation, license boundaries, and reproducible pinning requirements.
 - [Unified dual-mode specification](docs/DUAL_MODE_MODEL_SPEC.md): image, prompt, and hybrid routes sharing one generator.
@@ -22,7 +22,7 @@ A single reference glyph does not uniquely determine a typeface. The system must
 - [Training and evaluation](docs/TRAINING_EVALUATION.md): split policy, losses, baselines, and acceptance gates.
 - [Model configuration](configs/model.yaml) and [data configuration](configs/data.yaml).
 - JSONL manifest templates under `data/manifests/`.
-- A standard-library manifest validator: `python scripts/validate_manifest.py data/manifests/fonts.template.jsonl`.
+- HarfBuzz regression runner: `python scripts/run_shaping_regression.py --font path/to/cleared-font.otf` (requires `uharfbuzz`; records actual glyph IDs and cluster mappings for the versioned Arabic test strings).\n- A standard-library manifest validator: `python scripts/validate_manifest.py data/manifests/fonts.template.jsonl`.
 - Arabic font technical validator: `python scripts/validate_arabic_fonts.py --input data/raw_fonts --output data/validation` (requires FontTools and uharfbuzz; see [validation guide](docs/FONT_VALIDATION.md)).
 - A GitHub Actions workflow to collect, validate, and publish the binary font corpus as a GitHub Release asset (see [publishing guide](docs/FONT_CORPUS_RELEASE.md)).
 - Reproducible Arabic raster-sample builder: `python scripts/build_arabic_glyph_dataset.py --fonts data/raw_fonts --validation data/validation/font_validation.jsonl --output data/training_samples` (requires Pillow with RAQM; see [dataset guide](docs/ARABIC_GLYPH_DATASET.md)).
