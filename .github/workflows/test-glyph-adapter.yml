@@ -5,6 +5,9 @@ on:
     paths:
       - "scripts/build_isolated_glyph_crops.py"
       - "scripts/build_mxfont_episodes.py"
+      - "scripts/validate_arabic_character_system.py"
+      - "data/arabic_character_system_v1.json"
+      - "docs/ARABIC_CHARACTER_SYSTEM.md"
       - "tests/**"
       - ".github/workflows/test-glyph-adapter.yml"
   pull_request:
@@ -27,6 +30,8 @@ jobs:
         with:
           python-version: "3.11"
       - name: Compile scripts
-        run: python -m py_compile scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py
+        run: python -m py_compile scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py scripts/validate_arabic_character_system.py
+      - name: Validate Arabic character registry
+        run: python scripts/validate_arabic_character_system.py
       - name: Run episode sampler tests
         run: python -m unittest discover -s tests -v
