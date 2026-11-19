@@ -204,6 +204,7 @@ def main():
     parser.add_argument("--max-steps", type=int, required=True, help="explicit step count; no implicit long run")
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--latent-dim", type=int, default=64)
+    parser.add_argument("--embedding-dim", type=int, default=32)
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--edge-weight", type=float, default=0.2)
     parser.add_argument("--eval-batches", type=int, default=20)
@@ -257,7 +258,7 @@ def main():
         num_workers=0, collate_fn=collate_batch
     )
 
-    model = ArabicMultimodalGlyphModel(latent_dim=args.latent_dim).to(device)
+    model = ArabicMultimodalGlyphModel(latent_dim=args.latent_dim, embedding_dim=args.embedding_dim).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
     output_dir = Path(args.output_dir)
     checkpoints = output_dir / "checkpoints"
@@ -268,6 +269,9 @@ def main():
     resumed_from = None
     if args.resume:
         state = restore_training_checkpoint(args.resume, model, optimizer, map_location=device)
+        saved_metadata = state.get("metadata", {})
+        if saved_metadata.get("latent_dim", args.latent_dim) != args.latent_dim or saved_metadata.get("embedding_dim", args.embedding_dim) != args.embedding_dim:
+            raise ValueError("checkpoint model dimensions do not match the requested latent/embedding dimensions")
         step = state["step"]
         resumed_from = str(Path(args.resume))
         if step >= args.max_steps:
@@ -300,7 +304,7 @@ def main():
             if args.save_every and step % args.save_every == 0:
                 save_training_checkpoint(
                     checkpoint_path, model, optimizer, step,
-                    metadata={"route": "image", "latent_dim": args.latent_dim, "seed": args.seed}
+                    metadata={"route": "image", "latent_dim": args.latent_dim, "embedding_dim": args.embedding_dim, "seed": args.seed}
                 )
         if not len(train_loader):
             raise SystemExit("Training DataLoader is empty")
@@ -320,6 +324,7 @@ def main():
         "resumed_from": resumed_from,
         "device": str(device),
         "latent_dim": args.latent_dim,
+        "embedding_dim": args.embedding_dim,
         "batch_size": args.batch_size,
         "learning_rate": args.learning_rate,
         "edge_weight": args.edge_weight,
