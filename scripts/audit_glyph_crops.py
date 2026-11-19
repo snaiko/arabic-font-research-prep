@@ -21,6 +21,8 @@ def audit(manifest: Path, crop_root: Path, font_root: Path) -> dict:
                 try: rows.append(json.loads(line))
                 except json.JSONDecodeError as e: raise ValueError(f"{manifest}:{n}: {e}") from e
     errors, seen, fonts, family_splits = [], set(), {}, defaultdict(set)
+    referenced_images = set()
+    root = crop_root.resolve()
     for n, row in enumerate(rows, 1):
         cp = row.get("codepoint", "")
         char = row.get("unicode_char", "")
@@ -51,13 +53,18 @@ def audit(manifest: Path, crop_root: Path, font_root: Path) -> dict:
             fonts[digest] = actual
         if not image:
             errors.append(f"row {n}: missing image path"); continue
-        root = crop_root.resolve()
         target = (root / image).resolve()
         try: target.relative_to(root)
         except ValueError:
             errors.append(f"row {n}: image path escapes crop root"); continue
         if not target.is_file():
             errors.append(f"row {n}: crop image missing: {image}"); continue
+        referenced_images.add(target)
+        expected_image_hash = row.get("image_sha256")
+        if not isinstance(expected_image_hash, str) or len(expected_image_hash) != 64 or any(c not in "0123456789abcdef" for c in expected_image_hash.lower()):
+            errors.append(f"row {n}: missing or invalid image SHA-256")
+        elif sha256(target) != expected_image_hash:
+            errors.append(f"row {n}: image SHA-256 mismatch")
         try:
             with Image.open(target) as im:
                 im.load()
@@ -69,9 +76,16 @@ def audit(manifest: Path, crop_root: Path, font_root: Path) -> dict:
             errors.append(f"row {n}: unreadable image: {e}")
     for family, splits in family_splits.items():
         if len(splits) != 1: errors.append(f"family split leakage in crop manifest: {family}")
+    image_root = root / "images"
+    actual_images = {path.resolve() for path in image_root.rglob("*.png")} if image_root.exists() else set()
+    orphaned_images = sorted(str(path.relative_to(root)) for path in actual_images - referenced_images)
+    for image in orphaned_images:
+        errors.append(f"unreferenced image file: {image}")
     counts = Counter(r.get("split") for r in rows)
     return {"schema_version": 1, "status": "PASS" if rows and not errors else "FAIL",
-            "crop_count": len(rows), "distinct_font_hashes": len(fonts),
+            "crop_count": len(rows), "image_files_found": len(actual_images),
+            "unreferenced_image_files": len(orphaned_images),
+            "distinct_font_hashes": len(fonts),
             "distinct_families": len(family_splits), "split_crop_counts": dict(counts),
             "errors": errors,
             "scope": "Verifies crop file integrity, provenance, uniqueness and split consistency; does not verify visual correctness or training rights."}

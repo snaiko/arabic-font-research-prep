@@ -33,6 +33,24 @@ def digest(path: Path) -> str:
             h.update(chunk)
     return h.hexdigest()
 
+def clear_generated_images(out_dir: Path):
+    """Remove stale PNGs from this generated dataset directory before rebuilding."""
+    image_root = out_dir / "images"
+    if not image_root.exists():
+        return
+    for path in image_root.rglob("*.png"):
+        path.unlink()
+    directories = sorted(
+        (path for path in image_root.rglob("*") if path.is_dir()),
+        key=lambda path: len(path.parts),
+        reverse=True,
+    )
+    for directory in directories:
+        try:
+            directory.rmdir()
+        except OSError:
+            pass
+
 def resolve_font(value: str, root: Path) -> Path:
     p = Path(value)
     candidates = [p, root / p, root / p.name]
@@ -82,6 +100,7 @@ def main() -> int:
     if args.font_size < 16:
         ap.error("--font-size must be >= 16")
     out.mkdir(parents=True, exist_ok=True)
+    clear_generated_images(out)
     manifest = out / "glyph_crops.jsonl"
     rejected = []
     seen = set()
@@ -110,8 +129,10 @@ def main() -> int:
                 target = out / rel
                 target.parent.mkdir(parents=True, exist_ok=True)
                 image.save(target, format="PNG", optimize=True)
+                image_hash = digest(target)
                 record = {
-                    "image": rel.as_posix(), "family": row.get("family"),
+                    "image": rel.as_posix(), "image_sha256": image_hash,
+                    "family": row.get("family"),
                     "split": row.get("split"), "font_file": str(font_path),
                     "font_sha256": actual_hash, "codepoint": f"U+{cp:04X}",
                     "unicode_char": char, "sample_type": "isolated_single_codepoint",

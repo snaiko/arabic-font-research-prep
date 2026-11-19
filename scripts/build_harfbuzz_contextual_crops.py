@@ -29,6 +29,24 @@ def read_jsonl(path: Path):
                 try: yield json.loads(line)
                 except json.JSONDecodeError as e: raise ValueError(f"{path}:{n}: {e}") from e
 
+def clear_generated_images(out_dir: Path):
+    """Remove stale PNGs from this generated dataset directory before rebuilding."""
+    image_root = out_dir / "images"
+    if not image_root.exists():
+        return
+    for path in image_root.rglob("*.png"):
+        path.unlink()
+    directories = sorted(
+        (path for path in image_root.rglob("*") if path.is_dir()),
+        key=lambda path: len(path.parts),
+        reverse=True,
+    )
+    for directory in directories:
+        try:
+            directory.rmdir()
+        except OSError:
+            pass
+
 def shape_clusters(font_path: Path, text: str, case: dict, out_dir: Path, font_hash: str):
     import uharfbuzz as hb
     import cairosvg
@@ -71,6 +89,7 @@ def shape_clusters(font_path: Path, text: str, case: dict, out_dir: Path, font_h
         grouped[info.cluster].append((info.codepoint,pen_x+pos.x_offset,pos.y_offset))
         pen_x += pos.x_advance
     results=[]
+    pending_images=[]
     logical_starts=sorted(clusters)
     for cluster in clusters:
         glyphs=grouped[cluster]
@@ -103,9 +122,11 @@ def shape_clusters(font_path: Path, text: str, case: dict, out_dir: Path, font_h
         end=next_starts[0] if next_starts else len(text)
         logical=text[start:end]
         rel=Path("images")/font_hash[:12]/case["id"]/f"cluster_{cluster:04d}.png"
-        target=out_dir/rel; target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(png)
+        target=out_dir/rel
+        pending_images.append((target,png))
         results.append({
-            "image":rel.as_posix(),"font_file":str(font_path),"font_sha256":font_hash,
+            "image":rel.as_posix(),"image_sha256":hashlib.sha256(png).hexdigest(),
+            "font_file":str(font_path),"font_sha256":font_hash,
             "case_id":case["id"],"source_text":text,"cluster":cluster,
             "logical_start":start,"logical_end":end,"logical_text":logical,
             "logical_codepoints":[f"U+{ord(c):04X}" for c in logical],
@@ -141,6 +162,11 @@ def shape_clusters(font_path: Path, text: str, case: dict, out_dir: Path, font_h
                 )
     for item in results:
         item["nonrendering_source_codepoints"]=context_nonrendering
+    # Commit the case's images only after every source character has been
+    # accounted for. A failed shaping case must not leave orphan PNGs behind.
+    for target,png in pending_images:
+        target.parent.mkdir(parents=True,exist_ok=True)
+        target.write_bytes(png)
     tt.close()
     return results
 
@@ -154,6 +180,7 @@ def main():
     a=p.parse_args()
     import uharfbuzz, cairosvg
     root=Path(a.fonts); out=Path(a.output); out.mkdir(parents=True,exist_ok=True)
+    clear_generated_images(out)
     family_map={r["file"]:r.get("family","unknown") for r in read_jsonl(Path(a.collection))}
     split_by_hash={r["font_sha256"]:r.get("split") for r in read_jsonl(Path(a.samples))}
     cases=json.loads(Path(a.cases).read_text(encoding="utf-8"))["cases"]
