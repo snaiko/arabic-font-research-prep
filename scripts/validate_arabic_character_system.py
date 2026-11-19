@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse, json, re
 from pathlib import Path
 
-HEX = re.compile(r"^U\\+[0-9A-F]{4,6}$")
+HEX = re.compile(r"^U\+[0-9A-F]{4,6}$")
 JOINING = {"R", "L", "D", "C", "U", "T"}
 FORMS = {"isol", "init", "medi", "fina"}
 EXPECTED = {"R": {"isol", "fina"}, "L": {"isol", "init"}, "D": FORMS,
