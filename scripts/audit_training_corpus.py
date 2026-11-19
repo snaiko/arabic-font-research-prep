@@ -33,7 +33,7 @@ def audit(samples_path, font_root=None, image_root=None, source_assets_path=None
         if not family or split not in SPLITS or not font_hash:
             errors.append(f"row {i}: missing family, valid split, or font_sha256"); continue
         family_splits[family].add(split); font_family[font_hash].add(family)
-        key=(font_hash,row.get("sample_type"),row.get("target_char"),row.get("text"),row.get("target_index"))
+        key=(font_hash,row.get("sample_type"),row.get("target_char"),row.get("text"),row.get("target_index_logical", row.get("target_index")))
         if key in seen: errors.append(f"row {i}: duplicate sample identity")
         seen.add(key)
         if root:
