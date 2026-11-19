@@ -45,7 +45,7 @@ jobs:
       - name: Install raster and shaping dependencies
         run: python -m pip install --upgrade Pillow uharfbuzz fonttools CairoSVG
       - name: Compile scripts
-        run: python -m py_compile scripts/audit_glyph_crops.py scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py scripts/validate_arabic_character_system.py scripts/import_unicode_arabic_registry.py scripts/validate_arabic_script_registry.py scripts/validate_glyph_visual_annotation.py scripts/validate_font_rights_manifest.py scripts/run_batch_shaping_regression.py scripts/run_shaping_regression.py scripts/compare_glyph_annotations.py scripts/audit_training_corpus.py scripts/audit_glyph_crops.py scripts/build_harfbuzz_contextual_crops.py scripts/audit_harfbuzz_contextual_crops.py scripts/build_arabic_review_pack.py scripts/build_arabic_cluster_review_pack.py scripts/validate_arabic_cluster_annotation.py scripts/build_arabic_visual_supervision.py scripts/audit_google_fonts_licenses.py scripts/audit_arabic_linguistic_consistency.py scripts/build_arabic_component_supervision.py scripts/audit_arabic_component_supervision.py
+        run: python -m py_compile scripts/audit_glyph_crops.py scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py scripts/validate_arabic_character_system.py scripts/import_unicode_arabic_registry.py scripts/validate_arabic_script_registry.py scripts/validate_glyph_visual_annotation.py scripts/validate_font_rights_manifest.py scripts/run_batch_shaping_regression.py scripts/run_shaping_regression.py scripts/compare_glyph_annotations.py scripts/audit_training_corpus.py scripts/audit_glyph_crops.py scripts/build_harfbuzz_contextual_crops.py scripts/audit_harfbuzz_contextual_crops.py scripts/build_arabic_review_pack.py scripts/build_arabic_cluster_review_pack.py scripts/validate_arabic_cluster_annotation.py scripts/build_arabic_visual_supervision.py scripts/audit_google_fonts_licenses.py scripts/audit_arabic_linguistic_consistency.py scripts/build_arabic_component_supervision.py scripts/audit_arabic_component_supervision.py scripts/build_ofl_training_rights_manifest.py
       - name: Validate starter Arabic registry
         run: python scripts/validate_arabic_character_system.py
       - name: Generate complete Unicode 17 Arabic registry
@@ -63,7 +63,7 @@ jobs:
           gh release download arabic-glyph-dataset-v1 --repo "${GITHUB_REPOSITORY}" --pattern "arabic-glyph-training-dataset.zip" --dir .audit/glyph
           unzip -oq .audit/font/arabic-font-corpus.zip -d .
           unzip -oq .audit/glyph/arabic-glyph-training-dataset.zip -d data/training_samples
-      - name: Build per-font rights evidence candidates (not approvals)
+      - name: Build per-font rights evidence candidates
         run: |
           python scripts/build_font_rights_candidates.py --fonts-jsonl data/raw_fonts/fonts.jsonl --font-root data/raw_fonts --output reports/font_rights_evidence_candidates.json
       - name: Upload per-font rights evidence candidates
@@ -80,6 +80,18 @@ jobs:
         with:
           name: pinned-font-license-evidence
           path: reports/font_license_evidence
+          if-no-files-found: error
+      - name: Build conditional OFL 1.1 ML training rights manifest
+        run: |
+          python scripts/build_ofl_training_rights_manifest.py --candidates reports/font_rights_evidence_candidates.json --license-audit reports/font_license_evidence/license_evidence_audit.json --output data/manifests/font_rights.json
+      - name: Validate exact approved font paths and SHA-256
+        run: |
+          python scripts/validate_font_rights_manifest.py --manifest data/manifests/font_rights.json --font-root data/raw_fonts
+      - name: Upload conditional OFL rights manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: conditional-ofl-font-rights-manifest
+          path: data/manifests/font_rights.json
           if-no-files-found: error
       - name: Audit the actual published training corpus
         run: |
@@ -101,7 +113,7 @@ jobs:
           if-no-files-found: error
       - name: Build deterministic Arabic visual supervision records
         run: |
-          python scripts/build_arabic_visual_supervision.py --manifest data/contextual_glyph_crops/contextual_clusters.jsonl --crop-root data/contextual_glyph_crops --output reports/arabic_visual_supervision.jsonl --rights-manifest data/manifests/font_rights.template.json
+          python scripts/build_arabic_visual_supervision.py --manifest data/contextual_glyph_crops/contextual_clusters.jsonl --crop-root data/contextual_glyph_crops --output reports/arabic_visual_supervision.jsonl --rights-manifest data/manifests/font_rights.json
       - name: Upload Arabic visual supervision dataset
         uses: actions/upload-artifact@v4
         with:
