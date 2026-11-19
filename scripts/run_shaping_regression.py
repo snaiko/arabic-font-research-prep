@@ -32,7 +32,7 @@ def run(font_path, cases_path, output_path):
             })
         results.append({
             "case_id":case["id"],"text":case["text"],"logical_codepoints":[f"U+{ord(ch):04X}" for ch in case["text"]],
-            "direction":buf.direction,"script":buf.script,"language":buf.language,
+            "direction":case["direction"],"script":case["script"],"language":case["language"],
             "features":case.get("features",[]),"glyphs":glyphs,
             "cluster_values":[g["cluster"] for g in glyphs]
         })
