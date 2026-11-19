@@ -147,14 +147,16 @@
     },
     {
       "id": "font_specific_shaping_regression",
-      "status": "PARTIAL",
+      "status": "PASS",
       "evidence": [
         "data/shaping_regression_cases_v1.json",
         "scripts/run_shaping_regression.py",
         ".github/workflows/test-glyph-adapter.yml",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527604462"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527604462",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527935025",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527935025/artifacts/14532261639"
       ],
-      "notes": "The contextual pipeline independently reproduced all 1,732 HarfBuzz glyph mappings with zero integrity errors. A separate batch regression across all 52 conditionally OFL-approved files has now been added to CI but its latest run is still pending; do not claim it passed until the artifact is available."
+      "notes": "GitHub Actions run 44527935025 completed the batch HarfBuzz regression for all 52 conditionally OFL-approved font files across 20 families. All 52 font paths and SHA-256 values passed the rights gate, and each font produced 10 shaping-case reports (520 font-case records total). This records the exact HarfBuzz output for the regression strings; it does not prove visual correctness or complete Arabic coverage."
     },
     {
       "id": "annotation_agreement_analyzer",
@@ -366,7 +368,8 @@
     "machine_visual_supervision": "1,732 records; 2,987 component candidates; paired Arabic/English synthetic factual captions; Unicode/ArabicShaping metadata. Latest CI generated all 1,732 with per-file conditional OFL rights eligibility (train=1,134/validation=299/test=299). Component semantics remain unknown; no expert visual/linguistic approval.",
     "license_evidence": "20 pinned official SIL OFL 1.1 license snapshots for 52 font files, with hashes, copyright headers, reserved-name candidates and selected-clause checks. ML training permission is not explicit in the license text; legal approval remains unresolved.",
     "component_caption_integrity_audit": "PASS: 1,732 source-bound records, 2,987 connected-component candidates, 3,464 Arabic/English captions, 20 families; 0 boundary-touching crops, 0 audit errors. All semantic identities remain unknown, captions machine-generated/unreviewed, and 0 records training-eligible.",
-    "executable_model_baseline": "Experimental shared decoder with image, Unicode-codepoint text, and hybrid conditioning. All three routes pass CPU forward/backward smoke tests. It is not MX-Font, not a semantic Arabic language model, and not quality-validated."
+    "executable_model_baseline": "Experimental shared decoder with image, Unicode-codepoint text, and hybrid conditioning. All three routes pass CPU forward/backward smoke tests. It is not MX-Font, not a semantic Arabic language model, and not quality-validated.",
+    "font_specific_shaping_regression": "PASS: 52/52 conditional OFL font files passed manifest/hash validation and each produced 10 HarfBuzz regression case outputs (520 records total). This is a reproducible shaping capture, not visual review."
   },
   "tests": {
     "repository_tests": "51 tests executed in GitHub Actions run 44520251086: 47 passed and 4 optional PyTorch tests skipped in this job; all four were run separately and passed in the dedicated model workflow.",
@@ -378,7 +381,8 @@
     "component_caption_builder": "PASS: 1,732 records / 2,987 component candidates in run 44520251086",
     "pinned_license_evidence": "PASS: 20 pinned official SIL OFL 1.1 license snapshots covering 52 exact font files. Conditional OFL AI training manifest generated and hash-validated for all 52 files in run 44527370231.",
     "model_smoke_tests": "4/4 passed in dedicated CPU PyTorch run 44520250916: image/text/hybrid forward-backward, checkpoint round-trip, optimizer-state resume, Unicode codepoint encoding",
-    "component_caption_audit": "PASS: 1,732 records / 2,987 components / 3,464 paired captions / zero errors in run 44520251086"
+    "component_caption_audit": "PASS: 1,732 records / 2,987 components / 3,464 paired captions / zero errors in run 44520251086",
+    "font_specific_shaping_regression": "PASS: GitHub Actions run 44527935025 generated 52 font-specific HarfBuzz reports across 20 families; 10 shaping cases per font (520 total font-case records)."
   },
   "hardware": {
     "local_preflight": "not_run_in_this_preparation_update",
