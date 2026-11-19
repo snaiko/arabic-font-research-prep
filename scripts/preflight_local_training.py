@@ -228,10 +228,25 @@ def main():
     if rights.get("ok") and episodes.get("ok") and image_roots["ok"] and gpu["torch_available"]:
         model_preflight = run_model_preflight()
 
-    ready = bool(
-        rights.get("ok") and episodes.get("ok") and image_roots["ok"]
-        and model_preflight.get("status") == "PASS"
-    )
+    blocking_reasons = []
+    if not rights.get("ok"):
+        blocking_reasons.append(rights.get("reason", "rights manifest is not ready"))
+    if not episodes.get("ok"):
+        blocking_reasons.append(episodes.get("reason", "episode dataset is not ready"))
+    if not image_roots["ok"]:
+        blocking_reasons.append("contextual or isolated image dataset root is missing")
+    if not gpu["torch_available"]:
+        blocking_reasons.append("PyTorch is not installed in this Python environment")
+    elif model_preflight.get("status") != "PASS":
+        blocking_reasons.append("real-data no-training model preflight failed")
+    if disk.free < 2 * 1024**3:
+        blocking_reasons.append("less than 2 GB of free disk space")
+    warnings = []
+    if not gpu["cuda_available"]:
+        warnings.append("CUDA is unavailable; training will use CPU and may be slow.")
+    if ram is not None and ram < 12:
+        warnings.append("System RAM is below 12 GB; use a smaller batch size.")
+    ready = not blocking_reasons
     report = {
         "status": "READY_FOR_EXPERIMENTAL_IMAGE_ROUTE" if ready else "BLOCKED",
         "training_allowed": ready,
@@ -252,6 +267,8 @@ def main():
         "recommended_batch_size": recommended_batch_size(gpu, ram),
         "recommended_latent_dim": 64,
         "recommended_embedding_dim": 32,
+        "blocking_reasons": blocking_reasons,
+        "warnings": warnings,
         "rights": rights,
         "episodes": episodes,
         "image_roots": image_roots,
@@ -261,8 +278,7 @@ def main():
         "next_steps": (
             ["If the user approves, run RUN_IMAGE_ROUTE_TRAINING.bat for a controlled experiment."]
             if ready else
-            ["Extract the four required GitHub Actions artifacts into the documented data paths.",
-             "Install PyTorch and Pillow, then rerun START_LOCAL_TRAINING.bat."]
+            ["Resolve the blocking_reasons listed above, then rerun START_LOCAL_TRAINING.bat."]
         ),
     }
     REPORT.parent.mkdir(parents=True, exist_ok=True)
