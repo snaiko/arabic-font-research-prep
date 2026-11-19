@@ -84,6 +84,9 @@ class LocalPreflightTests(unittest.TestCase):
             self.assertTrue(result["ok"])
             self.assertEqual(result["total_episodes"], 3)
             self.assertEqual(result["reference_images"], 12)
+            strict_result = inspect_episodes(episodes_dir, rights, require_full_dataset=True)
+            self.assertFalse(strict_result["ok"])
+            self.assertIn("audited full corpus", strict_result["reason"])
 
     def test_episode_audit_rejects_target_reference_codepoint_leak(self):
         with tempfile.TemporaryDirectory() as td:
