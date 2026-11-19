@@ -50,5 +50,6 @@ class ReviewPackTests(unittest.TestCase):
             self.assertTrue((out/"index.html").is_file())
             self.assertEqual(len(list((out/"images").glob("*.png"))),1)
             self.assertEqual(len((out/"visual_linguistic_review.jsonl").read_text().splitlines()),1)
+            self.assertEqual(len(list((out/"geometry_annotations"/"images").glob("*.png"))),1)
 
 if __name__=="__main__": unittest.main()
