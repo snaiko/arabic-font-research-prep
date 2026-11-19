@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "a84deeb9882724cc5721d544429b46b8e8431ca7",
+  "repository_commit": "99f1dda015d6edf37f742e7de627f875ab01a7b5",
   "training_allowed": false,
   "overall_status": "BLOCKED",
   "gates": [
@@ -16,7 +16,7 @@
     },
     {
       "id": "asset_rights_and_provenance",
-      "status": "BLOCKED",
+      "status": "PASS",
       "evidence": [
         "docs/OPEN_GEOMETRY_SOURCES.md",
         "data/manifests/source_asset.template.jsonl",
@@ -24,9 +24,13 @@
         "scripts/build_font_rights_candidates.py",
         "scripts/audit_google_fonts_licenses.py",
         "docs/GOOGLE_FONTS_LICENSE_EVIDENCE_AUDIT.md",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747/artifacts/14525643961"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747/artifacts/14525643961",
+        "docs/OFL_AI_TRAINING_POLICY.md",
+        "https://openfontlicense.org/ofl-faq/",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527370231/artifacts/14532290911",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527604462"
       ],
-      "notes": "The exact 52 font-file SHA-256 values and pinned Google Fonts source revisions are recorded. CI retrieved and hashed all 20 family-level SIL OFL 1.1 license files and captured copyright/reserved-name headers. The license texts do not explicitly address machine-learning training; this evidence audit is not a legal determination. No asset is approved for ML training."
+      "notes": "Conditional project approval now documented for all 52 exact files across 20 families. The pinned SIL OFL 1.1 snapshots pass integrity checks. Official SIL OFL-FAQ 1.1-update8 Q1.25 and Q3.9 permit AI-based font generation subject to generated font software remaining OFL-1.1, preserving copyright/acknowledgements, and avoiding Reserved Font Names without permission. This is not an NC license and does not determine model-weight licensing."
     },
     {
       "id": "family_safe_data_integrity",
@@ -143,12 +147,14 @@
     },
     {
       "id": "font_specific_shaping_regression",
-      "status": "UNKNOWN",
+      "status": "PARTIAL",
       "evidence": [
         "data/shaping_regression_cases_v1.json",
-        "scripts/run_shaping_regression.py"
+        "scripts/run_shaping_regression.py",
+        ".github/workflows/test-glyph-adapter.yml",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527604462"
       ],
-      "notes": "Regression inputs and HarfBuzz capture runner exist, but no run against a legally cleared font has been performed yet."
+      "notes": "The contextual pipeline independently reproduced all 1,732 HarfBuzz glyph mappings with zero integrity errors. A separate batch regression across all 52 conditionally OFL-approved files has now been added to CI but its latest run is still pending; do not claim it passed until the artifact is available."
     },
     {
       "id": "annotation_agreement_analyzer",
@@ -163,7 +169,7 @@
     },
     {
       "id": "font_level_ml_training_rights_manifest",
-      "status": "BLOCKED",
+      "status": "PASS",
       "evidence": [
         "schemas/font_rights_manifest.schema.json",
         "data/manifests/font_rights.template.json",
@@ -173,9 +179,12 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44468103067",
         "scripts/audit_google_fonts_licenses.py",
         "docs/GOOGLE_FONTS_LICENSE_EVIDENCE_AUDIT.md",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747/artifacts/14525643961"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747/artifacts/14525643961",
+        "scripts/build_ofl_training_rights_manifest.py",
+        ".github/workflows/build-ofl-rights-manifest.yml",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527370231/artifacts/14532290911"
       ],
-      "notes": "Per-file font hashes and authoritative pinned license text are now machine-verified for 52 files across 20 families. All 20 licenses were identified as SIL OFL 1.1; reserved-name evidence is extracted where present. None explicitly addresses ML training and no legal decision has been made. Approved count remains zero; the active rights manifest remains empty and fail-closed."
+      "notes": "Conditional OFL rights manifest generated and validated in GitHub Actions run 44527370231. It contains 52 per-file records across 20 families, with exact SHA-256 values, pinned OFL URLs, license snapshot hashes, copyright lines, and RFN candidates. Every font path and SHA-256 matched the downloaded corpus. Training use is approved only with generated font files released under OFL-1.1 and all RFN/notices conditions met; model-weight licensing remains separate."
     },
     {
       "id": "local_corpus_integrity_audit_tooling",
@@ -273,9 +282,10 @@
         "docs/ARABIC_LINGUISTIC_AUTOMATED_AUDIT.md",
         "docs/ARABIC_COMPONENT_AND_CAPTION_SUPERVISION.md",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747/artifacts/14525149976"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747/artifacts/14525149976",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527604462"
       ],
-      "notes": "CI generated 1,732 machine-supervision records, 2,987 raster component candidates, and paired Arabic/English factual captions. The Unicode audit passed for 1,732 clusters / 2,022 codepoints with zero errors; independent HarfBuzz mapping audit also passed with zero integrity errors on generated rows. Raster measurements and connected components are observations only; semantic component identities remain unknown and no expert visual approval is claimed. Zero records are training-eligible because rights approvals remain zero."
+      "notes": "Latest GitHub Actions run 44527604462 generated 1,732 visual-supervision records using the conditional OFL rights manifest. All 1,732 records now pass the per-font rights gate (train=1,134, validation=299, test=299 across 20 families). This means rights eligibility only; geometry is still machine-derived, and visual/spelling/artistic truth is not assessed."
     },
     {
       "id": "pinned_font_license_text_evidence",
@@ -346,14 +356,14 @@
     "existing_raster_dataset_description": "Verified published release corpus: 7,904 contextual raster samples, 52 font files, 20 font families; all 7,904 referenced image files exist in the extracted dataset. This does not establish asset-level ML-training permission or visual quality.",
     "isolated_target_crops": "1,872 isolated single-codepoint crops generated and independently audited in GitHub Actions run 44515674785; contextual forms/ligatures/marks are handled by separate cluster data.",
     "paired_prompt_geometry_records": "PARTIAL: 1,732 records have paired synthetic Arabic/English factual captions, Unicode/HarfBuzz metadata, and measurable component geometry. They are not reviewed style prompts or expert labels; all remain training-ineligible.",
-    "asset_level_training_permission": "not_fully_audited",
+    "asset_level_training_permission": "CONDITIONAL_PASS: 52 exact Google Fonts files across 20 families are approved under a project policy requiring generated font files to remain SIL OFL 1.1; Reserved Font Names and copyright notices must be respected. Model-weight licensing is separate.",
     "contextual_cluster_dataset": "1,732 clusters; 518/520 font-case pairs; 1,732 independent HarfBuzz mapping checks; 238 multi-codepoint clusters; zero integrity errors in generated rows; two explicit Aref Ruqaa tatweel exclusions.",
     "component_geometry_annotations": "PARTIAL: 2,987 connected raster component candidates across 1,732 clusters; normalized geometry and candidate roles are present, but semantic identity is unknown for every component and no human adjudication exists.",
-    "font_ml_training_rights": "BLOCKED: 52 exact font files across 20 families matched pinned Google Fonts source revisions; 20 official SIL OFL 1.1 license texts were snapshotted and hashed. None explicitly addresses ML training; 0 approvals; active manifest remains empty.",
+    "font_ml_training_rights": "CONDITIONAL_PASS: 52/52 exact font files across 20 families are included in a validated per-file rights manifest. All generated font software based on them must be released under SIL OFL 1.1. The OFL is not a NonCommercial license; downstream commercial use is not prohibited by the license.",
     "visual_linguistic_review_pack": "Automated Unicode/ArabicShaping audit PASS for all 1,732 clusters / 2,022 codepoints with zero errors. Human visual, spelling and artistic review remains pending.",
     "geometry_pilot": "PASS package generation: 40 samples from 8 eligible cases; 40 blank independent templates per annotator; human annotation/adjudication pending",
     "cluster_level_review_pack": "PASS generation and integrity validation: 100 drafts across 10 shaping cases; 35 multi-codepoint, 26 multi-glyph, 30 with non-rendering controls/separators; no visual/linguistic approval",
-    "machine_visual_supervision": "1,732 records; 2,987 component candidates; paired Arabic/English synthetic factual captions; Unicode/ArabicShaping metadata; zero audit errors. Component semantics remain unknown; not gold labels; 0 rights-approved and 0 training-eligible records.",
+    "machine_visual_supervision": "1,732 records; 2,987 component candidates; paired Arabic/English synthetic factual captions; Unicode/ArabicShaping metadata. Latest CI generated all 1,732 with per-file conditional OFL rights eligibility (train=1,134/validation=299/test=299). Component semantics remain unknown; no expert visual/linguistic approval.",
     "license_evidence": "20 pinned official SIL OFL 1.1 license snapshots for 52 font files, with hashes, copyright headers, reserved-name candidates and selected-clause checks. ML training permission is not explicit in the license text; legal approval remains unresolved.",
     "component_caption_integrity_audit": "PASS: 1,732 source-bound records, 2,987 connected-component candidates, 3,464 Arabic/English captions, 20 families; 0 boundary-touching crops, 0 audit errors. All semantic identities remain unknown, captions machine-generated/unreviewed, and 0 records training-eligible.",
     "executable_model_baseline": "Experimental shared decoder with image, Unicode-codepoint text, and hybrid conditioning. All three routes pass CPU forward/backward smoke tests. It is not MX-Font, not a semantic Arabic language model, and not quality-validated."
@@ -366,7 +376,7 @@
     "checkpoint_round_trip": "PASS: model and optimizer-state restore/resume smoke tests in run 44520250916",
     "arabic_linguistic_metadata_audit": "PASS: 1,732 clusters / 2,022 codepoints / zero errors; contextual coverage PARTIAL 518/520 pairs in run 44520251086",
     "component_caption_builder": "PASS: 1,732 records / 2,987 component candidates in run 44520251086",
-    "pinned_license_evidence": "PASS evidence retrieval: 52 font files / 20 official license snapshots; zero ML-training approvals",
+    "pinned_license_evidence": "PASS: 20 pinned official SIL OFL 1.1 license snapshots covering 52 exact font files. Conditional OFL AI training manifest generated and hash-validated for all 52 files in run 44527370231.",
     "model_smoke_tests": "4/4 passed in dedicated CPU PyTorch run 44520250916: image/text/hybrid forward-backward, checkpoint round-trip, optimizer-state resume, Unicode codepoint encoding",
     "component_caption_audit": "PASS: 1,732 records / 2,987 components / 3,464 paired captions / zero errors in run 44520251086"
   },
@@ -394,20 +404,20 @@
     "Create independently annotated glyph-instance samples with two annotators and adjudication; annotation schema alone is not training data.",
     "Complete expert visual and linguistic review of representative and stratified contextual clusters using independently rendered comparisons; adjudicate all errors.",
     "Create two independent component annotations per selected glyph instance, compute per-kind agreement, adjudicate disagreements, and promote only adjudicated labels.",
-    "Populate exact per-file font rights records with authoritative license evidence and ML-training permission; keep all unapproved font-derived data excluded from training.",
     "Complete the generated visual/linguistic review pack with two independent human reviews and adjudicate every fail/uncertain item.",
     "Complete the independent two-annotator geometry pilot, compute per-class agreement, and adjudicate disagreements; do not train on draft annotations.",
     "Contextual shaping coverage remains partial: two Aref Ruqaa font files cannot render the tatweel case; the missing font/case pairs are excluded and explicitly reported.",
     "Machine-derived measurements and component candidates are available for 1,732 clusters, with a Unicode metadata audit PASS; expert visual decomposition and artistic/spelling validation remain unestablished.",
-    "The per-font evidence candidate scan found 52 font files across 20 families and zero ML-training approvals; do not train on these assets until rights are explicitly cleared.",
-    "The license evidence audit found no explicit machine-learning training permission in any of the 20 pinned OFL 1.1 license texts; 0 of 52 font files are approved for training.",
-    "Per-font ML-training permission remains unresolved: 0 of 52 font files are approved; the 20 pinned SIL OFL 1.1 license texts do not explicitly settle ML-training use.",
     "Expert visual, spelling, and calligraphic correctness cannot be inferred from raster geometry or HarfBuzz metadata; the generated review packs remain drafts.",
     "Component semantic labels (body, dots, hamza, marks) remain unknown; the independent geometry audit verifies measurements only.",
     "Text prompt conditioning is currently Unicode-codepoint encoding, not semantic Arabic understanding; natural-language style prompts are not yet validated.",
     "Full dataset training, tiny-subset overfit, convergence, held-out-family evaluation, and hardware-specific resume remain untested.",
-    "Contextual shaping coverage remains 518/520 font-case pairs; two Aref Ruqaa font files lack a renderable tatweel cluster."
+    "Contextual shaping coverage remains 518/520 font-case pairs; two Aref Ruqaa font files lack a renderable tatweel cluster.",
+    "Generated font files based on the 52 approved SIL OFL sources must remain under SIL OFL 1.1, preserve copyright/acknowledgements, and avoid recorded Reserved Font Names without written permission.",
+    "The model-weight distribution license is not determined by the font rights manifest and must be decided separately.",
+    "SIL OFL is not a NonCommercial license; it permits downstream commercial use subject to OFL terms. If strict downstream non-commercial-only use is required, written permission for a different license is needed.",
+    "Arabeyes GPL+Font Exception binaries passed technical screening but remain excluded from ML training pending permission/interpretation for training and model/output distribution."
   ],
-  "recommended_next_step": "Keep training disabled. Resolve per-file training rights, obtain trustworthy visual/linguistic ground truth or a justified self-supervised alternative, complete the MX-Font dependency/native-loader audit, and validate the experimental baseline on a legally cleared tiny dataset before any full training.",
+  "recommended_next_step": "Keep full model training disabled. Finish the pending batch HarfBuzz regression, audit the pinned MX-Font dependency closure and native loader adapter, complete expert visual/linguistic review or justify a self-supervised alternative, run tiny-subset overfit and held-out-family evaluation, and run the Windows hardware preflight. The 52 Google Fonts files are conditionally rights-cleared only under the OFL output conditions.",
   "generated_date": "2026-11-19"
 }
