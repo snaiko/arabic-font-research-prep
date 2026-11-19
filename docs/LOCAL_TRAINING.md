@@ -75,3 +75,8 @@ The data/rights preflight is automated. The project has not started this trainin
 After extracting the four artifacts into the paths above, run `RUN_IMAGE_ROUTE_TRAINING.bat`. It checks the required manifests and folders, displays the step/batch/device settings, and requires typing `TRAIN` before it starts the actual run. Edit `MAX_STEPS`, `BATCH_SIZE`, `LATENT_DIM`, `EMBEDDING_DIM`, or `DEVICE` at the top of the batch file before starting.
 
 The launcher is provided for the later training handoff; it has not been run as part of this preparation work.
+
+
+## Model memory estimate
+
+The latest CPU preflight measured **73,604,738 parameters**. FP32 model weights occupy about **294 MB**. Weights + gradients + the two AdamW moment buffers have an estimated lower bound of about **1.18 GB**, excluding activations, temporary workspaces, the OS, and other processes. This is why the launcher defaults to batch size 4 and embedding width 32. The local hardware preflight recommends a batch size based on detected VRAM/RAM; use its recommendation rather than assuming the default fits every GPU.
