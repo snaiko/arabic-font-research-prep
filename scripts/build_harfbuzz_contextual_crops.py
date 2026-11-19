@@ -104,22 +104,29 @@ def main():
     p.add_argument("--fonts",default="data/raw_fonts")
     p.add_argument("--collection",default="data/raw_fonts/fonts.jsonl")
     p.add_argument("--cases",default="data/shaping_regression_cases_v1.json")
+    p.add_argument("--samples",default="data/training_samples/samples.jsonl")
     p.add_argument("--output",default="data/contextual_glyph_crops")
     a=p.parse_args()
     import uharfbuzz, cairosvg
     root=Path(a.fonts); out=Path(a.output); out.mkdir(parents=True,exist_ok=True)
     family_map={r["file"]:r.get("family","unknown") for r in read_jsonl(Path(a.collection))}
+    split_by_hash={r["font_sha256"]:r.get("split") for r in read_jsonl(Path(a.samples))}
     cases=json.loads(Path(a.cases).read_text(encoding="utf-8"))["cases"]
     rows=[]; failures=[]
     for font_path in sorted(list(root.rglob("*.ttf"))+list(root.rglob("*.otf"))):
         digest=sha256(font_path)
         rel=font_path.as_posix()
         family=family_map.get(rel,family_map.get("data/raw_fonts/"+font_path.relative_to(root).as_posix(),font_path.parent.name))
+        split=split_by_hash.get(digest)
+        if split not in {"train","validation","test"}:
+            failures.append({"font":rel,"case_id":"*","error":"font hash has no valid family-safe split in sample manifest"})
+            continue
         for case in cases:
             try:
                 made=shape_clusters(font_path,case["text"],case,out,digest)
                 for row in made:
                     row["family"]=family
+                    row["split"]=split
                     rows.append(row)
             except Exception as e:
                 failures.append({"font":rel,"case_id":case["id"],"error":str(e)})
