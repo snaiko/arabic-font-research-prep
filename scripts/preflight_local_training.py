@@ -266,7 +266,7 @@ def main():
         "gpu": gpu,
         "recommended_batch_size": recommended_batch_size(gpu, ram),
         "recommended_latent_dim": 64,
-        "recommended_embedding_dim": 32,
+        "recommended_embedding_dim": 16,
         "blocking_reasons": blocking_reasons,
         "warnings": warnings,
         "rights": rights,
