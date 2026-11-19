@@ -20,6 +20,14 @@ class VisualAnnotationTests(unittest.TestCase):
     def test_rejects_unknown_relation_reference(self):
         r=record(); r["relations"]=[{"source":"missing","target":"body-1","type":"joins"}]
         self.assertTrue(any("unknown component" in e for e in validate(r)))
+    def test_rejects_self_intersecting_component_polygon(self):
+        r=record()
+        r["components"][0]["geometry"]["points"]=[[0.1,0.1],[0.9,0.9],[0.1,0.9],[0.9,0.1]]
+        self.assertTrue(any("self-intersects" in e for e in validate(r)))
+    def test_rejects_zero_area_component_polygon(self):
+        r=record()
+        r["components"][0]["geometry"]["points"]=[[0.1,0.1],[0.5,0.5],[0.9,0.9]]
+        self.assertTrue(any("zero/near-zero area" in e for e in validate(r)))
     def test_rejects_invalid_hash(self):
         r=record(); r["glyph_instance"]["font_sha256"]="bad"
         self.assertTrue(any("font_sha256" in e for e in validate(r)))
