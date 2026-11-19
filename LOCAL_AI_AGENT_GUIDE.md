@@ -101,3 +101,15 @@ Before training, complete the following on the local machine using only fonts wh
 6. Update readiness evidence only after artifacts exist and are inspected. The registry and comparison-tool CI tests passing do not mean fonts were shaped or human annotations were completed.
 
 Do not upload raw font files, private renderings, annotator identity information, or local machine reports to the public repository without explicit user permission. Do not start training while any rights, data, model, hardware, or evaluation gate is blocked.
+
+
+## Font rights manifest and batch shaping handoff
+
+Before running HarfBuzz against any local font, create `data/manifests/font_rights.json` from `data/manifests/font_rights.template.json`. Record the exact file SHA-256, family ID, authoritative license URL/name, explicit `ml_training_allowed: true`, `review_status: approved`, reviewer/date, and evidence references for every file. Do not infer permission from downloadability or a family-level label.
+
+Run:
+```powershell
+python scripts/validate_font_rights_manifest.py --manifest data/manifests/font_rights.json --font-root "D:\ArabicFonts"
+python scripts/run_batch_shaping_regression.py --manifest data/manifests/font_rights.json --font-root "D:\ArabicFonts" --output-dir reports/local/shaping
+```
+The second command checks every file hash and rights record before shaping any font. It creates one report per approved file and a batch summary. Keep local font files and reports private unless publication is explicitly authorized. A successful technical gate is not legal advice or visual-quality approval.
