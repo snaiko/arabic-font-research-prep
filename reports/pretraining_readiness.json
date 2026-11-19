@@ -86,9 +86,10 @@
         "tests/test_multimodal_model_smoke.py",
         "models/arabic_multimodal_glyph.py",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520250916",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520251086"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520251086",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527935025"
       ],
-      "notes": "The latest base CI run passed 51 tests (4 optional PyTorch tests skipped there); a dedicated CPU PyTorch workflow separately passed 4 tests covering image/text/hybrid forward and backward, model checkpoint round-trip, optimizer-state resume, and Unicode codepoint encoding. Full dataset training, tiny-subset overfit, convergence, held-out-family evaluation, and real hardware resume remain unverified."
+      "notes": "Latest main CI run 44527935025 passed 59 tests (55 passed, 4 optional PyTorch tests skipped in this job). The four model-specific tests separately passed in dedicated CPU PyTorch run 44520250916, including image/text/hybrid forward-backward, checkpoint round-trip, optimizer-state resume, and Unicode codepoint encoding. Full dataset training, convergence, held-out-family evaluation, and hardware-specific resume remain unverified."
     },
     {
       "id": "hardware_and_resource_plan",
@@ -298,7 +299,7 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747/artifacts/14525643961"
       ],
-      "notes": "CI verified pinned official Google Fonts license texts for 20 families covering all 52 exact font files, including OFL 1.1 markers, selected clauses, SHA-256 snapshots, copyright headers and reserved-name candidates. This is source/text evidence only; 0 ML-training approvals."
+      "notes": "CI retrieved and hashed all 20 official SIL OFL 1.1 license snapshots for the 52 exact source files. The official SIL OFL FAQ 1.1-update8 (November 2026), Q1.25 and Q3.9, provides the conditional AI-font guidance: generated font software based on OFL sources must remain OFL-1.1 and satisfy all normal derivative-font requirements. The exact per-file conditional manifest is built and validated in CI."
     },
     {
       "id": "arabic_unicode_linguistic_metadata_audit",
@@ -372,7 +373,7 @@
     "font_specific_shaping_regression": "PASS: 52/52 conditional OFL font files passed manifest/hash validation and each produced 10 HarfBuzz regression case outputs (520 records total). This is a reproducible shaping capture, not visual review."
   },
   "tests": {
-    "repository_tests": "51 tests executed in GitHub Actions run 44520251086: 47 passed and 4 optional PyTorch tests skipped in this job; all four were run separately and passed in the dedicated model workflow.",
+    "repository_tests": "GitHub Actions run 44527935025 executed 59 tests: 55 passed and 4 optional PyTorch tests skipped in this job. The four model-specific tests separately passed in dedicated CPU PyTorch run 44520250916.",
     "image_route": "PASS: CPU forward/backward smoke test in run 44520250916",
     "prompt_route": "PASS: CPU forward/backward Unicode-codepoint conditioning smoke test in run 44520250916; not semantic Arabic NLP",
     "hybrid_route": "PASS: CPU forward/backward confidence-gated fusion smoke test in run 44520250916",
@@ -396,15 +397,11 @@
     "reason": "Requires actual hardware and completed model/data implementation."
   },
   "blockers": [
-    "Resolve the legal ML-training permission for each exact font asset. The 52 file hashes and 20 pinned OFL 1.1 license texts are now verified, but none explicitly addresses ML training and no asset is approved; keep the manifest fail-closed.",
-    "Isolated single-codepoint crops have now been generated and audited (1,872); complete contextual supervision, expert visual/linguistic validation, and per-file ML training rights remain separate gates.",
-    "Complete the per-file ML-training rights decision after reviewing the pinned license text, copyright holders, Reserved Font Names and any third-party terms; current approved count is zero.",
     "Implement and test an adapter to the pinned upstream MX-Font native loader; current project episodes are an intermediate schema.",
     "Develop expert-reviewed Arabic visual decomposition/component labels, or document a justified alternative objective. Current 2,987 component candidates have unknown semantic identity.",
     "Complete the upstream dependency/license audit and reproduce the baseline in a supported environment; CUDA/NCCL Windows compatibility remains unverified.",
     "Turn the 1,732 machine-generated factual caption/geometry pairs into reviewed style-description supervision, or keep them limited to factual auxiliary metadata; they are not style prompts.",
     "Pass leakage, model forward/backward, checkpoint round-trip/resume, held-out-family evaluation, and local hardware/resource gates.",
-    "Run HarfBuzz regression suite against legally cleared font families and review cluster mappings, contextual joins, lam-alef, ZWJ/ZWNJ, and mark attachment.",
     "Create independently annotated glyph-instance samples with two annotators and adjudication; annotation schema alone is not training data.",
     "Complete expert visual and linguistic review of representative and stratified contextual clusters using independently rendered comparisons; adjudicate all errors.",
     "Create two independent component annotations per selected glyph instance, compute per-kind agreement, adjudicate disagreements, and promote only adjudicated labels.",
@@ -420,8 +417,9 @@
     "Generated font files based on the 52 approved SIL OFL sources must remain under SIL OFL 1.1, preserve copyright/acknowledgements, and avoid recorded Reserved Font Names without written permission.",
     "The model-weight distribution license is not determined by the font rights manifest and must be decided separately.",
     "SIL OFL is not a NonCommercial license; it permits downstream commercial use subject to OFL terms. If strict downstream non-commercial-only use is required, written permission for a different license is needed.",
-    "Arabeyes GPL+Font Exception binaries passed technical screening but remain excluded from ML training pending permission/interpretation for training and model/output distribution."
+    "Arabeyes GPL+Font Exception binaries passed technical screening but remain excluded from ML training pending permission/interpretation for training and model/output distribution.",
+    "Review the 520 HarfBuzz regression outputs for visual correctness, contextual joining, lam-alef, ZWJ/ZWNJ, and mark attachment; automated capture is not expert review."
   ],
-  "recommended_next_step": "Keep full model training disabled. Finish the pending batch HarfBuzz regression, audit the pinned MX-Font dependency closure and native loader adapter, complete expert visual/linguistic review or justify a self-supervised alternative, run tiny-subset overfit and held-out-family evaluation, and run the Windows hardware preflight. The 52 Google Fonts files are conditionally rights-cleared only under the OFL output conditions.",
+  "recommended_next_step": "Keep full model training disabled. Complete expert visual/linguistic review or justify a self-supervised alternative, audit the pinned MX-Font dependency closure and native loader adapter, resolve the model-weight distribution license, run tiny-subset overfit and held-out-family evaluation, and run the Windows hardware preflight. The 52 Google Fonts files are conditionally rights-cleared only under the OFL output conditions, and batch HarfBuzz regression passed.",
   "generated_date": "2026-11-19"
 }
