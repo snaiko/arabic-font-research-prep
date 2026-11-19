@@ -89,3 +89,33 @@ This PASS verifies corpus structure and file integrity only. It does not approve
 **Review-pack CI verified:** GitHub Actions runs [44506507595](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44506507595) and [44506521255](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44506521255) completed successfully. The uploaded `arabic-human-review-pack` artifact contains 100 visual/linguistic samples (10 from each of the 10 shaping cases, with 10 font families represented per case) and 40 geometry-pilot samples selected from the full eligible corpus, balanced across eight cases with eligible single-codepoint/single-glyph examples. It includes separate 40-record draft annotation ledgers for annotators A and B, an adjudication tracker, source images, and an offline HTML gallery.
 
 The package-generation gate is PASS. **The human review and component-annotation gates remain BLOCKED** until qualified reviewers complete the work and adjudication records are returned. The font-rights manifest remains empty and training remains disabled.
+
+
+## Verified update — 2026-11-19 (supersedes earlier crop-status statements)
+
+GitHub Actions run [44515674785](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44515674785) completed successfully on the current preparation code. It passed **40 repository unit tests** and ran the complete published-corpus pipeline:
+
+- Published corpus audit: 7,904 samples, 52 font files, 20 families, 7,904 images verified, zero audit errors.
+- Isolated crop generation: 1,872 single-codepoint crops; zero rejected; crop audit passed. These are isolated forms, not connected-form or ligature labels.
+- Contextual cluster generation: 1,732 clusters; independent HarfBuzz mapping checks passed with zero integrity errors; 518/520 font-case pairs observed. The two missing pairs are Aref Ruqaa tatweel cases where no renderable tatweel crop was produced.
+- Machine-derived visual supervision: 1,732 records generated, 1,135 unique raster hashes. Records contain canonical Unicode/HarfBuzz metadata and deterministic raster measurements (ink bounds, centroid, ink ratio, and row/column occupancy profiles). These are measurements, not expert component segmentation or linguistic/artistic approval.
+- Cluster review pack: 100 draft records validated; package generation is not a review result.
+- Font-rights candidate scan: 52 files across 20 families; **0 ML-training approvals**. The rights manifest remains empty.
+
+### Current gate correction
+
+| Area | Current status |
+|---|---|
+| Published corpus integrity | PASS |
+| Isolated single-codepoint crop generation and audit | PASS |
+| Contextual HarfBuzz cluster coverage | PARTIAL (518/520 pairs) |
+| Machine-derived raster measurement supervision | PASS (1,732 records; not expert labels) |
+| Expert visual/linguistic review | BLOCKED |
+| Human component geometry annotations/adjudication | BLOCKED |
+| Font-level ML-training rights | BLOCKED (0 approved) |
+| Prompt/geometry paired corpus and executable model paths | FAIL / not verified |
+| Training authorization | BLOCKED |
+
+The visual-supervision artifact is available from run [44515674785](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44515674785) as `arabic-visual-supervision` (artifact ID `14525941407`).
+
+**Final decision: training is still not allowed.** No model training has been started. Automated checks can verify file integrity, shaping mappings, and measurable raster geometry, but they cannot manufacture expert visual/linguistic approval or legal permission to use each font for ML training. All 1,732 machine-supervision records are currently marked `training_eligible=false` because zero font rights have been approved.
