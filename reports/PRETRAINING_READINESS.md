@@ -2,41 +2,49 @@
 
 <badge color="warning">BLOCKED — NOT READY FOR TRAINING</badge>
 
-Updated 2026-11-19 after a read-only audit of the upstream MX-Font source. This report is not a test report from the user's Windows computer. No training was started.
+Updated 2026-11-19. This report is not a test report from the user's Windows computer. No model training was started.
 
-## Work completed in this update
+## Completed in this preparation update
 
-- Pinned upstream `clovaai/fewshot-font-generation` to immutable commit `9d2b6ace3e23199e2a896de329d4c16489b09a96`.
-- Inspected the upstream README, root LICENSE, MX-Font training instructions, `train_MX.py`, and core MX-Font imports.
-- Documented that upstream `train_MX.py` uses CUDA-specific calls and NCCL, so Windows/device compatibility is not established.
-- Documented the upstream README's license exceptions for `FUNIT/` and `base/modules/modules.py`; the MX-Font dependency closure still needs file-by-file clearance.
-- Updated the machine-readable readiness record without promoting any unverified gate to PASS.
+- Pinned upstream MX-Font to immutable commit `9d2b6ace3e23199e2a896de329d4c16489b09a96`.
+- Added an isolated single-codepoint crop builder: `scripts/build_isolated_glyph_crops.py`.
+- Added a deterministic few-shot episode sampler: `scripts/build_mxfont_episodes.py`.
+- Added unit tests for target/reference leakage, deterministic sampling, split preservation, and insufficient glyph counts.
+- Added a GitHub Actions validation workflow. <badge color="success">CI passed</badge> [Run 44463443539](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44463443539): both scripts compiled and all four episode sampler tests passed.
+- Documented the intermediate data format and its limitations in `docs/GLYPH_CROP_AND_EPISODE_ADAPTER.md`.
 
-## Confirmed remaining blockers
+## What the passing tests do and do not prove
 
-- The upstream source is pinned, but the complete dependency-closure license audit and baseline reproduction are not complete.
-- Asset-by-asset training permissions are not fully audited.
-- Existing raster samples are contextual full-line images, not audited isolated target-glyph crops with verified HarfBuzz cluster mapping.
-- A populated, provenance-reviewed paired prompt/geometry dataset has not been demonstrated.
-- Executable image, prompt, and hybrid model paths sharing one generator have not been implemented and verified.
-- Required data/model tests, leakage checks, checkpoint recovery, and held-out-family evaluation have not been evidenced.
-- The actual Windows hardware preflight has not been run; device, VRAM, RAM, free disk, backend support, and runtime remain unknown.
+The CI validates Python syntax and the episode sampler's unit tests. It does not run the crop builder on the user's font archive, visually review crops, validate every font's ML-training permission, or prove compatibility with the official MX-Font loader.
 
-## Gate status
+The crop builder re-renders isolated single Unicode codepoints directly from their font files with Pillow-RAQM. It intentionally does not crop connected words because trustworthy HarfBuzz cluster-to-pixel mapping is not yet implemented. These isolated crops do not provide joining-form, ligature, or combining-mark supervision.
 
-| Gate | Status |
+The episode sampler groups by exact font hash and inherited family split, selects four distinct reference codepoints, and excludes the target codepoint from its own references. It is an intermediate project schema, not the upstream MX-Font native dataset format.
+
+## Remaining blockers
+
+- Run the crop builder on the local corpus and inspect actual output/contact sheets.
+- Complete asset-by-asset training-rights and provenance review.
+- Implement a tested adapter to the pinned upstream MX-Font native loader.
+- MX-Font uses weak component supervision and decomposition/primals labels. A defensible Arabic decomposition/component-label strategy is not yet present.
+- Complete upstream dependency/license clearance and reproduce the baseline in a supported environment. CUDA/NCCL Windows compatibility is not established.
+- Populate paired prompt/geometry data and implement image, prompt, and hybrid paths sharing one generator.
+- Pass model forward/backward, leakage, checkpoint save/reload/resume, and held-out-family evaluation tests.
+- Run the actual local hardware preflight and produce a resource estimate.
+
+## Current gate summary
+
+| Area | Status |
 |---|---|
-| Upstream pin and license | BLOCKED — revision pinned; dependency audit and baseline run pending |
-| Asset rights and provenance | BLOCKED |
-| Family-safe data integrity | UNKNOWN — local archive verification pending |
-| Arabic target-glyph crops | FAIL |
-| Paired prompt/geometry supervision | FAIL |
-| Image/prompt/hybrid model paths | FAIL |
-| Tests and checkpoint recovery | FAIL |
-| Hardware and resource plan | UNKNOWN |
+| Upstream revision pin | PASS |
+| Full upstream license/dependency audit and baseline reproduction | BLOCKED |
+| Isolated crop/episode adapter code + CI tests | PASS (limited scope) |
+| Crop quality review on local corpus | UNKNOWN |
+| Contextual joining/ligature/mark supervision | FAIL |
+| Asset-level training permissions | BLOCKED |
+| Native MX-Font loader and Arabic component labels | FAIL |
+| Prompt/geometry paired data and unified model paths | FAIL |
+| Full model/checkpoint/evaluation tests | FAIL |
+| Local hardware and resource estimate | UNKNOWN |
 
-## Required next action
-
-The local AI agent must continue with `docs/AI_AGENT_EXECUTION_SPEC.md` and `docs/PRETRAINING_COMPLETION_PLAN.md`, preserving evidence for every command and test. In particular, it must resolve the MX-Font dependency/license boundary, build and audit the shaped target crops, implement and test the baseline adapter and unified conditioning paths, and run the local hardware preflight.
-
-**Stop condition:** no long training run is authorized by this report. Even after every preparation gate passes, the agent must present a resource estimate and proposed run plan and wait for the user's explicit approval.
+**Training remains disabled.** The next step is local data execution and audit, then native MX-Font compatibility and Arabic component-label work. Even after every preparation gate passes, the first training run requires the user's explicit approval.
