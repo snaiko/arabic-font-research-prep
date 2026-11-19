@@ -6,7 +6,7 @@ OFL="""Copyright 2020 Example Authors
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
 The OFL allows the licensed fonts to be used, studied, modified and redistributed freely.
-The fonts cannot be sold by themselves. Reserved Font Name.
+The fonts are not sold by themselves. Reserved Font Name.
 """
 
 class LicenseEvidenceTests(unittest.TestCase):
