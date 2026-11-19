@@ -46,7 +46,7 @@ jobs:
           github-token: ${{ github.token }}
       - name: Build leakage-safe contextual style episodes
         run: |
-          python scripts/build_contextual_style_episodes.py --targets .audit/contextual/contextual_clusters.jsonl --references .audit/isolated/glyph_crops.jsonl --output reports/contextual_style_episodes --refs-per-episode 4 --seed 20261119
+          python scripts/build_contextual_style_episodes.py --targets .audit/contextual/contextual_clusters.jsonl --references .audit/isolated/glyph_crops.jsonl --target-root .audit/contextual --reference-root .audit/isolated --output reports/contextual_style_episodes --refs-per-episode 4 --seed 20261119
       - name: Run no-training real-data preflight
         run: |
           RIGHTS_MANIFEST="$(find .audit/rights -name font_rights.json -type f -print -quit)"
