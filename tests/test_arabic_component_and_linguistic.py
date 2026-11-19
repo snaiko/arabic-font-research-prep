@@ -22,7 +22,7 @@ class ArabicComponentSupervisionTests(unittest.TestCase):
             reg=root/"registry.json"; reg.write_text(json.dumps(registry,ensure_ascii=False),encoding="utf-8")
             out=root/"out.jsonl"; result=build(manifest,root,reg,out)
             record=json.loads(out.read_text(encoding="utf-8"))
-            self.assertEqual(result["records"],1); self.assertEqual(record["combining_mark_count"],1)
+            self.assertEqual(result["records"],1); self.assertEqual(record["combining_mark_count"],1); self.assertEqual(record["cluster"],0)
             self.assertEqual(record["unicode_character_metadata"][1]["joining_type"],"T")
             self.assertFalse(record["label_provenance"]["expert_visual_linguistic_approval"])
             self.assertTrue(all(x["semantic_identity"]=="unknown" for x in record["component_candidates"]))
