@@ -12,7 +12,10 @@ def audit(manifest,cases_path,registry_path):
     cases={x["id"]:x for x in json.loads(Path(cases_path).read_text(encoding="utf-8"))["cases"]}
     registry=json.loads(Path(registry_path).read_text(encoding="utf-8"))
     lookup={x["codepoint"]:x for x in registry["records"]}
+    contextual_lookup={x["codepoint"]:x for x in registry.get("contextual_joining_properties",[])}
     errors=[]; stats={"clusters":len(rows),"codepoints":0,"marks":0,"transparent_joining_chars":0,
+      "multi_codepoint_clusters":0,"multi_glyph_clusters":0,"possible_ligature_or_substitution_candidates":0,
+      "codepoints_outside_script_arabic_registry":0,"contextual_joining_properties_used":0}
       "multi_codepoint_clusters":0,"multi_glyph_clusters":0,"possible_ligature_or_substitution_candidates":0}
     seen=set()
     for n,row in enumerate(rows,1):
@@ -31,16 +34,31 @@ def audit(manifest,cases_path,registry_path):
         for ch,cp in zip(logical,cps):
             stats["codepoints"]+=1
             record=lookup.get(cp)
+            context_record=contextual_lookup.get(cp)
+            category=unicodedata.category(ch)
             if record:
-                if record["character"]!=ch or record["general_category"]!=unicodedata.category(ch):
+                if record["character"]!=ch or record["general_category"]!=category:
                     errors.append(f"{p}: Unicode registry/category mismatch at {cp}")
-                if record["joining_type"] not in {"R","L","D","C","U","T"}:
-                    errors.append(f"{p}: invalid Joining_Type at {cp}")
-                if record["is_combining_mark"]!=unicodedata.category(ch).startswith("M"):
+                joining_type=record["joining_type"]
+                if record["is_combining_mark"]!=category.startswith("M"):
                     errors.append(f"{p}: combining-mark classification mismatch at {cp}")
-                if record["joining_type"]=="T": stats["transparent_joining_chars"]+=1
-            elif unicodedata.name(ch,"").startswith("ARABIC"):
-                errors.append(f"{p}: Arabic codepoint missing from Unicode 17 registry: {cp}")
+            elif context_record:
+                stats["codepoints_outside_script_arabic_registry"]+=1
+                stats["contextual_joining_properties_used"]+=1
+                if context_record["character"]!=ch or context_record["general_category"]!=category:
+                    errors.append(f"{p}: contextual Unicode metadata mismatch at {cp}")
+                joining_type=context_record["joining_type"]
+                if context_record["is_combining_mark"]!=category.startswith("M"):
+                    errors.append(f"{p}: contextual combining-mark mismatch at {cp}")
+            else:
+                # ArabicShaping defaults: unlisted Mn/Me/Cf are Transparent; all others are Non_Joining.
+                joining_type="T" if category in {"Mn","Me","Cf"} else "U"
+                if unicodedata.name(ch,"").startswith("ARABIC"):
+                    stats["codepoints_outside_script_arabic_registry"]+=1
+            if joining_type not in {"R","L","D","C","U","T"}:
+                errors.append(f"{p}: invalid Joining_Type at {cp}")
+            if joining_type=="T": stats["transparent_joining_chars"]+=1
+            if category.startswith("M"): stats["marks"]+=1
             if unicodedata.category(ch).startswith("M"): stats["marks"]+=1
         if len(cps)>1: stats["multi_codepoint_clusters"]+=1
         if row.get("glyph_count",0)>1: stats["multi_glyph_clusters"]+=1
