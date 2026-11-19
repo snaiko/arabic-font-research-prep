@@ -87,6 +87,15 @@ jobs:
       - name: Validate exact approved font paths and SHA-256
         run: |
           python scripts/validate_font_rights_manifest.py --manifest data/manifests/font_rights.json --font-root data/raw_fonts
+      - name: Run batch HarfBuzz shaping regression on all rights-approved fonts
+        run: |
+          python scripts/run_batch_shaping_regression.py --manifest data/manifests/font_rights.json --font-root data/raw_fonts --cases data/shaping_regression_cases_v1.json --output-dir reports/local/shaping
+      - name: Upload batch HarfBuzz regression results
+        uses: actions/upload-artifact@v4
+        with:
+          name: approved-font-harfbuzz-regression
+          path: reports/local/shaping
+          if-no-files-found: error
       - name: Upload conditional OFL rights manifest
         uses: actions/upload-artifact@v4
         with:
