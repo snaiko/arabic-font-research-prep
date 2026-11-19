@@ -73,3 +73,6 @@ Before starting the experimental run, perform the Windows hardware preflight and
 - GitHub's connected Actions interface exposed job/artifact details for known run IDs but not a repository-wide run listing. Therefore the 28-run review is the complete evidence-linked set from the current readiness report, **not** a claim that every run or the latest 100 runs was enumerated. The earlier aggregate of 259 runs / 9 failures in the latest 100 remains a historical report value, not independently reverified in this refresh.
 
 The original MX-Font plan remains blocked by its native data contract and missing audited Arabic decomposition labels. The separate experimental model still produces raster output only; TTF/OTF generation is not ready.
+
+
+The later documentation commit that updated docs/LOCAL_TRAINING.md matches the main data-CI push path filter. Its resulting push run could not be listed or inspected through the available GitHub interface, so that post-update run status remains unknown.
