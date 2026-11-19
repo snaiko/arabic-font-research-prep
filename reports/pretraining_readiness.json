@@ -776,8 +776,7 @@
     "user_machine": {
       "windows_hardware_preflight": "NOT_RUN",
       "gpu_vram_ram_disk": "UNKNOWN"
-    },
-    "remaining_gates": []
+    }
   },
   "readiness_interpretation": {
     "original_mxfont_plan": "BLOCKED — native MX-Font data contract, Arabic decomposition labels, and full upstream dependency/reproduction gates remain incomplete.",
