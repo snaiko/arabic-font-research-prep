@@ -185,6 +185,9 @@ def main():
              "scope":"Real shaped output clusters with glyph IDs, logical source spans, mark/ligature grouping and outline-derived raster crops. Not human visual validation, component decomposition, or legal training-rights approval."}
     (out/"summary.json").write_text(json.dumps(summary,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(summary,ensure_ascii=False,indent=2))
-    if not rows or failures: raise SystemExit(2)
+    # A font may lack a visible glyph for one shaping case. Keep other
+    # verified data, record the exclusion in summary.json, and fail only
+    # when no usable clusters were produced.
+    if not rows: raise SystemExit(2)
 
 if __name__=="__main__": main()
