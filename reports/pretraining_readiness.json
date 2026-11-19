@@ -112,7 +112,7 @@
         "scripts/import_unicode_arabic_registry.py",
         "scripts/validate_arabic_script_registry.py",
         "data/shaping_regression_cases_v1.json",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44466093346"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44466183288"
       ],
       "notes": "CI generated and validated 1,413 assigned Script=Arabic records from pinned Unicode 17.0 UCD files with source hashes. This is script-level metadata, not a language-specific gold corpus or visual decomposition dataset."
     },
