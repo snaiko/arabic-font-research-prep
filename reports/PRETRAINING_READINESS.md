@@ -163,3 +163,75 @@ The generated data is available in the [Arabic component/caption supervision art
 | Overall training authorization | BLOCKED |
 
 **No model training has been started.** The automation has strengthened the dataset and made the remaining uncertainties explicit; it has not fabricated legal approvals or human visual ground truth.
+
+
+## Verified implementation update — 2026-11-19
+
+GitHub Actions run [44520251086](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520251086) passed the full data pipeline and unit suite. A separate CPU PyTorch run [44520250916](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520250916) passed all four model smoke tests.
+
+### 1. Contextual Arabic clusters
+
+- **1,732** cluster crops and metadata records were regenerated and independently checked.
+- HarfBuzz mapping was reproduced for all 1,732 records.
+- Coverage remains **518/520 font-case pairs**. Two Aref Ruqaa font files do not render the tatweel case; those omissions remain explicit rather than being fabricated.
+- **238** multi-codepoint clusters are retained.
+
+Status: **PARTIAL** — data integrity passes; coverage is not complete.
+
+### 2. Paired Arabic/English captions
+
+Added an independent audit at `scripts/audit_arabic_component_supervision.py`. It verifies source-derived identities, Unicode text/codepoint consistency, glyph IDs/counts, image hashes and dimensions, nonblank crops, safe image paths, component geometry bounds, caption language/provenance, and family-level split isolation.
+
+Latest audit result:
+
+| Measure | Result |
+|---|---:|
+| Source-bound records | 1,732 |
+| Raster component candidates | 2,987 |
+| Paired Arabic/English captions | 3,464 |
+| Font families | 20 |
+| Boundary-touching crops | 0 |
+| Audit errors | 0 |
+| Training-eligible records | 0 |
+
+Status: **PASS for integrity and measurable geometry; NOT APPROVED as linguistic/style descriptions.** Captions remain deterministic machine-generated factual descriptions. They do not claim that a detached component is a dot, hamza, or mark.
+
+Audit artifact: [arabic-component-caption-audit](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520251086/artifacts/14527697540).
+
+### 3. Visual and technical validation
+
+The new independent raster audit found no blank images, path escapes, hash mismatches, out-of-range component geometry, family split leakage, or ink touching the 160×160 crop boundary.
+
+Status: **PASS for automated geometric/integrity QA.** Human-level spelling, readability, calligraphic quality, and semantic decomposition are still not established. Review packs are generated drafts, not completed reviews.
+
+### 4. Font rights
+
+The pinned license evidence still covers all 52 exact font files across 20 families. The license audit does not explicitly settle ML-training permission.
+
+Status: **BLOCKED — zero approved font files.** No automated script can legitimately turn ambiguous license text into legal approval. The active manifest remains fail-closed.
+
+### 5. Executable model paths
+
+Added `models/arabic_multimodal_glyph.py`, a small experimental model with one shared raster decoder and three executable conditioning routes:
+
+- reference-image conditioning;
+- Unicode-codepoint text conditioning;
+- confidence-gated hybrid conditioning.
+
+The text branch is a trainable codepoint-level GRU, **not** a pretrained Arabic language model or semantic natural-language encoder. This baseline is not the pinned MX-Font implementation or its native data adapter.
+
+Status: **PASS for executable smoke paths; PARTIAL for project architecture readiness.** Image/text/hybrid forward and backward tests all passed on CPU.
+
+### 6. Checkpoint and training smoke tests
+
+The dedicated model workflow passed four tests covering all three conditioning routes, model checkpoint round-trip, optimizer-state restoration/resume, and Arabic Unicode codepoint encoding.
+
+The main data workflow passed **51 tests**; four optional PyTorch tests are skipped in that job and run separately in the dedicated model workflow.
+
+Status: **PASS for smoke tests and checkpoint/optimizer-state resume.** A real dataset training run, tiny-subset overfit, convergence, held-out-family evaluation, and the user's hardware-specific training/resume remain unverified.
+
+### Final decision
+
+**Overall: BLOCKED. Training remains disabled and no model training has been started.**
+
+The remaining hard blockers are legal permission for exact font assets, trustworthy visual/linguistic ground truth or a justified alternative objective, complete contextual coverage, the MX-Font native adapter/dependency audit, and real dataset-level training/evaluation. The new experimental baseline makes the three conditioning paths executable, but does not by itself establish generation quality or readiness for full training.
