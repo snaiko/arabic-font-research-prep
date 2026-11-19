@@ -46,7 +46,7 @@ def measure(image_path: Path):
         row=[]; col=[]
         for i in range(16):
             ya=i*h//16; yb=(i+1)*h//16
-            row.append(round(sum(ink[yy*w: (yy+1)*w] .__len__() and ink[yy*w: (yy+1)*w] for yy in range(ya,yb)),6))
+            row.append(round(sum(ink[yy*w+x] for yy in range(ya,yb) for x in range(w))/max(1,(yb-ya)*w),6))
         for i in range(16):
             xa=i*w//16; xb=(i+1)*w//16
             col.append(round(sum(ink[y*w+x] for y in range(h) for x in range(xa,xb))/max(1,h*(xb-xa)),6))
