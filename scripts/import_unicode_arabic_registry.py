@@ -6,7 +6,7 @@ from pathlib import Path
 
 VERSION = "17.0.0"
 BASE = f"https://www.unicode.org/Public/{VERSION}/ucd/"
-FILES = ("UnicodeData.txt", "Scripts.txt", "DerivedJoiningType.txt", "ArabicShaping.txt")
+FILES = ("UnicodeData.txt", "Scripts.txt", "extracted/DerivedJoiningType.txt", "ArabicShaping.txt")
 JOINING = {"R", "L", "D", "C", "U", "T"}
 FORM_MAP = {"R": ["isol", "fina"], "L": ["isol", "init"],
             "D": ["isol", "init", "medi", "fina"], "U": ["isol"],
@@ -63,7 +63,7 @@ def download_ucd(directory):
 def build(data_dir):
     names = parse_unicode_data(data_dir / "UnicodeData.txt")
     scripts = parse_property_file(data_dir / "Scripts.txt", "Arabic")
-    derived = parse_property_file(data_dir / "DerivedJoiningType.txt")
+    derived = parse_property_file(data_dir / "extracted" / "DerivedJoiningType.txt")
     groups = {}
     schematic = {}
     for raw in (data_dir / "ArabicShaping.txt").read_text(encoding="utf-8").splitlines():
