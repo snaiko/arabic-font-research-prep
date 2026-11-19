@@ -69,7 +69,7 @@ jobs:
           python scripts/build_isolated_glyph_crops.py --samples data/training_samples/samples.jsonl --font-root data/raw_fonts --output data/glyph_crops
       - name: Build HarfBuzz cluster-aware contextual crops
         run: |
-          python scripts/build_harfbuzz_contextual_crops.py --fonts data/raw_fonts --collection data/raw_fonts/fonts.jsonl --cases data/shaping_regression_cases_v1.json --output data/contextual_glyph_crops
+          python scripts/build_harfbuzz_contextual_crops.py --fonts data/raw_fonts --collection data/raw_fonts/fonts.jsonl --cases data/shaping_regression_cases_v1.json --samples data/training_samples/samples.jsonl --output data/contextual_glyph_crops
       - name: Upload contextual cluster dataset
         uses: actions/upload-artifact@v4
         with:
