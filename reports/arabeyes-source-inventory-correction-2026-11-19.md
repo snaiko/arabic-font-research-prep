@@ -2,7 +2,7 @@
 
 ## Why this correction exists
 
-The earlier `arabeyes-20-font-candidates-review-2026-11-19.md` is a shortlist of names, not a complete inventory. Its list should not be read as a verified count of distinct families or exact binary filenames. The Debian Sources listing for the older upstream source package `ttf-arabeyes 2.0-5` exposes 38 TTF files under `fonts/`. This is a more concrete file-level inventory, but it is not yet a binary audit and should not be conflated with the Debian `fonts-arabeyes 2.1-7` source archive targeted by the new GitHub Actions workflow.
+The earlier `arabeyes-20-font-candidates-review-2026-11-19.md` is a shortlist of names, not a complete inventory. Its list should not be read as a verified count of distinct families or exact binary filenames. The Debian Sources listing for the older upstream source package `ttf-arabeyes 2.0-5` exposes **39 TTF files** under `fonts/`. This is a concrete file-level inventory, but it is not yet a binary audit and should not be conflated with the Debian `fonts-arabeyes 2.1-7` source archive targeted by the new GitHub Actions workflow.
 
 ## File inventory visible in Debian Sources (ttf-arabeyes 2.0-5)
 
@@ -46,7 +46,7 @@ The earlier `arabeyes-20-font-candidates-review-2026-11-19.md` is a shortlist of
 38. ae_Tarablus.ttf
 39. ae_Tholoth.ttf
 
-The listing contains **39 file entries**, not 38. Some are bold styles or related designs; this is a file count, not a proven count of unique typeface families. The exact filenames also correct the earlier shorthand candidates: e.g. `ae_AlMateen-Bold.ttf` and `ae_AlMothnna-Bold.ttf`.
+These are **39 file entries**, not 39 proven distinct typeface families. Some are bold styles or related designs. The exact filenames also correct earlier shorthand candidates: e.g. `ae_AlMateen-Bold.ttf` and `ae_AlMothnna-Bold.ttf`.
 
 ## License and upstream provenance
 
