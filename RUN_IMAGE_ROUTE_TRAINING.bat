@@ -4,9 +4,9 @@ cd /d "%~dp0"
 
 rem Edit these values before starting a run.
 set MAX_STEPS=1000
-set BATCH_SIZE=4
+set BATCH_SIZE=2
 set LATENT_DIM=64
-set EMBEDDING_DIM=32
+set EMBEDDING_DIM=16
 set DEVICE=auto
 set OUTPUT_DIR=runs\arabic-contextual-baseline
 set EPISODES_DIR=data\contextual_style_episodes
