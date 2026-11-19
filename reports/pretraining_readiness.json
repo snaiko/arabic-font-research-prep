@@ -587,7 +587,7 @@
         44463443539
       ],
       "repository_wide_latest_runs_enumerated": false,
-      "note": "All 28 unique run IDs referenced by the current readiness report's gates, remaining gates, or latest-verification evidence were checked via their GitHub Actions job summaries. Every returned job was completed/success and none had a failed step. The available GitHub integration in this run does not expose a repository-wide list-workflow-runs operation; therefore this is not a claim that every run in the repository or the latest 100 runs was enumerated. A later documentation commit changed docs/LOCAL_TRAINING.md, which matches the data-CI push path filter; its resulting push run could not be listed or inspected through the available interface, so that post-update run status remains unknown.",
+      "note": "All 28 unique run IDs referenced by the current readiness report's gates or latest-verification evidence were checked via their GitHub Actions job summaries. Every returned job was completed/success and none had a failed step. The available GitHub integration in this run does not expose a repository-wide list-workflow-runs operation; therefore this is not a claim that every run in the repository or the latest 100 runs was enumerated. A later documentation commit changed docs/LOCAL_TRAINING.md, which matches the data-CI push path filter; its resulting push run could not be listed or inspected through the available interface, so that post-update run status remains unknown.",
       "previous_reported_aggregate": {
         "total_runs_reviewed": 259,
         "success": 172,
