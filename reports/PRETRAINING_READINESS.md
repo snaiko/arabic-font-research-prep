@@ -73,3 +73,14 @@ The episode sampler groups by exact font hash and inherited family split, select
 **Published corpus audit completed:** GitHub Actions run [44476157196](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44476157196) downloaded both published release archives and audited their actual contents. It verified 7,904 samples, 52 font files, 20 families, family splits of 14 train / 3 validation / 3 test families, and all 7,904 referenced images; the audit returned `errors: []`. All 30 unit tests passed. The earlier duplicate-sample failure was a false positive in the audit script: it used `target_index` instead of the dataset's `target_index_logical`. That bug is fixed and covered by a regression test.
 
 This PASS verifies corpus structure and file integrity only. It does not approve font ML-training rights or establish visual quality, contextual crop correctness, or Arabic shaping supervision. No font rights approvals, real HarfBuzz reports, visual crop review, two-person annotation pilot, paired prompt/geometry corpus, executable unified model paths, upstream baseline reproduction, or local hardware report have been supplied. Those gates remain BLOCKED/UNKNOWN/FAIL as recorded in `reports/pretraining_readiness.json`. Training remains disabled.
+
+
+## Human review package — 2026-11-19
+
+- Added `scripts/build_arabic_review_pack.py` to select samples deterministically across all HarfBuzz shaping cases while spreading selections across font families.
+- The CI job is configured to produce an offline HTML gallery and a machine-readable visual/linguistic review ledger (target: 10 examples per shaping case).
+- The geometry pilot is restricted to samples with exactly one source codepoint and one shaped glyph, because the current component schema models one glyph instance. It creates separate blank annotation ledgers for two independent annotators and an adjudication tracker (target: up to 40 samples).
+- Added `docs/ARABIC_HUMAN_REVIEW_PROTOCOL.md` with review criteria, double-annotation procedure, disagreement analysis, and explicit acceptance gates.
+- Added tests for deterministic family-stratified selection and valid draft annotation templates.
+
+**Important:** the package is a review instrument, not evidence that a human has reviewed the samples. No visual/linguistic labels or geometry labels are approved by the build process. Human visual review, independent geometry annotation/adjudication, and exact-font legal approvals remain BLOCKED. The review-pack CI run must pass before its artifact can be used.
