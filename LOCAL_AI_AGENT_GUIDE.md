@@ -1,5 +1,28 @@
 # Handoff guide for the local AI training agent
 
+> **Current-scope override (2026-11-19):** The sections below contain an older, broader research roadmap. They are not prerequisites for the current experimental training handoff. The only prepared training path is the standalone image-reference raster baseline documented in [docs/LOCAL_TRAINING.md](docs/LOCAL_TRAINING.md). Do not block or replace this path by attempting native MX-Font integration, semantic prompt training, or TTF/OTF generation. Those are separate future projects.
+
+## Current required procedure
+1. Download the single GitHub Actions artifact named arabic-font-training-handoff from [the verified workflow run](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44536752415).
+2. Extract its contents into the root of a fresh clone of this repository without changing the data folder names.
+3. Install Python 3.10+ and a PyTorch build appropriate for the actual device, plus Pillow. Do not silently install CPU-only PyTorch when a GPU is intended.
+4. Run START_LOCAL_TRAINING.bat. It performs a no-training hardware, rights, dataset and image-hash preflight. Read reports/local/machine_preflight.json.
+5. If the preflight is BLOCKED, fix only the reported local environment/data issue and rerun it. Do not bypass rights or integrity checks.
+6. Do not start training unless the user explicitly authorizes it. If authorized, use RUN_IMAGE_ROUTE_TRAINING.bat; it selects a conservative batch size from the local preflight and requires typing TRAIN.
+7. After any authorized training, preserve training_summary.json, checkpoints, logs, device details and validation/test metrics. Never claim quality or convergence without actual results.
+
+## Exact scope and known limits
+- The model is a standalone experimental image-reference raster baseline, not native MX-Font.
+- Input: target Unicode cluster plus four isolated reference glyph images from the exact same font file.
+- Output: a 128×128 raster glyph image, not a vector font.
+- The prepared data has 1,732 episodes: 1,134 train / 299 validation / 299 test; 20 families; 238 multi-codepoint targets; four references per target.
+- The 52 approved source font files are under a conditional SIL OFL 1.1 training policy. Any generated font software based on them must remain OFL 1.1 and preserve required notices. OFL is not a NonCommercial license.
+- The model's text route is a codepoint encoder, not semantic Arabic NLP. It is not part of the prepared training run.
+- The output is not TTF/OTF. Vectorization, OpenType tables, shaping integration and production QA remain future work.
+- Do not upload local machine reports, private fonts, checkpoints or generated private data to the public repository without explicit permission.
+
+---
+
 ## Mission
 Prepare this repository into a reproducible unified Arabic font-generation system. The local AI agent runs on the user's Windows computer, inspects its resources, implements missing code, audits data, and tests every path. It must stop after producing the readiness report; the user will separately authorize training.
 
