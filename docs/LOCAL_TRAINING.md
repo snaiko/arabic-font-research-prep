@@ -70,6 +70,16 @@ The model-weight license is separate and must be decided independently. Arabeyes
 The data/rights preflight is automated. The project has not started this training script on the full dataset. Tiny-subset overfit, convergence, held-out-family quality, font vectorization, and local hardware preflight still need to be demonstrated before claiming the generator is ready for production use.
 
 
+## Single-download data artifact
+
+The workflow now packages all runtime data into one GitHub Actions artifact named **arabic-font-training-handoff**. Download that artifact from the latest successful “Build contextual few-shot Arabic style episodes” workflow run, extract its contents into the root of a fresh repository clone, and keep the included data folder structure unchanged. It supplies all four required paths:
+- data/contextual_style_episodes/
+- data/contextual_glyph_crops/
+- data/glyph_crops/
+- data/manifests/font_rights.json
+
+The older individual artifacts remain available for audit/history, but the combined artifact is the recommended local handoff. It contains data only, not trained model weights.
+
 ## Windows one-click launcher
 
 After extracting the four artifacts into the paths above, run `RUN_IMAGE_ROUTE_TRAINING.bat`. It checks the required manifests and folders, displays the step/batch/device settings, and requires typing `TRAIN` before it starts the actual run. Edit `MAX_STEPS`, `BATCH_SIZE`, `LATENT_DIM`, `EMBEDDING_DIM`, or `DEVICE` at the top of the batch file before starting.
