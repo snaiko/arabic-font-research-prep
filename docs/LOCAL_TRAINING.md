@@ -26,7 +26,7 @@ Install a compatible PyTorch build for the machine and Pillow:
 python -m pip install torch Pillow
 ```
 
-Check available hardware before selecting a device. `--device auto` selects CUDA when PyTorch detects it; otherwise it uses CPU. The project has not yet verified the user's Windows GPU, VRAM, RAM, or runtime.
+Run `START_LOCAL_TRAINING.bat` first to record the Windows hardware/resource preflight; it does not start training. Check the resulting `reports/local/machine_preflight.json` before choosing a batch size. `--device auto` selects CUDA when PyTorch detects it; otherwise it uses CPU. The project has not yet verified the user's Windows GPU, VRAM, RAM, or runtime.
 
 ## Explicit training command
 
