@@ -1,21 +1,42 @@
-# Initial Pretraining Readiness Report
+# Pretraining Readiness Report
 
-<badge>BLOCKED — NOT READY FOR TRAINING</badge>
+<badge color="warning">BLOCKED — NOT READY FOR TRAINING</badge>
 
-This is an honest baseline of the repository preparation state as of 2026-11-18. It is not a test report from the user's Windows computer. No training was started.
+Updated 2026-11-19 after a read-only audit of the upstream MX-Font source. This report is not a test report from the user's Windows computer. No training was started.
 
-## Confirmed gaps
+## Work completed in this update
 
-- Upstream MX-Font commit and baseline reproduction are not yet pinned and evidenced.
+- Pinned upstream `clovaai/fewshot-font-generation` to immutable commit `9d2b6ace3e23199e2a896de329d4c16489b09a96`.
+- Inspected the upstream README, root LICENSE, MX-Font training instructions, `train_MX.py`, and core MX-Font imports.
+- Documented that upstream `train_MX.py` uses CUDA-specific calls and NCCL, so Windows/device compatibility is not established.
+- Documented the upstream README's license exceptions for `FUNIT/` and `base/modules/modules.py`; the MX-Font dependency closure still needs file-by-file clearance.
+- Updated the machine-readable readiness record without promoting any unverified gate to PASS.
+
+## Confirmed remaining blockers
+
+- The upstream source is pinned, but the complete dependency-closure license audit and baseline reproduction are not complete.
 - Asset-by-asset training permissions are not fully audited.
-- Existing raster samples are contextual full-line images, not audited isolated target-glyph crops.
-- A populated paired prompt/geometry dataset has not been demonstrated.
-- Executable image, prompt, and hybrid model paths sharing one generator have not been verified.
-- Required tests and checkpoint recovery have not been evidenced.
-- The user's actual hardware preflight has not been run for this readiness record.
+- Existing raster samples are contextual full-line images, not audited isolated target-glyph crops with verified HarfBuzz cluster mapping.
+- A populated, provenance-reviewed paired prompt/geometry dataset has not been demonstrated.
+- Executable image, prompt, and hybrid model paths sharing one generator have not been implemented and verified.
+- Required data/model tests, leakage checks, checkpoint recovery, and held-out-family evaluation have not been evidenced.
+- The actual Windows hardware preflight has not been run; device, VRAM, RAM, free disk, backend support, and runtime remain unknown.
 
-## Required action
+## Gate status
 
-The local AI agent must complete the work packages in [PRETRAINING_COMPLETION_PLAN.md](../docs/PRETRAINING_COMPLETION_PLAN.md), follow [AI_AGENT_EXECUTION_SPEC.md](../docs/AI_AGENT_EXECUTION_SPEC.md), and replace this initial report with evidence-backed results. Every gate must be PASS before the report can be marked ready for user review.
+| Gate | Status |
+|---|---|
+| Upstream pin and license | BLOCKED — revision pinned; dependency audit and baseline run pending |
+| Asset rights and provenance | BLOCKED |
+| Family-safe data integrity | UNKNOWN — local archive verification pending |
+| Arabic target-glyph crops | FAIL |
+| Paired prompt/geometry supervision | FAIL |
+| Image/prompt/hybrid model paths | FAIL |
+| Tests and checkpoint recovery | FAIL |
+| Hardware and resource plan | UNKNOWN |
 
-**Stop condition:** even when all preparation gates pass, `training_allowed` remains false until the user reviews the resource estimate and explicitly approves the first training run.
+## Required next action
+
+The local AI agent must continue with `docs/AI_AGENT_EXECUTION_SPEC.md` and `docs/PRETRAINING_COMPLETION_PLAN.md`, preserving evidence for every command and test. In particular, it must resolve the MX-Font dependency/license boundary, build and audit the shaped target crops, implement and test the baseline adapter and unified conditioning paths, and run the local hardware preflight.
+
+**Stop condition:** no long training run is authorized by this report. Even after every preparation gate passes, the agent must present a resource estimate and proposed run plan and wait for the user's explicit approval.
