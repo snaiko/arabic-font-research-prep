@@ -169,9 +169,10 @@
         "scripts/audit_training_corpus.py",
         "tests/test_training_corpus_audit.py",
         "docs/TRAINING_CORPUS_AUDIT.md",
-        ".github/workflows/test-glyph-adapter.yml"
+        ".github/workflows/test-glyph-adapter.yml",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44469089468"
       ],
-      "notes": "Fail-closed local audit tool and tests are implemented. This PASS covers tool implementation only; the actual user corpus has not yet been audited, so family_safe_data_integrity remains UNKNOWN."
+      "notes": "Fail-closed local audit tool and tests are implemented. This PASS covers tool implementation only; the actual user corpus has not yet been audited, so family_safe_data_integrity remains UNKNOWN. CI compiled the audit script and passed all 29 repository tests."
     }
   ],
   "upstream": {
@@ -189,7 +190,7 @@
     "asset_level_training_permission": "not_fully_audited"
   },
   "tests": {
-    "repository_tests": "25 unit tests passed in GitHub Actions run 44468103067",
+    "repository_tests": "29 unit tests passed in GitHub Actions run 44469089468",
     "image_route": "not_verified",
     "prompt_route": "not_verified",
     "hybrid_route": "not_verified",
