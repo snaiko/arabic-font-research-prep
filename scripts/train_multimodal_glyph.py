@@ -80,6 +80,9 @@ def validate_rights(episodes, rights_manifest):
         if not isinstance(logical_text, str) or not logical_text:
             raise ValueError("target logical_text must be a non-empty Unicode string")
         target_codepoints = {f"U+{ord(char):04X}" for char in logical_text}
+        target_image_hash = episode.get("target_image_sha256")
+        if not isinstance(target_image_hash, str) or len(target_image_hash) != 64:
+            raise ValueError("target image SHA-256 is missing or malformed")
         refs = episode.get("style_references", [])
         if not refs or len(refs) != episode.get("reference_count"):
             raise ValueError("episode has missing or inconsistent style references")
@@ -87,6 +90,9 @@ def validate_rights(episodes, rights_manifest):
         for ref in refs:
             if ref.get("font_sha256") != font_hash or ref.get("family") != family or ref.get("split") != split:
                 raise ValueError("style reference is not from the exact target font and split")
+            ref_hash = ref.get("image_sha256")
+            if not isinstance(ref_hash, str) or len(ref_hash) != 64:
+                raise ValueError("style reference image SHA-256 is missing or malformed")
             ref_cps.append(ref.get("codepoint"))
         if len(ref_cps) != len(set(ref_cps)):
             raise ValueError("duplicate codepoints in style references")
@@ -125,11 +131,16 @@ class ContextualEpisodeDataset(Dataset):
     def __getitem__(self, index):
         episode = self.episodes[index]
         target = episode["target"]
-        target_image = self.load_gray(self.safe_path(self.target_root, target["image"]))
-        refs = [
-            self.load_gray(self.safe_path(self.reference_root, ref["image"]))
-            for ref in episode["style_references"]
-        ]
+        target_path = self.safe_path(self.target_root, target["image"])
+        if file_sha256(target_path) != episode.get("target_image_sha256"):
+            raise ValueError(f"target image hash mismatch: {target['image']}")
+        target_image = self.load_gray(target_path)
+        refs = []
+        for ref in episode["style_references"]:
+            ref_path = self.safe_path(self.reference_root, ref["image"])
+            if file_sha256(ref_path) != ref.get("image_sha256"):
+                raise ValueError(f"style reference image hash mismatch: {ref['image']}")
+            refs.append(self.load_gray(ref_path))
         return {
             "target_image": target_image,
             "reference_images": torch.stack(refs),
