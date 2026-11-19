@@ -88,3 +88,29 @@ def encode_unicode_batch(texts, max_length=64, device=None):
         values=[ord(ch) for ch in text[:max_length]]
         if values: ids[i,:len(values)]=torch.tensor(values,dtype=torch.long,device=device)
     return ids
+
+
+def save_training_checkpoint(path, model, optimizer=None, step=0, metadata=None):
+    """Atomically save model/optimizer state for resumable experiments."""
+    import os, tempfile
+    from pathlib import Path
+    target=Path(path); target.parent.mkdir(parents=True,exist_ok=True)
+    payload={"model":model.state_dict(),"step":int(step),"metadata":metadata or {}}
+    if optimizer is not None: payload["optimizer"]=optimizer.state_dict()
+    fd,tmp=tempfile.mkstemp(prefix=target.name+".",suffix=".tmp",dir=str(target.parent))
+    os.close(fd)
+    try:
+        torch.save(payload,tmp)
+        os.replace(tmp,target)
+    finally:
+        if os.path.exists(tmp): os.unlink(tmp)
+
+def restore_training_checkpoint(path, model, optimizer=None, map_location="cpu"):
+    """Restore model and optional optimizer; return the saved step/metadata."""
+    payload=torch.load(path,map_location=map_location,weights_only=True)
+    model.load_state_dict(payload["model"])
+    if optimizer is not None:
+        if "optimizer" not in payload:
+            raise ValueError("checkpoint has no optimizer state; cannot resume optimizer")
+        optimizer.load_state_dict(payload["optimizer"])
+    return {"step":int(payload.get("step",0)),"metadata":payload.get("metadata",{})}
