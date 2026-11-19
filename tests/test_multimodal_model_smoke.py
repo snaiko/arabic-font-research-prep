@@ -106,7 +106,9 @@ class MultimodalModelSmokeTests(unittest.TestCase):
 
     def test_default_model_parameter_budget_is_consumer_scale(self):
         parameter_count = sum(parameter.numel() for parameter in self.model.parameters())
-        self.assertLess(parameter_count, 100_000_000)
+        self.assertLess(parameter_count, 25_000_000)
+        self.assertIs(self.model.content_encoder.embedding, self.model.text_style_encoder.embedding)
+        self.assertIs(self.model.content_encoder.embedding, self.model.unicode_embedding)
 
     def test_unicode_encoder_preserves_arabic_codepoints(self):
         ids = encode_unicode_batch(["بَ"], max_length=4)
