@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "28594fc86e238d59952420bb4338ceaf1b55f1a3",
+  "repository_commit": "6becf73854af7937f4fa1f92fde79ac273ac0dc3",
   "training_allowed": false,
   "overall_status": "BLOCKED",
   "gates": [
@@ -177,13 +177,14 @@
     },
     {
       "id": "contextual_harfbuzz_cluster_integrity",
-      "status": "PASS",
+      "status": "PARTIAL",
       "evidence": [
         "scripts/build_harfbuzz_contextual_crops.py",
         "scripts/audit_harfbuzz_contextual_crops.py",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44490579652"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44510736687",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44510736687/artifacts/14523445736"
       ],
-      "notes": "CI built 1,736 HarfBuzz cluster crops from 52 font files/20 families across 10 shaping cases; independently reproduced all 1,736 glyph-ID mappings over 520 font-case pairs, checked logical source spans and explicit non-rendering controls/separators, verified image readability and provenance, and reported 238 multi-codepoint clusters with zero errors. This is integrity/shaping consistency, not human visual or linguistic validation."
+      "notes": "Latest CI built 1,732 contextual cluster crops from 52 fonts/20 families. Independent audit reproduced all 1,732 glyph-ID mappings with zero integrity errors, preserved context-level non-rendering controls/separators, and verified images and split provenance. Coverage is PARTIAL: 518 of 520 font-case pairs are present; two Aref Ruqaa font files lack a renderable tatweel cluster and are explicitly reported/excluded. 238 multi-codepoint clusters remain. Integrity PASS for produced records does not establish visual/linguistic correctness or legal training rights."
     },
     {
       "id": "expert_visual_linguistic_review",
@@ -232,10 +233,10 @@
         "scripts/validate_arabic_cluster_annotation.py",
         "schemas/arabic_cluster_visual_annotation.schema.json",
         ".github/workflows/test-glyph-adapter.yml",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44509676611",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44509676611/artifacts/14522830341"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44510736687",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44510736687/artifacts/14523365576"
       ],
-      "notes": "CI generated 100 stratified cluster-level drafts (10 per shaping case). Independent validation matched all 100 records to source clusters, verified image integrity and metadata, and reported zero errors. Records preserve multi-codepoint and multi-glyph clusters and remain drafts; this does not certify visual or linguistic correctness."
+      "notes": "Latest CI generated 100 stratified cluster-level drafts (10 for each of 10 shaping cases). Independent validation matched all 100 records to source clusters, checked schema-critical metadata and image hashes/dimensions, and reported zero errors. The pack contains 35 multi-codepoint samples, 26 multi-glyph samples, and 30 samples carrying omitted source controls/separators. All records remain drafts; this is not visual or linguistic approval."
     }
   ],
   "upstream": {
@@ -251,15 +252,15 @@
     "isolated_target_crops": "not_ready",
     "paired_prompt_geometry_records": "not_verified",
     "asset_level_training_permission": "not_fully_audited",
-    "contextual_cluster_dataset": "1,736 clusters integrity-audited; not visually/linguistically cleared and not rights-cleared",
+    "contextual_cluster_dataset": "1,732 clusters; 518/520 font-case pairs; zero integrity errors in generated rows; two explicit tatweel coverage exclusions; 238 multi-codepoint clusters; not visually/linguistically or rights cleared",
     "component_geometry_annotations": "no adjudicated annotation dataset",
     "font_ml_training_rights": "blocked; per-file approval manifest remains empty",
     "visual_linguistic_review_pack": "PASS generation: 100 samples, 10 per shaping case; human review pending",
     "geometry_pilot": "PASS package generation: 40 samples from 8 eligible cases; 40 blank independent templates per annotator; human annotation/adjudication pending",
-    "cluster_level_review_pack": "PASS generation and integrity validation: 100 drafts across 10 shaping cases; no visual/linguistic approval"
+    "cluster_level_review_pack": "PASS generation and integrity validation: 100 drafts across 10 shaping cases; 35 multi-codepoint, 26 multi-glyph, 30 with non-rendering controls/separators; no visual/linguistic approval"
   },
   "tests": {
-    "repository_tests": "39 unit tests passed in GitHub Actions run 44509676611",
+    "repository_tests": "39 unit tests passed in GitHub Actions run 44510736687",
     "image_route": "not_verified",
     "prompt_route": "not_verified",
     "hybrid_route": "not_verified",
@@ -292,8 +293,8 @@
     "Populate exact per-file font rights records with authoritative license evidence and ML-training permission; keep all unapproved font-derived data excluded from training.",
     "Complete the generated visual/linguistic review pack with two independent human reviews and adjudicate every fail/uncertain item.",
     "Complete the independent two-annotator geometry pilot, compute per-class agreement, and adjudicate disagreements; do not train on draft annotations.",
-    "Cluster-level Arabic annotations are drafts; automated integrity checks do not certify visual or linguistic correctness."
+    "Contextual shaping coverage remains partial: two Aref Ruqaa font files cannot render the tatweel case; the missing font/case pairs are excluded and explicitly reported."
   ],
-  "recommended_next_step": "Continue automated data expansion and validation without requiring manual user review; exclude assets and labels whose training rights or correctness remain unverified.",
+  "recommended_next_step": "Continue automated expansion of Arabic style descriptions and component geometry signals; retain fail-closed rights and visual/linguistic gates, and exclude unverified font-derived data from training.",
   "generated_date": "2026-11-19"
 }
