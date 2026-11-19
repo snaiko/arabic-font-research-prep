@@ -310,3 +310,52 @@ GitHub Actions run [44527935025](https://github.com/snaiko/arabic-font-research-
 This verifies that the pinned HarfBuzz runner executed and captured outputs for the complete approved font set. It does not prove that every shaping result is visually correct, that all Arabic text is covered, or that every cluster is linguistically/artistically correct.
 
 The overall readiness status remains **BLOCKED**. The remaining major blockers are expert visual/linguistic validation, the two missing contextual tatweel font-case pairs, the upstream MX-Font dependency/native-loader audit, dataset-level overfit/convergence and held-out-family evaluation, and local hardware/resource preflight. No model training has started.
+
+
+## Final preparation update — 2026-11-19 (experimental image-route handoff)
+
+This update supersedes earlier overall readiness statements for the **standalone experimental image-reference raster baseline**. It does not declare the complete production font generator ready.
+
+### Current decision
+
+<badge color="success">Ready for a controlled experimental image-route training run</badge>
+
+- `training_allowed=true` for the limited image-reference raster baseline under the conditional OFL source-font policy.
+- `training_started=false`; no model weights have been updated by training.
+- `overall_status=PARTIAL_READY_FOR_EXPERIMENTAL_IMAGE_ROUTE`.
+- Native MX-Font integration, semantic text-style generation, vectorization, OpenType font compilation, and production visual QA remain outside this limited readiness decision.
+
+### Verified data and rights
+
+1. **Rights:** 52 exact font files across 20 families have a hash-validated conditional SIL OFL 1.1 rights manifest. Any generated font software based on these sources must remain OFL 1.1, preserve copyright notices/acknowledgements, and avoid recorded Reserved Font Names without written permission.
+2. **HarfBuzz:** 52 fonts × 10 cases = 520 batch regression reports; CI passed.
+3. **Contextual few-shot episodes:** 1,732 episodes, four isolated references from the same exact font per target, zero skipped targets, 238 multi-codepoint targets, 1,134 train / 299 validation / 299 test, 20 families, and no family split leakage.
+4. **Image integrity:** the no-training preflight verified SHA-256 for all **1,732 target images** and **6,928 reference images** across all three splits.
+5. **Real model preflight:** a real batch loaded and the image-reference model produced a finite 128×128 output. The preflight explicitly recorded `training_performed=false`, `optimizer_created=false`, `backward_pass_performed=false`, `weights_updated=false`, and `checkpoint_created=false`.
+6. **Tests:** main data CI run [44530248721](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530248721) passed 73 tests (60 passed, 13 optional PyTorch tests skipped in that job). Dedicated CPU model/training pipeline run [44530248539](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530248539) passed 13/13 tests.
+7. **Episode/preflight artifact:** [arabic-contextual-style-episodes](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530432867/artifacts/14533013474).
+
+### Windows training handoff
+
+- `START_LOCAL_TRAINING.bat` runs the machine/hardware preflight only; it does not train.
+- `RUN_IMAGE_ROUTE_TRAINING.bat` checks the required artifacts and asks the user to type `TRAIN` before starting a real run.
+- `scripts/train_multimodal_glyph.py` supports explicit step counts, validation/test evaluation, checkpoint saving, and optimizer-state resume.
+- Full instructions: [docs/LOCAL_TRAINING.md](../blob/main/docs/LOCAL_TRAINING.md).
+
+### What this ready status does and does not mean
+
+**Ready:** a controlled experiment that learns to predict a contextual Arabic raster from the target Unicode sequence and four same-font reference glyphs.
+
+**Not ready:** a semantic natural-language style generator, native MX-Font model, or production TTF/OTF font generator. The text-style route is a character-level GRU, not semantic Arabic NLP. The output is a raster image; vectorization, OpenType tables, GSUB/GPOS and final font QA are not implemented.
+
+### Remaining work after the first controlled experiment
+
+- Run the Windows hardware preflight and choose realistic batch/step settings.
+- After the user/local agent starts training, measure tiny-subset overfit, convergence, validation/test loss, and held-out-family visual quality.
+- Decide a separate distribution license for model weights.
+- Finish native MX-Font integration only if that upstream architecture remains required.
+- Complete vectorization/OpenType and production visual/linguistic validation before calling the system a finished font generator.
+
+### Non-commercial license caveat
+
+SIL OFL 1.1 is not an NC license. The project itself can publish its model and fonts for free, but the OFL does not prohibit downstream commercial use of generated fonts. If the user requires a strict prohibition on commercial use by everyone, the OFL-based source set cannot meet that requirement without explicit written permissions for a different output license.
