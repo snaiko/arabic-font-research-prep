@@ -21,6 +21,6 @@ class UnicodeImporterTests(unittest.TestCase):
             self.assertEqual(rows["U+0628"]["possible_forms_by_joining_type"],["isol","init","medi","fina"])
             self.assertEqual(rows["U+064B"]["joining_type"],"T")
             self.assertEqual(rows["U+064B"]["role"],"mark")
-            self.assertEqual(rows["U+064B"]["joining_group"],"No_Joining_Group")
+            self.assertEqual(rows["U+064B"]["joining_group"],"No_Joining_Group")\n            context={r["codepoint"]:r for r in data["contextual_joining_properties"]}\n            self.assertEqual(context["U+0640"]["joining_type"],"C")\n            self.assertEqual(context["U+0640"]["script"],"Common")
 
 if __name__=="__main__": unittest.main()
