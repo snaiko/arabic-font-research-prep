@@ -3,6 +3,7 @@ name: Arabeyes font candidate acquisition and technical audit
 on:
   push:
     paths:
+      - "scripts/audit_font_outline_duplicates.py"
       - ".github/workflows/arabeyes-candidate-audit.yml"
   workflow_dispatch:
 
@@ -20,6 +21,8 @@ jobs:
           python-version: "3.11"
       - name: Install audit dependencies
         run: python -m pip install --upgrade fonttools uharfbuzz pillow
+      - name: Compile outline audit
+        run: python -m py_compile scripts/audit_font_outline_duplicates.py
       - name: Download and verify Debian source archive
         shell: bash
         run: |
@@ -50,7 +53,7 @@ jobs:
       - name: Audit font binaries, Arabic coverage, shaping, and render samples
         run: |
           python - <<'PY'
-          import hashlib, json, pathlib, re
+          import hashlib, json, pathlib
           from collections import Counter
           from fontTools.ttLib import TTFont
           from PIL import Image, ImageDraw, ImageFont
@@ -143,6 +146,22 @@ jobs:
           print((out / "SUMMARY.md").read_text())
           if not rows:
               raise SystemExit("No font records produced")
+          PY
+      - name: Audit normalized Arabic glyph outlines for exact duplicates
+        run: |
+          python scripts/audit_font_outline_duplicates.py --font-root candidate-package --output arabeyes-audit/outline_duplicate_audit.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("arabeyes-audit/outline_duplicate_audit.json")
+          r=json.loads(p.read_text(encoding="utf-8"))
+          summary=Path("arabeyes-audit/SUMMARY.md")
+          with summary.open("a",encoding="utf-8") as f:
+              f.write("\n## Strict normalized outline screen\n\n")
+              f.write(f"- Whole-font Arabic outline fingerprints: {r['unique_whole_font_fingerprints']} / {r['fonts_inspected']}\n")
+              f.write(f"- Exact whole-font duplicate groups: {len(r['exact_whole_font_duplicate_groups'])}\n")
+              f.write(f"- Pairs sharing at least one exact glyph outline: {r['font_pairs_with_shared_exact_glyph_outlines']}\n")
+              f.write("- This is exact-coordinate matching, not perceptual similarity or independent design-lineage proof.\n")
           PY
       - name: Preserve license and source evidence
         run: |
