@@ -44,3 +44,26 @@ These episodes provide image-style supervision for the contextual cluster genera
 ## Image integrity
 
 The episode builder also pins SHA-256 for each target raster and each of its four style-reference rasters. The local trainer recomputes and verifies those hashes immediately before loading the images. A modified or corrupted target/reference image therefore fails closed rather than silently entering training.
+
+
+## Verified CI result and no-training preflight
+
+GitHub Actions run [44529785828](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44529785828) completed the episode build and real-data preflight successfully. Artifact: [arabic-contextual-style-episodes](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44529785828/artifacts/14531943917).
+
+Verified result:
+- 1,732 episodes, zero skipped targets.
+- Four same-font references per target.
+- 1,134 train / 299 validation / 299 test.
+- 20 families; no family split leakage.
+- 238 multi-codepoint targets.
+- SHA-256 pinned for every target raster and all four reference rasters per episode.
+- The preflight loaded a real batch, verified all 52 approved font hashes, and produced a finite 128×128 forward output.
+
+The preflight report explicitly records:
+- `training_performed=false`
+- `optimizer_created=false`
+- `backward_pass_performed=false`
+- `weights_updated=false`
+- `checkpoint_created=false`
+
+This proves the real data and image-reference forward path can be loaded together under the conditional OFL rights gate. It is not a training run and does not establish generation quality.
