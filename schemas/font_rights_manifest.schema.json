@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/snaiko/arabic-font-research-prep/blob/main/schemas/font_rights_manifest.schema.json",
+  "title": "Per-file font rights manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "fonts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "fonts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "font_file",
+          "family_id",
+          "sha256",
+          "license_name",
+          "license_url",
+          "ml_training_allowed",
+          "review_status",
+          "reviewed_by",
+          "reviewed_date",
+          "evidence"
+        ],
+        "properties": {
+          "font_file": {
+            "type": "string",
+            "minLength": 1
+          },
+          "family_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{64}$"
+          },
+          "license_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "license_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "ml_training_allowed": {
+            "type": "boolean"
+          },
+          "review_status": {
+            "enum": [
+              "approved",
+              "pending",
+              "rejected"
+            ]
+          },
+          "reviewed_by": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reviewed_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
