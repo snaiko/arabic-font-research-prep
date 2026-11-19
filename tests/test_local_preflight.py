@@ -43,14 +43,15 @@ class LocalPreflightTests(unittest.TestCase):
                     "output_font_license": "SIL Open Font License 1.1",
                 },
                 "fonts": [
-                    {"sha256": f"{i:064x}", "family_id": f"family-{i}",
+                    {"sha256": f"{i+1:064x}", "family_id": f"family-{i % 20}",
                      "ml_training_allowed": True, "review_status": "approved"}
-                    for i in range(3)
+                    for i in range(52)
                 ],
             }), encoding="utf-8")
             result = inspect_rights(path)
             self.assertTrue(result["ok"])
-            self.assertEqual(result["approved_font_files"], 3)
+            self.assertEqual(result["approved_font_files"], 52)
+            self.assertEqual(result["families"], 20)
 
     def test_episode_splits_validate_font_rights_and_reference_leakage(self):
         with tempfile.TemporaryDirectory() as td:
