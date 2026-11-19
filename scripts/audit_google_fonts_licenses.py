@@ -80,7 +80,7 @@ def audit(candidate_path, output_dir, fetcher=fetch):
             "reason":"A machine can verify the pinned license text, but cannot issue a legal interpretation or approval for the proposed model-training use."}
     }
     out.mkdir(parents=True,exist_ok=True)
-    (out/"license_evidence_audit.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+    (out/"license_evidence_audit.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     return report
 
 def main():
