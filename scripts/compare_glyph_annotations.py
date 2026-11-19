@@ -3,7 +3,7 @@
 from __future__ import annotations
 import argparse, json
 from pathlib import Path
-from validate_glyph_visual_annotation import validate
+try:\n    from .validate_glyph_visual_annotation import validate\nexcept ImportError:\n    from validate_glyph_visual_annotation import validate
 
 KINDS=("body","dot","hamza","diacritic","other_mark","counter","join_region","stroke_segment","ornament","uncertain")
 
