@@ -4,7 +4,7 @@ cd /d "%~dp0"
 
 rem Edit these values before starting a run.
 set MAX_STEPS=1000
-set BATCH_SIZE=8
+set BATCH_SIZE=4
 set LATENT_DIM=64
 set EMBEDDING_DIM=32
 set DEVICE=auto
