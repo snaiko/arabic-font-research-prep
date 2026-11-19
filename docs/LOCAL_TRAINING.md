@@ -40,7 +40,7 @@ python -m scripts.train_multimodal_glyph `
   --rights-manifest data/manifests/font_rights.json `
   --output-dir runs/arabic-contextual-baseline `
   --max-steps 1000 `
-  --batch-size 8 `
+  --batch-size 4 `
   --latent-dim 64 `
   --embedding-dim 32 `
   --device auto
