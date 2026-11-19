@@ -104,6 +104,10 @@ class MultimodalModelSmokeTests(unittest.TestCase):
             for left, right in zip(model.parameters(), clone.parameters()):
                 self.assertTrue(torch.equal(left, right))
 
+    def test_default_model_parameter_budget_is_consumer_scale(self):
+        parameter_count = sum(parameter.numel() for parameter in self.model.parameters())
+        self.assertLess(parameter_count, 100_000_000)
+
     def test_unicode_encoder_preserves_arabic_codepoints(self):
         ids = encode_unicode_batch(["بَ"], max_length=4)
         self.assertEqual(ids[0, :2].tolist(), [0x628, 0x64E])
