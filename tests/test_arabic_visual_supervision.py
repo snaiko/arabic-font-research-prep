@@ -16,7 +16,7 @@ class VisualSupervisionTests(unittest.TestCase):
                  "language":"ar","features":[]}
             manifest=root/"source.jsonl"; manifest.write_text(json.dumps(row,ensure_ascii=False)+"\n",encoding="utf-8")
             row2=dict(row,case_id="isolated_variant",cluster=1)
-            manifest.write_text(json.dumps(row,ensure_ascii=False)+"\\n"+json.dumps(row2,ensure_ascii=False)+"\\n",encoding="utf-8")
+            manifest.write_text(json.dumps(row,ensure_ascii=False)+"\n"+json.dumps(row2,ensure_ascii=False)+"\n",encoding="utf-8")
             output=root/"out.jsonl"
             result=build(manifest,root,output)
             records=[json.loads(x) for x in output.read_text(encoding="utf-8").splitlines()]
