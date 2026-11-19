@@ -4,7 +4,7 @@ cd /d "%~dp0"
 
 rem Edit these values before starting a run.
 set MAX_STEPS=1000
-set BATCH_SIZE=2
+set BATCH_SIZE=auto
 set LATENT_DIM=64
 set EMBEDDING_DIM=16
 set DEVICE=auto
@@ -14,17 +14,6 @@ set TARGET_ROOT=data\contextual_glyph_crops
 set REFERENCE_ROOT=data\glyph_crops
 set RIGHTS_MANIFEST=data\manifests\font_rights.json
 
-echo ============================================================
-echo Arabic Font Research - Image-Reference Raster Training
-echo ============================================================
-echo This starts a real training run. It is NOT a preflight.
-echo Steps: %MAX_STEPS%
-echo Batch: %BATCH_SIZE%
-echo Latent dimension: %LATENT_DIM%
-echo Embedding dimension: %EMBEDDING_DIM%
-echo Device: %DEVICE%
-echo Output: %OUTPUT_DIR%
-echo.
 
 if not exist "%EPISODES_DIR%\train.jsonl" (
   echo ERROR: Missing %EPISODES_DIR%\train.jsonl
@@ -68,6 +57,24 @@ if errorlevel 1 (
   echo ERROR: The latest local preflight is not READY. Rerun START_LOCAL_TRAINING.bat and inspect blockers.
   goto :failed
 )
+if not exist "reports\local\recommended_batch_size.bat" (
+  echo ERROR: Recommended batch-size file is missing. Rerun START_LOCAL_TRAINING.bat.
+  goto :failed
+)
+call reports\local\recommended_batch_size.bat
+if /I "%BATCH_SIZE%"=="AUTO" set BATCH_SIZE=%RECOMMENDED_BATCH_SIZE%
+
+echo ============================================================
+echo Arabic Font Research - Image-Reference Raster Training
+echo ============================================================
+echo This starts a real training run. It is NOT a preflight.
+echo Steps: %MAX_STEPS%
+echo Batch: %BATCH_SIZE% (detected safe default unless manually set)
+echo Latent dimension: %LATENT_DIM%
+echo Embedding dimension: %EMBEDDING_DIM%
+echo Device: %DEVICE%
+echo Output: %OUTPUT_DIR%
+echo.
 
 echo IMPORTANT LICENSE CONDITION:
 echo Generated font files based on these sources must be released under SIL OFL 1.1.
