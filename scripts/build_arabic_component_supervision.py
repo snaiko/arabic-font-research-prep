@@ -93,7 +93,7 @@ def build(manifest,crop_root,registry_path,output):
               "schema_version":1,"sample_id":f"{row['font_sha256']}:{row['case_id']}:{row['cluster']}",
               "image":row["image"],"image_sha256":digest(image),
               "font_sha256":row["font_sha256"],"family":row.get("family"),"split":row.get("split"),
-              "case_id":row["case_id"],"source_text":row["source_text"],"logical_text":logical,
+              "case_id":row["case_id"],"cluster":row["cluster"],"source_text":row["source_text"],"logical_text":logical,
               "logical_codepoints":cps,"unicode_character_metadata":semantic,
               "codepoint_count":cp_count,"glyph_ids":row["glyph_ids"],"glyph_count":glyph_count,
               "combining_mark_count":marks,"mapping_hint":mapping_hint,
