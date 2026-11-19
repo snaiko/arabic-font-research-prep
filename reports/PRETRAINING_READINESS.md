@@ -508,3 +508,59 @@ The latest 100 workflow runs contained 90 successes, 9 failures and 1 skipped ru
 - The model-weight distribution license is separate from the font rights manifest.
 
 No training was started during this verification.
+
+
+## Independent verification refresh — 2026-11-19
+
+This section supersedes any earlier statement about the current handoff image mode or a freshly reverified repository-wide Actions inventory.
+
+### GitHub Actions review
+
+I queried the job summaries for all **28 unique run IDs referenced by this report's gates, remaining gates, and verification evidence**. All 28 returned completed/success jobs; no failed job was found in this inspected set. The latest relevant runs were:
+
+- [Main data CI 44538878182](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538878182): **83 tests**, 67 passed and 16 optional PyTorch tests skipped. The run's job completed successfully, including rights-manifest generation, corpus audit, crop generation/audits, and artifact uploads.
+- [Dedicated CPU model smoke 44538121400](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538121400): **16/16 tests passed**. The checkpoint optimizer-state test uses a no-op probe, not a real optimizer step.
+- [Episode and handoff build 44539170273](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273): completed successfully, built all three episode splits, ran the real-data no-training preflight, and uploaded the combined handoff plus the separate episode package.
+
+**Enumeration limitation:** the connected GitHub interface used in this pass can retrieve jobs and artifacts for a known run ID, but does not expose a repository-wide list of workflow runs. Thus the 28-run review covers every run ID referenced by the current readiness report, not every run in the repository or the latest 100. The earlier report's aggregate (259 total runs; 90 success / 9 failure / 1 skipped in the latest 100) is retained only as a historical, unverified-this-pass claim. No failed job was found among the 28 evidence-linked runs, so no rerun or failure repair was needed in this refresh.
+
+### Independent handoff and image audit
+
+Downloaded artifact: [arabic-font-training-handoff, run 44539170273](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273/artifacts/14537521518).
+
+- ZIP: **10,070,054 bytes**, SHA-256 5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9, **3,615 entries**, 18,740,096 uncompressed bytes. The downloaded ZIP hash matched the Actions artifact digest.
+- Episode split: **1,134 train / 299 validation / 299 test**, 1,732 total, 20 families, 52 font hashes, 238 multi-codepoint targets, no family or font-hash split leakage.
+- Target manifest: 1,732 entries and 1,732 PNGs; all SHA-256 values matched, all files decoded, and no missing/unlisted files. **Encoding detail:** these target PNGs are 160×160 RGB files with identical R, G and B channels (grayscale encoded as RGB), not PNG mode L.
+- Reference manifest: 1,872 entries and 1,872 PNGs; all SHA-256 values matched, all files decoded, and no missing/unlisted files. These are 128×128 PNGs in grayscale L mode.
+- Combined image result: **3,604/3,604** files decoded and hash-verified; zero missing files, unlisted files, corrupt images, or hash mismatches. All 1,732 target files are converted to grayscale by the dataset loader before resize to 128×128.
+- Episodes contain 6,928 reference uses drawn from 1,831 distinct reference PNGs; 41 additional valid reference crops are retained but not sampled. Every episode has four references from the same exact font/family/split; no target codepoint appears in its references.
+- The separate [episode package](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273/artifacts/14536894957) was also downloaded. Its five files match the corresponding files in the combined handoff byte-for-byte.
+
+### Rights and shaping artifacts
+
+- The rights manifest contains **52/52 exact font files**, 52 unique font hashes, and 20 families. The downloaded manifest ZIP hash matched its Actions digest.
+- The pinned license-evidence artifact contains **20 official OFL 1.1 license snapshots**. All 20 snapshot SHA-256 values matched the evidence audit; no mismatch was found.
+- The contextual audit artifact reports **1,732 clusters**, 1,732 independent HarfBuzz glyph-ID mapping checks, **518/520** font/case pairs, 238 multi-codepoint clusters, and zero integrity errors. The two absent pairs are the documented Aref Ruqaa tatweel cases.
+- The isolated crop audit reports **1,872/1,872** crop files, zero unreferenced files, 52 font hashes, 20 families, and zero errors. The published corpus audit reports **7,904/7,904** images verified across 52 font files and 20 families, with zero errors.
+
+The current official [SIL OFL FAQ](https://openfontlicense.org/ofl-faq/) is version **1.1-update8 (November 2026)**. Q1.25 and Q3.9 provide the AI-font guidance used by the project's conditional policy: released font software based on these OFL sources must remain under OFL 1.1 and meet the ordinary derivative-font conditions. Preserve copyright/acknowledgement notices and avoid Reserved Font Names without permission. **OFL is not a NonCommercial license; downstream commercial use is not prohibited by its terms.** The policy mapping is not legal advice, and the model-weight distribution license remains separate.
+
+### Training entrypoint and checkpoint recovery
+
+Source inspection confirms that scripts/train_multimodal_glyph.py requires an explicit --max-steps, supports --resume, restores model and optimizer state, checks saved model dimensions and step bounds, and saves periodic/final checkpoints. The unit tests verify model-state round-trip and optimizer-state payload restoration through a no-op probe. However:
+
+- no actual optimizer was instantiated or stepped in this verification;
+- no backward pass or weight update was performed;
+- no training-produced checkpoint exists;
+- end-to-end resume from a real trained checkpoint is therefore **not verified**.
+
+The user's actual Windows GPU/VRAM/RAM/disk preflight remains outstanding. The CI runner's 15.61 GB RAM / 85.79 GB free disk / CPU-only recommendation is not a measurement of the user's computer.
+
+### Current decision
+
+- **Original MX-Font plan:** BLOCKED — no direct weight merge is supported, and the current episode handoff lacks MX-Font's same-character cross-font content images and audited Arabic primitive/decomposition labels.
+- **Separate experimental image-reference route:** PARTIAL_READY for a controlled raster experiment only. The user has not authorized training; this verification did not start it.
+- **Output:** raster only. This is **not** a TTF/OTF generator; vectorization, OpenType tables, shaping integration, font compilation and production QA remain future work.
+- **Model weights:** distribution license remains unresolved and separate from the source-font OFL manifest.
+
+The matching machine-readable counts, run IDs, artifact digests and scope limitation are recorded in reports/pretraining_readiness.json.
