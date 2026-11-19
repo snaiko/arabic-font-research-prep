@@ -16,6 +16,7 @@ on:
       - "docs/ARABIC_HUMAN_REVIEW_PROTOCOL.md"
       - "tests/**"
       - ".github/workflows/test-glyph-adapter.yml"
+      - ".github/workflows/build-contextual-style-episodes.yml"
   pull_request:
     paths:
       - "scripts/**"
