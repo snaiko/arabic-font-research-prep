@@ -74,7 +74,7 @@ The data/rights preflight is automated. The project has not started this trainin
 
 After extracting the four artifacts into the paths above, run `RUN_IMAGE_ROUTE_TRAINING.bat`. It checks the required manifests and folders, displays the step/batch/device settings, and requires typing `TRAIN` before it starts the actual run. Edit `MAX_STEPS`, `BATCH_SIZE`, `LATENT_DIM`, `EMBEDDING_DIM`, or `DEVICE` at the top of the batch file before starting.
 
-The launcher is provided for the later training handoff; it has not been run as part of this preparation work.
+The launcher also refuses to start unless `reports/local/machine_preflight.json` says `READY_FOR_EXPERIMENTAL_IMAGE_ROUTE` and `training_allowed=true`. It is provided for the later training handoff; it has not been run as part of this preparation work.
 
 
 ## Model memory estimate
