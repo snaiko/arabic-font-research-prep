@@ -82,7 +82,7 @@ def build(manifest,crop_root,registry_path,output):
             glyph_count=row["glyph_count"]; cp_count=len(cps)
             mapping_hint=("possible_ligature_or_substitution" if cp_count>1 and glyph_count==1 else
                           "multi_glyph_cluster" if glyph_count>1 else "single_codepoint_single_glyph_candidate")
-            caption_ar=(f"عينة خط عربي من النص «{logical}»: تتكون من {cp_count} نقاط Unicode و{glyph_count} معرّفات محارف مرسومة، "
+            caption_ar=(f"عينة خط عربي من النص «{logical}»: تتكون من {cp_count} محارف Unicode و{glyph_count} معرّفات محارف مرسومة، "
                         f"وتحتوي على {marks} علامات مركبة و{len(comps)} مكونات حبر منفصلة قابلة للقياس. "
                         f"تصنيف العلاقة بين النص والمحارف: {mapping_hint}. هذه أوصاف آلية ولا تحدد هوية النقاط أو الهمزات بصرياً.")
             caption_en=(f"Arabic text cluster {logical!r}: {cp_count} Unicode code points, {glyph_count} shaped glyph IDs, "
