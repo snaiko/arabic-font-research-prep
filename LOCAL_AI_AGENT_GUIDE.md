@@ -14,8 +14,9 @@ Prepare this repository into a reproducible unified Arabic font-generation syste
 ## Required work before training
 
 ### 1. Inspect upstream MX-Font
-- Use the official implementation linked in docs/MODEL_ARCHITECTURE.md.
-- Pin an exact upstream commit and record its license and commit hash.
+- Use the official implementation linked in docs/MODEL_ARCHITECTURE.md, pinned at `9d2b6ace3e23199e2a896de329d4c16489b09a96` as recorded in `docs/UPSTREAM_BASELINE.md`.
+- Audit the complete MX-Font import/dependency closure. The upstream README explicitly excludes `FUNIT/` and `base/modules/modules.py` from its top-level MIT statement; do not copy either under the assumption that it is MIT.
+- Reproduce the documented baseline in a supported environment. The upstream `train_MX.py` uses CUDA-specific APIs and NCCL; prove the exact Windows/device path works or implement and test a documented adaptation before proceeding.
 - Preserve an untouched upstream baseline path. Do not claim this repository merged two pretrained models.
 - Confirm upstream data format, training command, checkpoint format, and evaluation protocol from source code. Do not invent APIs or flags.
 
