@@ -61,11 +61,7 @@ jobs:
           unzip -oq .audit/glyph/arabic-glyph-training-dataset.zip -d data/training_samples
       - name: Audit the actual published training corpus
         run: |
-          python scripts/audit_training_corpus.py \\
-            --samples data/training_samples/samples.jsonl \\
-            --font-root data/raw_fonts \\
-            --image-root data/training_samples \\
-            --output reports/local/dataset_audit.json
+          python scripts/audit_training_corpus.py --samples data/training_samples/samples.jsonl --font-root data/raw_fonts --image-root data/training_samples --output reports/local/dataset_audit.json
       - name: Upload corpus audit report
         uses: actions/upload-artifact@v4
         with:
