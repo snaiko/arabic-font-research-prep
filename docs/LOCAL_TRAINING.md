@@ -33,19 +33,19 @@ Check available hardware before selecting a device. `--device auto` selects CUDA
 The trainer requires an explicit `--max-steps`; it will not start an unbounded run by default.
 
 ```bash
-python -m scripts.train_multimodal_glyph ^
-  --episodes-dir data/contextual_style_episodes ^
-  --target-root data/contextual_glyph_crops ^
-  --reference-root data/glyph_crops ^
-  --rights-manifest data/manifests/font_rights.json ^
-  --output-dir runs/arabic-contextual-baseline ^
-  --max-steps 1000 ^
-  --batch-size 8 ^
-  --latent-dim 64 ^
+python -m scripts.train_multimodal_glyph `
+  --episodes-dir data/contextual_style_episodes `
+  --target-root data/contextual_glyph_crops `
+  --reference-root data/glyph_crops `
+  --rights-manifest data/manifests/font_rights.json `
+  --output-dir runs/arabic-contextual-baseline `
+  --max-steps 1000 `
+  --batch-size 8 `
+  --latent-dim 64 `
   --device auto
 ```
 
-For PowerShell, the same command can be entered on one line or use PowerShell backticks for line continuation.
+The backticks shown above are PowerShell line-continuation characters.
 
 To resume from a saved checkpoint, pass `--resume runs/arabic-contextual-baseline/checkpoints/last.pt` and set `--max-steps` to the desired total step count, not the number of additional steps.
 
