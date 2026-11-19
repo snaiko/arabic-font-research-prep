@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - "models/**"
+      - "tests/test_mxfont_unicode_adapter.py"
+      - "docs/MXFONT_UNICODE_BRIDGE.md"
       - "scripts/train_multimodal_glyph.py"
       - "tests/test_multimodal*.py"
       - "requirements-model-smoke.txt"
@@ -28,6 +30,6 @@ jobs:
       - name: Install CPU model dependencies
         run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch && python -m pip install Pillow
       - name: Compile model and training pipeline
-        run: python -m py_compile models/arabic_multimodal_glyph.py scripts/train_multimodal_glyph.py
+        run: python -m py_compile models/arabic_multimodal_glyph.py models/mxfont_unicode_adapter.py scripts/train_multimodal_glyph.py
       - name: Run model and training-pipeline unit tests
         run: python -m unittest discover -s tests -p "test_multimodal*.py" -v
