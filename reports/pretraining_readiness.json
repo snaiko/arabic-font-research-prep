@@ -359,13 +359,13 @@
     "executable_model_baseline": "Experimental shared decoder with image, Unicode-codepoint text, and hybrid conditioning. All three routes pass CPU forward/backward smoke tests. It is not MX-Font, not a semantic Arabic language model, and not quality-validated."
   },
   "tests": {
-    "repository_tests": "51 tests passed in GitHub Actions run 44520251086 (4 optional PyTorch tests skipped in this job)",
-    "image_route": "not_verified",
-    "prompt_route": "not_verified",
-    "hybrid_route": "not_verified",
-    "checkpoint_round_trip": "not_verified",
+    "repository_tests": "51 tests executed in GitHub Actions run 44520251086: 47 passed and 4 optional PyTorch tests skipped in this job; all four were run separately and passed in the dedicated model workflow.",
+    "image_route": "PASS: CPU forward/backward smoke test in run 44520250916",
+    "prompt_route": "PASS: CPU forward/backward Unicode-codepoint conditioning smoke test in run 44520250916; not semantic Arabic NLP",
+    "hybrid_route": "PASS: CPU forward/backward confidence-gated fusion smoke test in run 44520250916",
+    "checkpoint_round_trip": "PASS: model and optimizer-state restore/resume smoke tests in run 44520250916",
     "arabic_linguistic_metadata_audit": "PASS: 1,732 clusters / 2,022 codepoints / zero errors; contextual coverage PARTIAL 518/520 pairs in run 44520251086",
-    "component_caption_builder": "PASS: 1,732 records / 2,987 component candidates in run 44517742747",
+    "component_caption_builder": "PASS: 1,732 records / 2,987 component candidates in run 44520251086",
     "pinned_license_evidence": "PASS evidence retrieval: 52 font files / 20 official license snapshots; zero ML-training approvals",
     "model_smoke_tests": "4/4 passed in dedicated CPU PyTorch run 44520250916: image/text/hybrid forward-backward, checkpoint round-trip, optimizer-state resume, Unicode codepoint encoding",
     "component_caption_audit": "PASS: 1,732 records / 2,987 components / 3,464 paired captions / zero errors in run 44520251086"
