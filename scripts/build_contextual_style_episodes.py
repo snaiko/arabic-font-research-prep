@@ -24,9 +24,28 @@ def read_jsonl(path):
                 raise ValueError(f"{path}:{line_number}: {exc}") from exc
 
 
-def build_episodes(target_rows, reference_rows, refs_per_episode=4, seed=20261119):
+def image_sha256(root, relative):
+    root = Path(root).resolve()
+    path = (root / relative).resolve()
+    try:
+        path.relative_to(root)
+    except ValueError as exc:
+        raise ValueError(f"image path escapes root: {relative}") from exc
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def build_episodes(target_rows, reference_rows, refs_per_episode=4, seed=20261119,
+                   target_root=None, reference_root=None):
     if refs_per_episode < 1:
         raise ValueError("refs_per_episode must be positive")
+    if (target_root is None) != (reference_root is None):
+        raise ValueError("target_root and reference_root must be supplied together")
     references = defaultdict(list)
     for row in reference_rows:
         required = ("font_sha256", "family", "split", "codepoint", "image")
@@ -69,6 +88,14 @@ def build_episodes(target_rows, reference_rows, refs_per_episode=4, seed=2026111
         episode_id = hashlib.sha256(
             f"{stable_seed}:{'|'.join(ref_codepoints)}".encode("utf-8")
         ).hexdigest()[:20]
+        target_hash = image_sha256(target_root, target["image"]) if target_root else None
+        refs_with_hashes = []
+        for ref in style_refs:
+            item = dict(ref)
+            if reference_root:
+                item["image_sha256"] = image_sha256(reference_root, ref["image"])
+            refs_with_hashes.append(item)
+
         episodes.append({
             "schema_version": 1,
             "episode_id": episode_id,
@@ -76,7 +103,8 @@ def build_episodes(target_rows, reference_rows, refs_per_episode=4, seed=2026111
             "family": target["family"],
             "split": target["split"],
             "target": target,
-            "style_references": style_refs,
+            "target_image_sha256": target_hash,
+            "style_references": refs_with_hashes,
             "reference_count": len(style_refs),
             "target_codepoints_excluded_from_references": sorted(target_codepoints),
             "target_excluded_from_references": True,
@@ -93,12 +121,15 @@ def main():
     parser.add_argument("--output", required=True)
     parser.add_argument("--refs-per-episode", type=int, default=4)
     parser.add_argument("--seed", type=int, default=20261119)
+    parser.add_argument("--target-root", required=True)
+    parser.add_argument("--reference-root", required=True)
     args = parser.parse_args()
 
     targets = list(read_jsonl(args.targets))
     references = list(read_jsonl(args.references))
     episodes, skipped = build_episodes(
-        targets, references, args.refs_per_episode, args.seed
+        targets, references, args.refs_per_episode, args.seed,
+        args.target_root, args.reference_root
     )
     out = Path(args.output)
     out.mkdir(parents=True, exist_ok=True)
