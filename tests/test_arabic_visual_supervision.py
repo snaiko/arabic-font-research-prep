@@ -15,10 +15,15 @@ class VisualSupervisionTests(unittest.TestCase):
                  "nonrendering_source_codepoints":[],"direction":"rtl","script":"Arab",
                  "language":"ar","features":[]}
             manifest=root/"source.jsonl"; manifest.write_text(json.dumps(row,ensure_ascii=False)+"\n",encoding="utf-8")
+            row2=dict(row,case_id="isolated_variant",cluster=1)
+            manifest.write_text(json.dumps(row,ensure_ascii=False)+"\\n"+json.dumps(row2,ensure_ascii=False)+"\\n",encoding="utf-8")
             output=root/"out.jsonl"
             result=build(manifest,root,output)
-            record=json.loads(output.read_text(encoding="utf-8"))
-            self.assertEqual(result["records"],1)
+            records=[json.loads(x) for x in output.read_text(encoding="utf-8").splitlines()]
+            record=records[0]
+            self.assertEqual(result["records"],2)
+            self.assertEqual(result["unique_images"],1)
+            self.assertEqual(len(records),2)
             self.assertFalse(record["supervision_provenance"]["training_eligible"])
             self.assertEqual(len(record["raster_geometry"]["row_occupancy_16"]),16)
             self.assertEqual(record["logical_codepoints"],["U+0628"])
