@@ -72,13 +72,13 @@ The data/rights preflight is automated. The project has not started this trainin
 
 ## Single-download data artifact
 
-The workflow now packages all runtime data into one GitHub Actions artifact named **arabic-font-training-handoff**. Download that artifact from the latest successful “Build contextual few-shot Arabic style episodes” workflow run, extract its contents into the root of a fresh repository clone, and keep the included data folder structure unchanged. It supplies all four required paths:
+The workflow packages all runtime data into one GitHub Actions artifact named **arabic-font-training-handoff**. A verified artifact is available in [workflow run 44536155715](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44536155715) (9.95 MB; SHA-256: 30cb94b9218ff0444dcf63c4910ea55d855cbc14c7064bf55908a11d8923c84e). Download the artifact from the run's Artifacts section, extract its contents into the root of a fresh repository clone, and keep the included data folder structure unchanged. It supplies all four required paths:
 - data/contextual_style_episodes/
 - data/contextual_glyph_crops/
 - data/glyph_crops/
 - data/manifests/font_rights.json
 
-The older individual artifacts remain available for audit/history, but the combined artifact is the recommended local handoff. It contains data only, not trained model weights.
+The older individual artifacts remain available for audit/history, but the combined artifact is the recommended local handoff. Its ZIP contents were independently inspected: all 1,732 target images and 6,928 reference images resolve, all 52 approved font hashes are present, and no family crosses train/validation/test. It contains data only, not trained model weights.
 
 ## Windows one-click launcher
 
