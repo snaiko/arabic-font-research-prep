@@ -5,7 +5,7 @@ except ModuleNotFoundError:
     torch = None
 
 if torch is not None:
-    from models.arabic_multimodal_glyph import ArabicMultimodalGlyphModel, encode_unicode_batch
+    from models.arabic_multimodal_glyph import ArabicMultimodalGlyphModel, encode_unicode_batch, save_training_checkpoint, restore_training_checkpoint
 
 @unittest.skipIf(torch is None, "PyTorch is installed only in the dedicated model-smoke workflow")
 class MultimodalModelSmokeTests(unittest.TestCase):
@@ -35,6 +35,25 @@ class MultimodalModelSmokeTests(unittest.TestCase):
             clone.load_state_dict(payload["model"]); clone.eval()
             after=clone("hybrid",reference_images=self.images,prompt_ids=self.tokens)["image"].detach()
         self.assertTrue(torch.allclose(before,after,atol=1e-6))
+
+    def test_optimizer_checkpoint_can_resume(self):
+        model=ArabicMultimodalGlyphModel(latent_dim=64)
+        optimizer=torch.optim.AdamW(model.parameters(),lr=1e-3)
+        tokens=encode_unicode_batch(["ب"],max_length=4)
+        target=torch.rand(1,1,128,128)
+        out=model("text",prompt_ids=tokens)["image"]
+        loss=torch.nn.functional.l1_loss(out,target)
+        loss.backward(); optimizer.step()
+        with tempfile.NamedTemporaryFile(suffix=".pt") as f:
+            save_training_checkpoint(f.name,model,optimizer,step=17,metadata={"route":"text"})
+            clone=ArabicMultimodalGlyphModel(latent_dim=64)
+            clone_optimizer=torch.optim.AdamW(clone.parameters(),lr=1e-3)
+            state=restore_training_checkpoint(f.name,clone,clone_optimizer)
+            self.assertEqual(state,{"step":17,"metadata":{"route":"text"}})
+            self.assertEqual(len(clone_optimizer.state),len(optimizer.state))
+            for a,b in zip(model.parameters(),clone.parameters()):
+                self.assertTrue(torch.equal(a,b))
+
     def test_unicode_encoder_preserves_arabic_codepoints(self):
         ids=encode_unicode_batch(["بَ"],max_length=4)
         self.assertEqual(ids[0,:2].tolist(),[0x628,0x64e])
