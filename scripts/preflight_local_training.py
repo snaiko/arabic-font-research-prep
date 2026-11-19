@@ -113,7 +113,7 @@ def inspect_rights(path=RIGHTS):
     }
 
 
-def inspect_episodes(episodes_dir=EPISODES, rights_path=RIGHTS):
+def inspect_episodes(episodes_dir=EPISODES, rights_path=RIGHTS, require_full_dataset=False):
     paths = {split: episodes_dir / f"{split}.jsonl" for split in ("train", "validation", "test")}
     missing = [str(path.relative_to(ROOT)) for path in paths.values() if not path.is_file()]
     if missing:
@@ -166,9 +166,22 @@ def inspect_episodes(episodes_dir=EPISODES, rights_path=RIGHTS):
             if target_cps.intersection(ref_cps):
                 return {"ok": False, "reason": "target codepoint leaked into style references"}
             total_refs += len(refs)
+    family_count = len(families)
+    total_episodes = sum(counts.values())
+    if require_full_dataset:
+        expected = {"train": 1134, "validation": 299, "test": 299}
+        if counts != expected or family_count != 20 or multicodepoint != 238:
+            return {
+                "ok": False,
+                "reason": (
+                    "episode dataset does not match the audited full corpus: "
+                    f"counts={counts}, families={family_count}, "
+                    f"multi-codepoint={multicodepoint}"
+                ),
+            }
     return {
-        "ok": True, "split_counts": counts, "total_episodes": sum(counts.values()),
-        "families": len(families), "multicodepoint_targets": multicodepoint,
+        "ok": True, "split_counts": counts, "total_episodes": total_episodes,
+        "families": family_count, "multicodepoint_targets": multicodepoint,
         "reference_images": total_refs, "family_split_leakage": False,
     }
 
@@ -217,7 +230,7 @@ def main():
     ram = ram_gb()
     disk = shutil.disk_usage(ROOT)
     rights = inspect_rights()
-    episodes = inspect_episodes() if rights.get("ok") else {"ok": False, "reason": "rights manifest not ready"}
+    episodes = inspect_episodes(require_full_dataset=True) if rights.get("ok") else {"ok": False, "reason": "rights manifest not ready"}
     image_roots = {
         "target_root_exists": (TARGET_ROOT / "contextual_clusters.jsonl").is_file(),
         "reference_root_exists": (REFERENCE_ROOT / "glyph_crops.jsonl").is_file(),
