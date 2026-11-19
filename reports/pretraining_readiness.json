@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "daf2f16c78ce2dbe28e839c78f7e55c9348e04ce",
+  "repository_commit": "81ae3c6fb9aa5b7d2d82ab61bdf7d1e7dc415bdc",
   "training_allowed": false,
   "overall_status": "BLOCKED",
   "gates": [
@@ -29,9 +29,11 @@
       "status": "UNKNOWN",
       "evidence": [
         "docs/DATA_SPECIFICATION.md",
-        "docs/ARABIC_GLYPH_DATASET.md"
+        "docs/ARABIC_GLYPH_DATASET.md",
+        "scripts/audit_training_corpus.py",
+        "docs/TRAINING_CORPUS_AUDIT.md"
       ],
-      "notes": "The repository documents family-level splits; the local agent must verify the actual downloaded release, hashes, duplicate families, and split disjointness."
+      "notes": "The repository documents family-level splits; the local agent must verify the actual downloaded release, hashes, duplicate families, and split disjointness. A fail-closed local audit tool is now available, but no audit report from the actual local corpus has been supplied; status remains UNKNOWN."
     },
     {
       "id": "arabic_target_glyph_crops",
@@ -159,6 +161,17 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44468103067"
       ],
       "notes": "Per-file rights manifest schema, fail-closed validator, and batch HarfBuzz runner are implemented. The batch runner requires at least three distinct approved font families and exact SHA-256 matches. CI compiled the tools and passed 25 unit tests. The template is intentionally empty; no font-specific ML-training permissions have been reviewed or approved yet."
+    },
+    {
+      "id": "local_corpus_integrity_audit_tooling",
+      "status": "PASS",
+      "evidence": [
+        "scripts/audit_training_corpus.py",
+        "tests/test_training_corpus_audit.py",
+        "docs/TRAINING_CORPUS_AUDIT.md",
+        ".github/workflows/test-glyph-adapter.yml"
+      ],
+      "notes": "Fail-closed local audit tool and tests are implemented. This PASS covers tool implementation only; the actual user corpus has not yet been audited, so family_safe_data_integrity remains UNKNOWN."
     }
   ],
   "upstream": {
@@ -194,6 +207,7 @@
     "reason": "Requires actual hardware and completed model/data implementation."
   },
   "blockers": [
+    "Run scripts/audit_training_corpus.py on the extracted local corpus with font-root and image-root; inspect reports/local/dataset_audit.json. Do not treat tool CI as an audit of private local files.",
     "Populate and independently review the per-file font rights manifest with authoritative license evidence and exact SHA-256 values; run batch HarfBuzz only after the gate passes.",
     "Run the isolated-crop builder on the downloaded licensed font corpus and review generated crops; this adapter is not contextual joining/ligature supervision.",
     "Complete per-font asset-level ML-training rights review.",
@@ -205,6 +219,6 @@
     "Run HarfBuzz regression suite against legally cleared font families and review cluster mappings, contextual joins, lam-alef, ZWJ/ZWNJ, and mark attachment.",
     "Create independently annotated glyph-instance samples with two annotators and adjudication; annotation schema alone is not training data."
   ],
-  "recommended_next_step": "On the local Windows machine, complete the per-file font rights manifest for at least three distinct Arabic font families, run the rights validator and batch HarfBuzz regression, then create the stratified glyph-instance pilot for two independent annotators. Training remains blocked.",
+  "recommended_next_step": "Run the local corpus integrity audit, complete exact per-file font rights approvals, and run batch HarfBuzz across at least three distinct approved families. Then generate and inspect crops and build a two-annotator pilot. Other model, paired-data, hardware, and checkpoint gates remain blocked.",
   "generated_date": "2026-11-19"
 }
