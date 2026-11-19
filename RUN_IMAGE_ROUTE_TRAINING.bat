@@ -83,7 +83,7 @@ where py >nul 2>nul
 if %errorlevel%==0 (
   py -3 -m scripts.train_multimodal_glyph --episodes-dir "%EPISODES_DIR%" --target-root "%TARGET_ROOT%" --reference-root "%REFERENCE_ROOT%" --rights-manifest "%RIGHTS_MANIFEST%" --output-dir "%OUTPUT_DIR%" --max-steps %MAX_STEPS% --batch-size %BATCH_SIZE% --latent-dim %LATENT_DIM% --embedding-dim %EMBEDDING_DIM% --device %DEVICE%
 ) else (
-  python -m scripts.train_multimodal_glyph --episodes-dir "%EPISODES_DIR%" --target-root "%TARGET_ROOT%" --reference-root "%REFERENCE_ROOT%" --rights-manifest "%RIGHTS_MANIFEST%" --output-dir "%OUTPUT_DIR%" --max-steps %MAX_STEPS% --batch-size %BATCH_SIZE% --latent-dim %LATENT_DIM% --device %DEVICE%
+  python -m scripts.train_multimodal_glyph --episodes-dir "%EPISODES_DIR%" --target-root "%TARGET_ROOT%" --reference-root "%REFERENCE_ROOT%" --rights-manifest "%RIGHTS_MANIFEST%" --output-dir "%OUTPUT_DIR%" --max-steps %MAX_STEPS% --batch-size %BATCH_SIZE% --latent-dim %LATENT_DIM% --embedding-dim %EMBEDDING_DIM% --device %DEVICE%
 )
 
 if errorlevel 1 goto :failed
