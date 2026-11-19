@@ -64,7 +64,7 @@ def audit(candidate_path, output_dir, fetcher=fetch):
             quoted=re.findall(r"[\"“']([^\"”']+)[\"”']",tail)
             if quoted: reserved.extend(name.strip() for name in quoted if name.strip())
             else:
-                value=re.sub(r'^s\\s+','',tail,flags=re.I).strip().rstrip('.,;')
+                value=(tail[2:] if tail.lower().startswith('s ') else tail).strip().rstrip('.,;')
                 if value: reserved.append(value)
         reserved=sorted(set(reserved))
         license_records.append({
