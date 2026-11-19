@@ -19,6 +19,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install CPU model preflight dependencies
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
+          python -m pip install Pillow
       - name: Download contextual cluster targets from the completed data audit
         uses: actions/download-artifact@v4
         with:
@@ -33,10 +37,20 @@ jobs:
           path: .audit/isolated
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
+      - name: Download the exact conditional OFL rights manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: conditional-ofl-font-rights-manifest
+          path: .audit/rights
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
       - name: Build leakage-safe contextual style episodes
         run: |
           python scripts/build_contextual_style_episodes.py --targets .audit/contextual/contextual_clusters.jsonl --references .audit/isolated/glyph_crops.jsonl --output reports/contextual_style_episodes --refs-per-episode 4 --seed 20261119
-      - name: Upload contextual style episode dataset
+      - name: Run no-training real-data preflight
+        run: |
+          python scripts/preflight_multimodal_training.py --episodes-dir reports/contextual_style_episodes --target-root .audit/contextual --reference-root .audit/isolated --rights-manifest .audit/rights/font_rights.json --output reports/contextual_style_episodes/preflight.json
+      - name: Upload contextual episodes and no-training preflight
         uses: actions/upload-artifact@v4
         with:
           name: arabic-contextual-style-episodes
