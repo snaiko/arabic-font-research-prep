@@ -1,0 +1,45 @@
+name: Build contextual few-shot Arabic style episodes
+
+on:
+  workflow_run:
+    workflows: ["Validate Arabic glyph data and adapters"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  build-episodes:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Download contextual cluster targets from the completed data audit
+        uses: actions/download-artifact@v4
+        with:
+          name: arabic-harfbuzz-contextual-clusters
+          path: .audit/contextual
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Download isolated same-font style references from the completed data audit
+        uses: actions/download-artifact@v4
+        with:
+          name: isolated-arabic-glyph-crops
+          path: .audit/isolated
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Build leakage-safe contextual style episodes
+        run: |
+          python scripts/build_contextual_style_episodes.py --targets .audit/contextual/contextual_clusters.jsonl --references .audit/isolated/glyph_crops.jsonl --output reports/contextual_style_episodes --refs-per-episode 4 --seed 20261119
+      - name: Upload contextual style episode dataset
+        uses: actions/upload-artifact@v4
+        with:
+          name: arabic-contextual-style-episodes
+          path: reports/contextual_style_episodes
+          if-no-files-found: error
+          retention-days: 90
