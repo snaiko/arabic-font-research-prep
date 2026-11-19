@@ -24,7 +24,12 @@ def read_jsonl(path):
 def rights_index(path):
     if path is None: return {}
     data=json.loads(Path(path).read_text(encoding="utf-8"))
-    return {x.get("font_sha256"):x for x in data.get("fonts",[]) if x.get("font_sha256")}
+    # Candidate queues used font_sha256; the approved per-file manifest uses sha256.
+    return {
+        (x.get("font_sha256") or x.get("sha256")): x
+        for x in data.get("fonts",[])
+        if (x.get("font_sha256") or x.get("sha256"))
+    }
 
 def measure(image_path: Path):
     with Image.open(image_path) as im:
@@ -41,7 +46,6 @@ def measure(image_path: Path):
         count=sum(row_sums)
         if not count: raise ValueError("blank_image")
         x0,y0,x1,y1=bbox
-        # Fixed-length normalized row/column occupancy profiles in O(width*height).
         row=[]; col=[]
         for i in range(16):
             ya=i*h//16; yb=(i+1)*h//16
