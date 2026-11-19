@@ -1,0 +1,159 @@
+name: Arabeyes font candidate acquisition and technical audit
+
+on:
+  push:
+    paths:
+      - ".github/workflows/arabeyes-candidate-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acquire-and-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install audit dependencies
+        run: python -m pip install --upgrade fonttools uharfbuzz pillow
+      - name: Download and verify Debian source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --output arabeyes.tar.xz https://deb.debian.org/debian/pool/main/f/fonts-arabeyes/fonts-arabeyes_2.1.orig.tar.xz
+          echo "abc5f9628f4df02c8c5fdec210e9f628  arabeyes.tar.xz" | md5sum --check -
+          sha256sum arabeyes.tar.xz | tee archive-sha256.txt
+      - name: Extract only font and license evidence files
+        run: |
+          python - <<'PY'
+          import pathlib, tarfile
+          out = pathlib.Path("candidate-package")
+          out.mkdir(exist_ok=True)
+          with tarfile.open("arabeyes.tar.xz", "r:xz") as archive:
+              for member in archive.getmembers():
+                  p = pathlib.PurePosixPath(member.name)
+                  if not member.isfile() or p.is_absolute() or ".." in p.parts:
+                      continue
+                  name = p.name
+                  if name.lower().endswith(".ttf") or name in {"COPYING", "README", "ChangeLog"}:
+                      target = out / name
+                      target.write_bytes(archive.extractfile(member).read())
+          fonts = sorted(out.glob("*.ttf"))
+          if not fonts:
+              raise SystemExit("No TTF files found in verified Debian source archive")
+          print(f"Extracted {len(fonts)} font files and available license/provenance documents")
+          PY
+      - name: Audit font binaries, Arabic coverage, shaping, and render samples
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, re
+          from collections import Counter
+          from fontTools.ttLib import TTFont
+          from PIL import Image, ImageDraw, ImageFont
+          import uharfbuzz as hb
+
+          root = pathlib.Path("candidate-package")
+          out = pathlib.Path("arabeyes-audit")
+          fonts_out = out / "fonts"
+          previews = out / "previews"
+          fonts_out.mkdir(parents=True, exist_ok=True)
+          previews.mkdir(parents=True, exist_ok=True)
+          arabic_ranges = [(0x0600,0x06FF),(0x0750,0x077F),(0x08A0,0x08FF),(0xFB50,0xFDFF),(0xFE70,0xFEFF)]
+          phrase = "سلام عليكم لا إله إلا الله"
+          rows = []
+          for path in sorted(root.glob("*.ttf")):
+              raw = path.read_bytes()
+              digest = hashlib.sha256(raw).hexdigest()
+              font = TTFont(path, lazy=False)
+              cmap = {}
+              for table in font["cmap"].tables:
+                  if table.isUnicode():
+                      cmap.update(table.cmap)
+              arabic = sorted(cp for cp in cmap if any(a <= cp <= b for a,b in arabic_ranges))
+              names = font["name"]
+              def name_value(name_id):
+                  for n in names.names:
+                      if n.nameID == name_id:
+                          try: return n.toUnicode()
+                          except Exception: pass
+                  return ""
+              face = hb.Face(raw)
+              hbfont = hb.Font(face)
+              buf = hb.Buffer()
+              buf.add_str(phrase)
+              buf.direction = "rtl"
+              buf.script = "Arab"
+              buf.language = "ar"
+              hb.shape(hbfont, buf)
+              gids = [i.codepoint for i in buf.glyph_infos]
+              advances = [p.x_advance for p in buf.glyph_positions]
+              missing = sum(g == 0 for g in gids)
+              preview_ok = False
+              try:
+                  image = Image.new("RGB", (1200, 220), "white")
+                  draw = ImageDraw.Draw(image)
+                  pilfont = ImageFont.truetype(str(path), 64)
+                  draw.text((1160, 70), phrase, font=pilfont, fill="black", anchor="ra", direction="rtl", language="ar")
+                  image.save(previews / (path.stem + ".png"))
+                  preview_ok = True
+              except Exception as exc:
+                  preview_error = str(exc)
+              (fonts_out / path.name).write_bytes(raw)
+              rows.append({
+                  "file": path.name, "family_name": name_value(1), "subfamily_name": name_value(2),
+                  "postscript_name": name_value(6), "sha256": digest, "file_bytes": len(raw),
+                  "glyph_count": len(font.getGlyphOrder()), "unicode_codepoint_count": len(cmap),
+                  "arabic_script_range_codepoint_count": len(arabic),
+                  "arabic_codepoints": [f"U+{cp:04X}" for cp in arabic],
+                  "shaping_probe": {"text": phrase, "direction": "rtl", "script": "Arab",
+                                    "glyph_count": len(gids), "missing_glyph_count": missing,
+                                    "glyph_ids": gids, "advances": advances},
+                  "preview_rendered": preview_ok,
+                  "technical_candidate_only": True,
+                  "ml_training_allowed": False,
+                  "notes": "Automated cmap/HarfBuzz/render smoke audit only; not linguistic, artistic, or legal approval."
+              })
+          duplicate_hashes = Counter(r["sha256"] for r in rows)
+          for r in rows:
+              r["exact_binary_duplicate"] = duplicate_hashes[r["sha256"]] > 1
+          report = {
+              "source": "Debian fonts-arabeyes 2.1.orig.tar.xz",
+              "published_md5_verified": True,
+              "fonts_inspected": len(rows),
+              "unique_binary_hashes": len(duplicate_hashes),
+              "arabeyes_gpl_font_exception": "Document embedding exception is recorded upstream; it does not explicitly grant ML training or model-weight permission.",
+              "training_allowed": False,
+              "fonts": rows
+          }
+          (out / "audit.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          (out / "SUMMARY.md").write_text(
+              "# Arabeyes binary audit\n\n"
+              f"- Font binaries inspected: {len(rows)}\n"
+              f"- Unique SHA-256 values: {len(duplicate_hashes)}\n"
+              f"- Fonts with Arabic cmap entries: {sum(bool(r['arabic_script_range_codepoint_count']) for r in rows)}\n"
+              f"- Fonts passing zero-missing-glyph shaping probe: {sum(r['shaping_probe']['missing_glyph_count']==0 for r in rows)}\n"
+              f"- Previews rendered: {sum(r['preview_rendered'] for r in rows)}\n"
+              "- **ML training authorization: BLOCKED (0 files approved).**\n\n"
+              "This automated report is a technical screening, not proof of correct spelling, readability, calligraphic quality, duplicate design lineage, or legal permission.\n",
+              encoding="utf-8")
+          print((out / "SUMMARY.md").read_text())
+          if not rows:
+              raise SystemExit("No font records produced")
+          PY
+      - name: Preserve license and source evidence
+        run: |
+          mkdir -p arabeyes-audit/source-evidence
+          cp candidate-package/COPYING candidate-package/README candidate-package/ChangeLog arabeyes-audit/source-evidence/ 2>/dev/null || true
+          cp archive-sha256.txt arabeyes-audit/source-evidence/
+          cp arabeyes.tar.xz arabeyes-audit/source-evidence/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arabeyes-font-binaries-and-audit
+          path: |
+            arabeyes-audit/
+          if-no-files-found: error
+          retention-days: 30
