@@ -42,6 +42,7 @@ class OflTrainingRightsManifestTests(unittest.TestCase):
         result = build_manifest(candidates, audit)
         self.assertEqual(len(result["fonts"]), 1)
         record = result["fonts"][0]
+        self.assertEqual(record["font_file"], "example/Example-Regular.ttf")
         self.assertTrue(record["ml_training_allowed"])
         self.assertEqual(record["review_status"], "approved")
         self.assertEqual(record["reserved_font_names"], ["Example Reserved"])
@@ -70,6 +71,12 @@ class OflTrainingRightsManifestTests(unittest.TestCase):
         candidates, audit = self.fixture()
         candidates["fonts"][0]["ml_training_allowed"] = True
         with self.assertRaisesRegex(ValueError, "not fail-closed"):
+            build_manifest(candidates, audit)
+
+    def test_rejects_unsafe_source_path(self):
+        candidates, audit = self.fixture()
+        candidates["fonts"][0]["font_file"] = "data/raw_fonts/../outside.ttf"
+        with self.assertRaisesRegex(ValueError, "unsafe font path"):
             build_manifest(candidates, audit)
 
 
