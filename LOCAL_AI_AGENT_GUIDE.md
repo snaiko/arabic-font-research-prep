@@ -113,3 +113,14 @@ python scripts/validate_font_rights_manifest.py --manifest data/manifests/font_r
 python scripts/run_batch_shaping_regression.py --manifest data/manifests/font_rights.json --font-root "D:\ArabicFonts" --output-dir reports/local/shaping
 ```
 The second command checks every file hash and rights record before shaping any font. It creates one report per approved file and a batch summary. Keep local font files and reports private unless publication is explicitly authorized. A successful technical gate is not legal advice or visual-quality approval.
+## Local corpus integrity audit (run before crop generation)
+
+After the corpus release has been extracted and the sample manifest exists, run:
+
+```powershell
+python scripts/audit_training_corpus.py --samples data/training_samples/samples.jsonl --font-root data/raw_fonts --image-root data/training_samples --output reports/local/dataset_audit.json
+```
+
+If a separately reviewed source-asset manifest is available, add `--source-assets data/manifests/source_assets.jsonl`. The audit checks family split leakage, duplicate sample identities, font hash/family consistency, exact local font hashes, image existence/path safety, and explicit rights evidence. A PASS is only for those checks; it does not certify legal interpretation or visual quality. Do not upload private local reports or fonts without explicit permission.
+
+Run this audit before `build_isolated_glyph_crops.py`; if it fails, stop and fix the dataset rather than regenerating or relabeling splits.
