@@ -54,6 +54,12 @@ jobs:
         run: python scripts/validate_arabic_script_registry.py
       - name: Run all unit tests
         run: python -m unittest discover -s tests -v
+      - name: Verify training handoff documentation
+        run: |
+          test -s docs/OFL_AI_TRAINING_POLICY.md
+          test -s docs/LOCAL_TRAINING.md
+          test -s docs/CONTEXTUAL_EPISODE_DATASET.md
+          test -s docs/EXECUTABLE_MULTIMODAL_BASELINE.md
       - name: Download published font and glyph datasets
         env:
           GH_TOKEN: ${{ github.token }}
