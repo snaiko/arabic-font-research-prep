@@ -102,11 +102,12 @@ def inspect_rights(path=RIGHTS):
         for row in records
         if row.get("ml_training_allowed") is True and row.get("review_status") == "approved"
     }
-    if len(approved) < 3:
-        return {"ok": False, "reason": "rights manifest has fewer than three approved font files"}
+    family_count = len(set(approved.values()))
+    if len(approved) != 52 or family_count != 20:
+        return {"ok": False, "reason": f"expected 52 approved files across 20 families; found {len(approved)} files across {family_count} families"}
     return {
         "ok": True, "approved_font_files": len(approved),
-        "families": len(set(approved.values())),
+        "families": family_count,
         "output_font_license": policy["output_font_license"],
         "noncommercial_note": policy.get("noncommercial_note"),
     }
