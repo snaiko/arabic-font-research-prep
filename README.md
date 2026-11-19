@@ -2,7 +2,7 @@
 
 Research preparation for an Arabic font-generation system that learns a visual style from reference glyphs and predicts Arabic glyphs and shaped clusters.
 
-> **Current status (2026-11-19):** The image-reference raster baseline now has a conditional OFL rights manifest, audited contextual episodes, a local training entry point, and a no-training data/model preflight. **No model training has been started.** Full project readiness remains BLOCKED pending the gates listed below.
+> **Current status (2026-11-19):** The image-reference raster baseline now has a conditional OFL rights manifest, 1,732 audited contextual episodes, a local training entry point, and a successful no-training real-data/model preflight. **No model training has been started.** Full project readiness remains BLOCKED pending the gates listed below.
 
 ## Verified preparation
 
@@ -10,7 +10,7 @@ Research preparation for an Arabic font-generation system that learns a visual s
 - **Raster data:** 7,904 published samples from 52 font files and 20 families; family-safe split of 14 train / 3 validation / 3 test families; published corpus integrity audit passed.
 - **Isolated crops:** 1,872 single-codepoint glyph crops.
 - **Contextual targets:** 1,732 HarfBuzz-shaped cluster crops; 238 multi-codepoint clusters; independent glyph-ID mapping audit passed. Coverage is partial at 518/520 font-case pairs because two Aref Ruqaa tatweel cases do not render.
-- **Few-shot episodes:** 1,732 episodes, each pairing a contextual target with four isolated reference glyphs from the same exact font; target codepoints are excluded from references; 1,134 train / 299 validation / 299 test episodes across 20 families.
+- **Few-shot episodes:** 1,732 episodes, each pairing a contextual target with four isolated reference glyphs from the same exact font; target codepoints are excluded from references; target and reference image SHA-256 values are pinned; 1,134 train / 299 validation / 299 test episodes across 20 families. The real-data preflight loaded a batch and passed a no-gradient forward pass without updating weights ([artifact](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44529785828/artifacts/14531943917)).
 - **Shaping regression:** 52 conditionally approved fonts × 10 cases = 520 HarfBuzz regression reports; CI passed.
 - **Experimental model:** target Unicode content is now separate from image-style and text-style conditioning. Image, text and hybrid routes share one raster decoder. Six CPU PyTorch smoke tests passed; nine model/training-pipeline tests passed in the dedicated CPU workflow.
 - **Arabeyes research:** 36 binaries downloaded and checksum-verified; all passed one shaping smoke phrase and rendered previews. They remain excluded from training because GPL+Font Exception does not expressly settle ML training or model/output distribution.
