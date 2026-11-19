@@ -6,6 +6,12 @@ from pathlib import Path
 from validate_font_rights_manifest import validate
 from run_shaping_regression import run
 
+def require_minimum_families(manifest, minimum=3):
+    families={item["family_id"] for item in manifest.get("fonts",[])}
+    if len(families) < minimum:
+        raise ValueError(f"Need at least {minimum} distinct approved font families; found {len(families)}.")
+    return families
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--manifest",default="data/manifests/font_rights.json")
@@ -17,9 +23,8 @@ def main():
     root=Path(a.font_root).resolve()
     manifest=json.loads(Path(a.manifest).read_text(encoding="utf-8"))
     gate=validate(manifest,root,True)
-    family_ids={item["family_id"] for item in manifest["fonts"]}
-    if len(family_ids) < a.minimum_families:
-        raise SystemExit(f"BLOCKED: need at least {a.minimum_families} distinct approved font families; found {len(family_ids)}.")
+    try: family_ids=require_minimum_families(manifest,a.minimum_families)
+    except ValueError as exc: raise SystemExit(f"BLOCKED: {exc}")
     out=Path(a.output_dir); out.mkdir(parents=True,exist_ok=True)
     results=[]
     for item in manifest["fonts"]:
