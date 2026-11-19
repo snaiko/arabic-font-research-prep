@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "0844165976e02b5db6109c7af7c7e3d9ddadab49",
+  "repository_commit": "2ac9329b17a5b5bae7900ae09270f0bdb479d4b3",
   "training_allowed": true,
   "overall_status": "PARTIAL_READY_FOR_EXPERIMENTAL_IMAGE_ROUTE",
   "gates": [
@@ -108,9 +108,10 @@
         "scripts/preflight_local_training.py",
         "scripts/preflight_local_training.py",
         "START_LOCAL_TRAINING.bat",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535639834"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535639834",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099"
       ],
-      "notes": "A Windows local preflight now inspects CPU/GPU/VRAM/RAM/disk, validates the complete audited rights and episode corpus, verifies every image SHA-256 and runs a real no-training forward pass. The script is unit-tested and its cloud-side model footprint is known; the user's actual Windows hardware readings have not yet been collected."
+      "notes": "The exact local preflight script passed end-to-end on the GitHub Actions Linux runner (15.33 GB RAM, CPU-only, recommended batch 1), validating rights, exact splits, all image hashes and a real forward pass. Actual Windows hardware/GPU/VRAM/RAM/disk readings from the user's computer are still required."
     },
     {
       "id": "isolated_crop_and_episode_adapter",
@@ -397,10 +398,10 @@
       "status": "PASS",
       "evidence": [
         ".github/workflows/build-contextual-style-episodes.yml",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44536155715",
-        "artifact SHA-256 30cb94b9218ff0444dcf63c4910ea55d855cbc14c7064bf55908a11d8923c84e"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099",
+        "artifact SHA-256 43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc"
       ],
-      "notes": "One 9.95 MB GitHub Actions artifact contains the three episode splits, contextual target metadata and images, isolated reference metadata and images, and the exact conditional OFL rights manifest. Independently downloaded and inspected: 1,732 episodes (1,134/299/299), 20 families, 52 approved font files, 6,928 reference images, all target/reference paths present, zero family split leakage."
+      "notes": "Latest 9.95 MB artifact includes all runtime data and the conditional rights manifest. Independent ZIP audit: 1,732 episodes, 20 families, 52 approved font files, 6,928 reference images, zero missing image paths and no family split leakage."
     }
   ],
   "upstream": {
@@ -435,8 +436,9 @@
     "experimental_model_size": "20,115,074 parameters; FP32 weights 80,460,296 bytes; estimated weights + gradients + Adam state 321,841,184 bytes (~307 MiB), excluding activations, batches, runtime and OS.",
     "shared_unicode_embedding": "One shared full-Unicode embedding table (16 dimensions) is used for target codepoints and style prompt codepoints, reducing duplicated memory.",
     "local_preflight": "Windows local preflight validates 52 fonts/20 families, exact 1,732 episode split counts (1,134/299/299), 238 multi-codepoint targets, four references per episode, and all image hashes; actual user hardware readings remain pending.",
-    "single_download_handoff": "PASS: arabic-font-training-handoff artifact, 9,953,674 bytes, SHA-256 30cb94b9218ff0444dcf63c4910ea55d855cbc14c7064bf55908a11d8923c84e; independent ZIP inspection found all 1,732 targets and 6,928 references with zero missing image paths.",
-    "handoff_artifact_url": "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44536155715"
+    "single_download_handoff": "PASS: arabic-font-training-handoff artifact from run 44537037099, 9,953,673 bytes, SHA-256 43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc; independent ZIP inspection found all 1,732 targets and 6,928 references with zero missing image paths.",
+    "handoff_artifact_url": "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099",
+    "local_preflight_ci": "PASS in run 44537037099: 52 approved font files/20 families; episodes 1,134/299/299; 238 multi-codepoint targets; 6,928 references; no family leakage; full no-training forward preflight. CI runner: 15.33 GB RAM, CPU-only, recommended batch 1. User Windows hardware still unmeasured."
   },
   "tests": {
     "repository_tests": "GitHub Actions run 44535642388 passed 80 tests: 64 passed, 16 optional PyTorch tests skipped in the main data job; dedicated CPU PyTorch run 44535642258 passed 16/16 model and training-pipeline tests.",
@@ -451,9 +453,9 @@
     "component_caption_audit": "PASS: 1,732 records / 2,987 components / 3,464 paired captions / zero errors in run 44520251086",
     "font_specific_shaping_regression": "PASS: GitHub Actions run 44527935025 generated 52 font-specific HarfBuzz reports across 20 families; 10 shaping cases per font (520 total font-case records).",
     "real_data_preflight": "PASS in run 44535639834: all 1,732 target and 6,928 reference image hashes verified; 52 approved font hashes; real 128x128 forward pass; no optimizer/backward/weight update/checkpoint/training.",
-    "local_hardware_preflight": "Local Windows preflight script and launcher added; validates full 52-font/20-family rights manifest, exact episode counts (1,134/299/299), 20 families, 238 multi-codepoint targets, four same-font references, hashes and real forward pass. Unit-tested; actual user Windows hardware/GPU/RAM/disk inspection still required.",
+    "local_hardware_preflight": "PASS on the GitHub Actions Linux runner in run 44537037099: rights, exact episode counts, 238 multi-codepoint targets, all image roots, full SHA-256 verification and a real model forward pass. Runner detected 15.33 GB RAM, no CUDA, and recommended batch 1. This does not replace running START_LOCAL_TRAINING.bat on the user's Windows PC.",
     "model_memory": "20,115,074 parameters; FP32 weights 80,460,296 bytes; estimated weights+gradients+Adam state 321,841,184 bytes (~307 MiB), excluding activations, batches, runtime and OS.",
-    "single_download_handoff": "PASS: artifact arabic-font-training-handoff from workflow run 44536155715, 9,953,674 bytes, SHA-256 30cb94b9218ff0444dcf63c4910ea55d855cbc14c7064bf55908a11d8923c84e. Downloaded and inspected independently: 1,732 episodes, 20 families, 52 approved fonts, 6,928 references, all target/reference paths present, no family split leakage."
+    "single_download_handoff": "PASS: artifact arabic-font-training-handoff from workflow run 44537037099, 9,953,673 bytes, SHA-256 43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc. Independent ZIP inspection: 1,732 episodes, 20 families, 52 approved fonts, 6,928 reference images, zero missing target/reference paths and zero family split leakage."
   },
   "hardware": {
     "local_preflight": "not_run_in_this_preparation_update",
@@ -478,7 +480,7 @@
     "Arabeyes GPL+Font Exception binaries passed technical screening but remain excluded from training pending explicit ML-training/model-output permission.",
     "The user's actual Windows hardware/resource preflight has not yet been run. START_LOCAL_TRAINING.bat is ready; the CI memory estimate is not a substitute for the user's GPU/VRAM/RAM/disk readings."
   ],
-  "recommended_next_step": "The combined training data artifact is ready. Download arabic-font-training-handoff from run 44536155715 and extract its contents into the root of a fresh repository clone. Run START_LOCAL_TRAINING.bat on the user's Windows machine to collect actual CPU/GPU/VRAM/RAM/disk readings and revalidate all data. Only after that preflight and the user's explicit confirmation should RUN_IMAGE_ROUTE_TRAINING.bat be used.",
+  "recommended_next_step": "Download arabic-font-training-handoff from run 44537037099, extract into the root of a fresh repository clone, then run START_LOCAL_TRAINING.bat on the user's Windows machine. The local script will select a batch size from that machine's detected VRAM/RAM and write reports/local/machine_preflight.json. Only after this passes and the user explicitly approves should RUN_IMAGE_ROUTE_TRAINING.bat be used.",
   "generated_date": "2026-11-19",
   "experimental_image_route_ready": true,
   "training_scope": "Experimental image-reference raster baseline only: target Unicode cluster plus four same-font reference glyph images -> 128x128 raster. It is not native MX-Font, does not train semantic text prompts, and does not produce TTF/OTF files.",
