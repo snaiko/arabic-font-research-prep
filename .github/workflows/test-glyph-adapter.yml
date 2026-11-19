@@ -41,7 +41,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Compile scripts
-        run: python -m py_compile scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py scripts/validate_arabic_character_system.py scripts/import_unicode_arabic_registry.py scripts/validate_arabic_script_registry.py scripts/validate_glyph_visual_annotation.py scripts/validate_font_rights_manifest.py scripts/run_batch_shaping_regression.py scripts/run_shaping_regression.py scripts/compare_glyph_annotations.py
+        run: python -m py_compile scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py scripts/validate_arabic_character_system.py scripts/import_unicode_arabic_registry.py scripts/validate_arabic_script_registry.py scripts/validate_glyph_visual_annotation.py scripts/validate_font_rights_manifest.py scripts/run_batch_shaping_regression.py scripts/run_shaping_regression.py scripts/compare_glyph_annotations.py scripts/audit_training_corpus.py
       - name: Validate starter Arabic registry
         run: python scripts/validate_arabic_character_system.py
       - name: Generate complete Unicode 17 Arabic registry
