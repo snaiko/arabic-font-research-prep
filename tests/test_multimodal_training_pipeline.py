@@ -80,6 +80,18 @@ class MultimodalTrainingPipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not approved"):
             validate_rights([episode], self.rights(digest="b" * 64))
 
+    def test_real_training_requires_complete_52_font_20_family_manifest(self):
+        episode = self.make_episode(Path(tempfile.mkdtemp()), Path(tempfile.mkdtemp()))
+        with self.assertRaisesRegex(ValueError, "complete 52-file/20-family"):
+            validate_rights([episode], self.rights(), require_complete_manifest=True)
+
+    def test_rights_gate_requires_exactly_four_style_references(self):
+        episode = self.make_episode(Path(tempfile.mkdtemp()), Path(tempfile.mkdtemp()))
+        episode["style_references"].pop()
+        episode["reference_count"] = 3
+        with self.assertRaisesRegex(ValueError, "exactly four"):
+            validate_rights([episode], self.rights())
+
     def test_rights_gate_rejects_family_mismatch(self):
         episode = self.make_episode(Path(tempfile.mkdtemp()), Path(tempfile.mkdtemp()))
         episode["family"] = "wrong-family"
