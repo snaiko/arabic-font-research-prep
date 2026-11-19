@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 OFL_FAQ_URL = "https://openfontlicense.org/ofl-faq/"
 OFL_FAQ_VERSION = "1.1-update8 (November 2026)"
@@ -39,9 +39,19 @@ def build_manifest(candidates: dict, license_audit: dict) -> dict:
     approved = []
     seen_paths = set()
     for index, font in enumerate(fonts):
-        path = font.get("font_file", "")
+        original_path = font.get("font_file", "")
         family = font.get("family_id", "")
         digest = font.get("sha256", "")
+        if not original_path:
+            raise ValueError(f"fonts[{index}]: missing font path")
+        source_path = PurePosixPath(original_path)
+        if source_path.is_absolute() or ".." in source_path.parts:
+            raise ValueError(f"fonts[{index}]: unsafe font path")
+        parts = source_path.parts
+        if parts[:2] == ("data", "raw_fonts"):
+            path = PurePosixPath(*parts[2:]).as_posix()
+        else:
+            path = source_path.as_posix()
         if not path or path in seen_paths:
             raise ValueError(f"fonts[{index}]: missing or duplicate font path")
         seen_paths.add(path)
