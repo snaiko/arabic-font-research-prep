@@ -106,6 +106,30 @@ class MultimodalTrainingPipelineTests(unittest.TestCase):
             self.assertEqual(tuple(batch["reference_images"].shape), (1, 4, 1, 128, 128))
             self.assertEqual(batch["target_ids"][0, :2].tolist(), [0x0628, 0x064E])
 
+    def test_dataset_rejects_modified_target_image(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            target_root, ref_root = root / "target", root / "refs"
+            episode = self.make_episode(target_root, ref_root)
+            Image.new("L", (128, 128), 0).save(target_root / "images/target.png")
+            path = root / "train.jsonl"
+            path.write_text(json.dumps(episode) + "\\n", encoding="utf-8")
+            dataset = ContextualEpisodeDataset(path, target_root, ref_root)
+            with self.assertRaisesRegex(ValueError, "target image hash mismatch"):
+                dataset[0]
+
+    def test_dataset_rejects_modified_style_reference(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            target_root, ref_root = root / "target", root / "refs"
+            episode = self.make_episode(target_root, ref_root)
+            Image.new("L", (128, 128), 0).save(ref_root / "images/ref0.png")
+            path = root / "train.jsonl"
+            path.write_text(json.dumps(episode) + "\\n", encoding="utf-8")
+            dataset = ContextualEpisodeDataset(path, target_root, ref_root)
+            with self.assertRaisesRegex(ValueError, "style reference image hash mismatch"):
+                dataset[0]
+
     def test_edge_loss_is_finite(self):
         prediction = torch.rand(2, 1, 128, 128)
         target = torch.rand(2, 1, 128, 128)
