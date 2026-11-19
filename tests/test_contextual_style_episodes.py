@@ -51,8 +51,9 @@ class ContextualStyleEpisodeTests(unittest.TestCase):
 
     def test_requires_same_font_and_family_split(self):
         refs = self.references()
-        refs[0]["font_sha256"] = "b" * 64
-        refs[1]["split"] = "validation"
+        for row in refs:
+            row["family"] = "another-family"
+            row["split"] = "validation"
         episodes, skipped = build_episodes([self.target(0)], refs, refs_per_episode=4)
         self.assertEqual(episodes, [])
         self.assertEqual(sum(skipped.values()), 1)
