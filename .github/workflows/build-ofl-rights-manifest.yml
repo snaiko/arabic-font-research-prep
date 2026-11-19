@@ -1,0 +1,53 @@
+name: Build conditional OFL font rights manifest
+
+on:
+  push:
+    paths:
+      - "scripts/build_font_rights_candidates.py"
+      - "scripts/audit_google_fonts_licenses.py"
+      - "scripts/build_ofl_training_rights_manifest.py"
+      - "scripts/validate_font_rights_manifest.py"
+      - ".github/workflows/build-ofl-rights-manifest.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-rights-manifest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Download exact published font corpus
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p .audit/font
+          gh release download arabic-font-corpus-v1 --repo "${GITHUB_REPOSITORY}" --pattern "arabic-font-corpus.zip" --dir .audit/font
+          unzip -oq .audit/font/arabic-font-corpus.zip -d .
+      - name: Build exact per-file source evidence
+        run: |
+          python scripts/build_font_rights_candidates.py --fonts-jsonl data/raw_fonts/fonts.jsonl --font-root data/raw_fonts --output reports/font_rights_evidence_candidates.json
+      - name: Snapshot pinned upstream OFL license texts
+        run: |
+          python scripts/audit_google_fonts_licenses.py --candidates reports/font_rights_evidence_candidates.json --output-dir reports/font_license_evidence
+      - name: Build conditional OFL 1.1 ML training rights manifest
+        run: |
+          python scripts/build_ofl_training_rights_manifest.py --candidates reports/font_rights_evidence_candidates.json --license-audit reports/font_license_evidence/license_evidence_audit.json --output data/manifests/font_rights.json
+      - name: Verify every approved font path and SHA-256
+        run: |
+          python scripts/validate_font_rights_manifest.py --manifest data/manifests/font_rights.json --font-root data/raw_fonts
+      - name: Upload conditional rights manifest and complete evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: conditional-ofl-font-rights-manifest
+          path: |
+            data/manifests/font_rights.json
+            reports/font_rights_evidence_candidates.json
+            reports/font_license_evidence/
+          if-no-files-found: error
+          retention-days: 90
