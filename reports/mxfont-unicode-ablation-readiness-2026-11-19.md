@@ -73,6 +73,7 @@ The previous workflow run `44542514944` reported success, but its test-discovery
 - Added `scripts/build_mxfont_native_pairs.py` and `tests/test_mxfont_native_pairs.py` to this PR. The exporter constructs three same-font/different-character style images and three same-character/different-font content images per target, deterministically and without crossing family splits.
 - Reproduced the pairing logic against the downloaded handoff: **1,872/1,872 targets paired**, split counts 1,224/324/324, and all same-font/cross-font/codepoint/split invariants passed.
 - The generated manifest intentionally leaves `decomposition=null`; it does not pretend connected raster components are reviewed Arabic primitives.
+- GitHub Actions run [44543532476](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44543532476) passed on the PR head: all 16 existing multimodal tests plus all 9 MX-Font-specific tests (5 native-pairing tests and 4 Unicode-adapter tests). This is code/data-relationship validation, not a training or quality comparison.
 
 ## Remaining gates
 
