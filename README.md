@@ -10,6 +10,7 @@ A single reference glyph does not uniquely determine a typeface. The system must
 
 ## What is included
 
+- [Arabic character system v1](docs/ARABIC_CHARACTER_SYSTEM.md) and its machine-readable registry: Unicode joining metadata, provisional visual families, and strict validation.
 - [Model architecture](docs/MODEL_ARCHITECTURE.md): staged MX-Font-based design and Arabic-specific modules.
 - [Upstream baseline pinning](docs/UPSTREAM_BASELINE.md): official implementation, license boundaries, and reproducible pinning requirements.
 - [Unified dual-mode specification](docs/DUAL_MODE_MODEL_SPEC.md): image, prompt, and hybrid routes sharing one generator.
