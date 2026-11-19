@@ -3,29 +3,28 @@ name: Validate Arabic glyph data and adapters
 on:
   push:
     paths:
-      - "scripts/build_isolated_glyph_crops.py"
-      - "scripts/build_mxfont_episodes.py"
-      - "scripts/validate_arabic_character_system.py"
-      - "scripts/import_unicode_arabic_registry.py"
-      - "scripts/validate_arabic_script_registry.py"
-      - "scripts/validate_glyph_visual_annotation.py scripts/run_shaping_regression.py scripts/compare_glyph_annotations.py"
-      - "scripts/run_shaping_regression.py"\n      - "scripts/validate_font_rights_manifest.py"\n      - "scripts/run_batch_shaping_regression.py"\n      - "schemas/font_rights_manifest.schema.json"\n      - "data/manifests/font_rights.template.json"\n      - "docs/FONT_RIGHTS_AND_BATCH_SHAPING.md"
-      - "scripts/compare_glyph_annotations.py"
+      - "scripts/**"
+      - "schemas/glyph_visual_annotation.schema.json"
+      - "schemas/font_rights_manifest.schema.json"
       - "data/arabic_character_system_v1.json"
       - "data/shaping_regression_cases_v1.json"
+      - "data/manifests/font_rights.template.json"
       - "docs/ARABIC_CHARACTER_SYSTEM.md"
       - "docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md"
-      - "schemas/glyph_visual_annotation.schema.json"
+      - "docs/FONT_RIGHTS_AND_BATCH_SHAPING.md"
       - "tests/**"
       - ".github/workflows/test-glyph-adapter.yml"
   pull_request:
     paths:
       - "scripts/**"
+      - "schemas/glyph_visual_annotation.schema.json"
+      - "schemas/font_rights_manifest.schema.json"
       - "data/arabic_character_system_v1.json"
       - "data/shaping_regression_cases_v1.json"
+      - "data/manifests/font_rights.template.json"
       - "docs/ARABIC_CHARACTER_SYSTEM.md"
       - "docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md"
-      - "schemas/glyph_visual_annotation.schema.json"
+      - "docs/FONT_RIGHTS_AND_BATCH_SHAPING.md"
       - "tests/**"
       - ".github/workflows/test-glyph-adapter.yml"
   workflow_dispatch:
@@ -42,14 +41,14 @@ jobs:
         with:
           python-version: "3.11"
       - name: Compile scripts
-        run: python -m py_compile scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py scripts/validate_arabic_character_system.py scripts/import_unicode_arabic_registry.py scripts/validate_arabic_script_registry.py scripts/validate_glyph_visual_annotation.py
+        run: python -m py_compile scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py scripts/validate_arabic_character_system.py scripts/import_unicode_arabic_registry.py scripts/validate_arabic_script_registry.py scripts/validate_glyph_visual_annotation.py scripts/validate_font_rights_manifest.py scripts/run_batch_shaping_regression.py scripts/run_shaping_regression.py scripts/compare_glyph_annotations.py
       - name: Validate starter Arabic registry
         run: python scripts/validate_arabic_character_system.py
       - name: Generate complete Unicode 17 Arabic registry
         run: python scripts/import_unicode_arabic_registry.py --download
       - name: Validate generated Unicode registry
         run: python scripts/validate_arabic_script_registry.py
-      - name: Validate empty rights template is safely blocked\n        run: python scripts/validate_font_rights_manifest.py --manifest data/manifests/font_rights.template.json --allow-missing-files && exit 1 || test $? -eq 1\n      - name: Run all unit tests
+      - name: Run all unit tests
         run: python -m unittest discover -s tests -v
       - name: Upload generated Unicode registry
         uses: actions/upload-artifact@v4
