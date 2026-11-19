@@ -564,3 +564,6 @@ The user's actual Windows GPU/VRAM/RAM/disk preflight remains outstanding. The C
 - **Model weights:** distribution license remains unresolved and separate from the source-font OFL manifest.
 
 The matching machine-readable counts, run IDs, artifact digests and scope limitation are recorded in reports/pretraining_readiness.json.
+
+
+The later documentation commit that updated docs/LOCAL_TRAINING.md matches the main data-CI push path filter. Its resulting push run could not be listed or inspected through the available GitHub interface, so that post-update run status remains unknown.
