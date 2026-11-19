@@ -45,7 +45,7 @@ def read_jsonl(path: Path):
     return rows
 
 
-def validate_rights(episodes, rights_manifest):
+def validate_rights(episodes, rights_manifest, require_complete_manifest=False):
     policy = rights_manifest.get("policy", {})
     if policy.get("status") != "CONDITIONAL_OFL_1_1_APPROVAL":
         raise ValueError("rights manifest is not the conditional OFL-1.1 approved manifest")
@@ -58,6 +58,13 @@ def validate_rights(episodes, rights_manifest):
     }
     if not approved:
         raise ValueError("rights manifest contains no approved font hashes")
+    if require_complete_manifest:
+        family_count = len(set(approved.values()))
+        if len(approved) != 52 or family_count != 20:
+            raise ValueError(
+                f"expected the complete 52-file/20-family rights manifest; "
+                f"found {len(approved)} files across {family_count} families"
+            )
 
     families_by_split = {}
     for episode in episodes:
@@ -81,17 +88,23 @@ def validate_rights(episodes, rights_manifest):
             raise ValueError("target logical_text must be a non-empty Unicode string")
         target_codepoints = {f"U+{ord(char):04X}" for char in logical_text}
         target_image_hash = episode.get("target_image_sha256")
-        if not isinstance(target_image_hash, str) or len(target_image_hash) != 64:
+        if (
+            not isinstance(target_image_hash, str) or len(target_image_hash) != 64
+            or any(char not in "0123456789abcdef" for char in target_image_hash.lower())
+        ):
             raise ValueError("target image SHA-256 is missing or malformed")
         refs = episode.get("style_references", [])
-        if not refs or len(refs) != episode.get("reference_count"):
-            raise ValueError("episode has missing or inconsistent style references")
+        if len(refs) != 4 or episode.get("reference_count") != 4:
+            raise ValueError("every episode must contain exactly four style references")
         ref_cps = []
         for ref in refs:
             if ref.get("font_sha256") != font_hash or ref.get("family") != family or ref.get("split") != split:
                 raise ValueError("style reference is not from the exact target font and split")
             ref_hash = ref.get("image_sha256")
-            if not isinstance(ref_hash, str) or len(ref_hash) != 64:
+            if (
+                not isinstance(ref_hash, str) or len(ref_hash) != 64
+                or any(char not in "0123456789abcdef" for char in ref_hash.lower())
+            ):
                 raise ValueError("style reference image SHA-256 is missing or malformed")
             ref_cps.append(ref.get("codepoint"))
         if len(ref_cps) != len(set(ref_cps)):
@@ -225,7 +238,7 @@ def main():
     all_rows = [row for rows in split_rows.values() for row in rows]
     rights_path = Path(args.rights_manifest)
     rights = json.loads(rights_path.read_text(encoding="utf-8"))
-    approved_hashes = validate_rights(all_rows, rights)
+    approved_hashes = validate_rights(all_rows, rights, require_complete_manifest=True)
 
     if not split_rows["train"]:
         raise SystemExit("No training episodes are available")
