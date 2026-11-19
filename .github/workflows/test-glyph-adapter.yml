@@ -11,7 +11,7 @@ on:
       - "data/manifests/font_rights.template.json"
       - "docs/ARABIC_CHARACTER_SYSTEM.md"
       - "docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md"
-      - "docs/FONT_RIGHTS_AND_BATCH_SHAPING.md"
+      - "docs/FONT_RIGHTS_AND_BATCH_SHAPING.md"\n      - "docs/ARABIC_HUMAN_REVIEW_PROTOCOL.md"
       - "tests/**"
       - ".github/workflows/test-glyph-adapter.yml"
   pull_request:
@@ -43,7 +43,7 @@ jobs:
       - name: Install raster and shaping dependencies
         run: python -m pip install --upgrade Pillow uharfbuzz fonttools CairoSVG
       - name: Compile scripts
-        run: python -m py_compile scripts/audit_glyph_crops.py scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py scripts/validate_arabic_character_system.py scripts/import_unicode_arabic_registry.py scripts/validate_arabic_script_registry.py scripts/validate_glyph_visual_annotation.py scripts/validate_font_rights_manifest.py scripts/run_batch_shaping_regression.py scripts/run_shaping_regression.py scripts/compare_glyph_annotations.py scripts/audit_training_corpus.py scripts/audit_glyph_crops.py scripts/build_harfbuzz_contextual_crops.py scripts/audit_harfbuzz_contextual_crops.py
+        run: python -m py_compile scripts/audit_glyph_crops.py scripts/build_isolated_glyph_crops.py scripts/build_mxfont_episodes.py scripts/validate_arabic_character_system.py scripts/import_unicode_arabic_registry.py scripts/validate_arabic_script_registry.py scripts/validate_glyph_visual_annotation.py scripts/validate_font_rights_manifest.py scripts/run_batch_shaping_regression.py scripts/run_shaping_regression.py scripts/compare_glyph_annotations.py scripts/audit_training_corpus.py scripts/audit_glyph_crops.py scripts/build_harfbuzz_contextual_crops.py scripts/audit_harfbuzz_contextual_crops.py scripts/build_arabic_review_pack.py
       - name: Validate starter Arabic registry
         run: python scripts/validate_arabic_character_system.py
       - name: Generate complete Unicode 17 Arabic registry
@@ -78,6 +78,15 @@ jobs:
         with:
           name: arabic-contextual-cluster-audit
           path: reports/local/contextual_cluster_audit.json
+          if-no-files-found: error
+      - name: Build stratified Arabic human review pack
+        run: |
+          python scripts/build_arabic_review_pack.py --manifest data/contextual_glyph_crops/contextual_clusters.jsonl --crop-root data/contextual_glyph_crops --output reports/review_pack --per-case 10 --geometry-count 40 --seed 20261119
+      - name: Upload Arabic human review pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: arabic-human-review-pack
+          path: reports/review_pack
           if-no-files-found: error
       - name: Upload contextual cluster dataset
         uses: actions/upload-artifact@v4
