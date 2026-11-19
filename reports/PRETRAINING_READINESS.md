@@ -444,3 +444,67 @@ The updated episode workflow [44537037099](https://github.com/snaiko/arabic-font
 The CI runner reported 15.33 GB RAM, CPU-only PyTorch (no CUDA), and a recommended batch size of 1. The preflight returned `READY_FOR_EXPERIMENTAL_IMAGE_ROUTE` with no blockers, verified the full 52-file/20-family rights manifest, all 1,732 episodes, 238 multi-codepoint targets, 6,928 references, and a finite real 128×128 forward output. It explicitly recorded that no optimizer, backward pass, weight update, checkpoint or training occurred.
 
 **Important:** this is the GitHub-hosted Linux runner's hardware report. The user's Windows GPU/VRAM/RAM/disk remain unknown until START_LOCAL_TRAINING.bat is run on that computer.
+
+
+## Authoritative verification snapshot — 2026-11-19 (latest handoff and architecture boundary)
+
+This section supersedes earlier handoff sizes, run links and readiness wording above. It separates the standalone raster prototype from the selected MX-Font plan.
+
+### Latest successful GitHub Actions runs
+
+- [Main data validation run 44538878182](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538878182), source commit bd49ffc83e8e4db9a2b2dde2b33451d8e4ffe6b4: **83 tests**, 67 passed and 16 optional PyTorch tests skipped in this CPU-light job. Registry generation, license-manifest construction, published-corpus audit, contextual crop audit, and dataset build steps completed.
+- [Dedicated model smoke run 44538121400](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538121400): **16/16 tests passed**. These cover forward-only route shapes, Unicode identity, image-hash rejection, rights gates, model checkpoint save/restore and optimizer-state payload restoration. The optimizer payload test uses a no-op probe; it does not run an optimizer step.
+- [Episode/handoff build run 44539170273](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273): completed successfully and uploaded both the episode artifact and the one-download handoff.
+- Current documentation-only architecture audit commit: [48d4a8be](https://github.com/snaiko/arabic-font-research-prep/commit/48d4a8be17c7bfdb62f84fa850a787e69c66600a). It did not change model or data code.
+
+### Independent inspection of the actual handoff ZIP
+
+Artifact: [arabic-font-training-handoff, run 44539170273](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273/artifacts/14537521518).
+
+- ZIP size: **10,070,054 bytes**; SHA-256: 5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9.
+- Archive: **3,615 entries**, **18,740,096 uncompressed bytes**.
+- Episode splits: **1,134 train / 299 validation / 299 test**; 1,732 total; 20 families; 52 exact font hashes; 238 multi-codepoint targets; no family or font-hash split overlap.
+- Contextual targets: **1,732 PNGs**, all 160×160 grayscale, all 1,732 SHA-256 values matched, zero missing/unlisted/corrupt files.
+- Isolated reference corpus: **1,872 PNGs**, all 128×128 grayscale, all 1,872 SHA-256 values matched, zero missing/unlisted/corrupt files.
+- Episode reference use: **6,928 uses**, from **1,831 distinct reference PNGs**. The other **41** reference PNGs are valid manifest-backed crops retained in the source corpus but not sampled by this episode set.
+- Every episode has exactly four references from the same exact font hash, family and split; target codepoints do not occur in its references. Zero duplicate episode IDs and zero episode consistency errors.
+- Rights manifest: **52/52 approved exact font files across 20 families**, conditional SIL OFL 1.1 policy. This is not a NonCommercial license; downstream commercial use of generated font software is not prohibited by OFL, subject to its terms.
+
+The separate [arabic-contextual-style-episodes artifact](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273/artifacts/14536894957) was also downloaded. Its five files match byte-for-byte the corresponding episode/preflight files in the combined handoff ZIP.
+
+### Real-data no-training preflight
+
+Run 44539170273 returned READY_FOR_EXPERIMENTAL_IMAGE_ROUTE on the GitHub-hosted Linux runner:
+
+- 1,732 target and 6,928 reference image hashes verified through all three splits.
+- 52 approved font hashes and 20 families; 1,732 episodes and no family leakage.
+- One real batch loaded; finite output shape **1×1×128×128**.
+- Model: **20,115,074 parameters**; FP32 weights **80,460,296 bytes**; estimated weights + gradients + Adam state **321,841,184 bytes (~307 MiB)**, excluding activations/runtime overhead.
+- CI runner only: **15.61 GB RAM**, **85.79 GB free disk**, CPU-only PyTorch, no CUDA/VRAM, recommended batch size **1**.
+- Report flags: training_performed=false, optimizer_created=false, backward_pass_performed=false, weights_updated=false, checkpoint_created=false.
+
+This is not a Windows hardware result. The user's actual Windows CPU/GPU/VRAM/RAM/disk remain unknown. The real-data preflight intentionally creates no checkpoint. Checkpoint serialization/restore is unit-tested, but an end-to-end resume from a checkpoint produced by actual training cannot be tested without a training run; none was started.
+
+### Architecture compatibility decision
+
+The source-level [Model Architecture Compatibility Audit](model-architecture-compatibility-audit-2026-11-19.md) establishes:
+
+1. The upstream MX-Font model and models/arabic_multimodal_glyph.py have different module graphs, tensor shapes and latent semantics. No direct weight/checkpoint merge is supported.
+2. The current handoff is for the separate image-reference raster prototype: target Unicode cluster + four same-font references.
+3. Native MX-Font requires same-character content images from other fonts and audited character decomposition/primitive labels. Those are absent from the current handoff.
+4. Keep MX-Font as the primary architecture for the original plan; quarantine the experimental model as a separate prototype. Do not call it the merged model or feed its handoff to the native MX-Font trainer.
+
+### Recent workflow failures and resolution
+
+The latest 100 workflow runs contained 90 successes, 9 failures and 1 skipped run. The nine failed-run logs were inspected. They came from intermediate commits: an undersized rights-manifest test fixture (3 files instead of the production 52-file/20-family gate), malformed JSONL test fixtures containing a literal backslash-n, a target-image hash fixture mismatch, and episode-workflow path/import assumptions (hard-coded nested rights-manifest path and direct-script import). The current fixtures and workflow now use the 52/20 manifest fixture, valid JSONL newlines, hash-consistent data, recursive manifest discovery and module invocation. Later successful runs 44538878182, 44538121400 and 44539170273 verify the corrected current code. Older failed attempts in the wider 259-run history belong to superseded commits and were not rerun against their historical snapshots.
+
+### Remaining work / limits
+
+- Decide whether to continue the separate raster prototype or return to the native MX-Font integration path. The current handoff does not solve the MX-Font data contract.
+- Run the local Windows hardware preflight before any training and obtain explicit authorization before starting any optimizer/backward pass.
+- A real trained checkpoint and a real resume cycle remain unverified until a future explicitly authorized training run.
+- Text-style prompts are not semantic Arabic NLP; only the image-reference route has a real dataset/trainer.
+- Raster output is **not TTF/OTF**. Vectorization, OpenType tables, GSUB/GPOS, compilation and production QA remain unimplemented.
+- The model-weight distribution license is separate from the font rights manifest.
+
+No training was started during this verification.

@@ -90,9 +90,9 @@ jobs:
           - data/glyph_crops/ — isolated same-font reference metadata and reference images.
           - data/manifests/font_rights.json — exact conditional OFL 1.1 source-font rights manifest.
 
-          Expected audited data: 1,732 episodes (1,134 train / 299 validation / 299 test), 20 font families, 52 approved font files, four same-font reference images per target, 1,732 target images and 6,928 reference images.
+          Expected audited data: 1,732 episodes (1,134 train / 299 validation / 299 test), 20 font families, 52 approved font files, 1,732 contextual target PNGs and 1,872 isolated reference PNGs. Episodes contain 6,928 reference uses, drawn from 1,831 distinct reference PNGs; 41 additional valid reference crops are retained in the source crop corpus but are not sampled by these episodes.
 
-          This artifact prepares only the experimental image-reference raster route. It does not contain trained weights and no training has been run. Generated font software based on these sources must be released under SIL OFL 1.1. OFL is not a NonCommercial license.
+          This artifact prepares only the separate experimental image-reference raster prototype. It is not native MX-Font and is not a merged model. It contains no trained weights and no training has been run. Output is raster only, not TTF/OTF. Generated font software based on these sources must be released under SIL OFL 1.1. OFL is not a NonCommercial license; downstream commercial use is not prohibited by OFL terms.
           EOF
       - name: Upload complete one-download local training handoff
         uses: actions/upload-artifact@v4

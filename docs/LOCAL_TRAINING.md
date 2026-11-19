@@ -1,10 +1,12 @@
 # Local training handoff
 
+> **Architecture boundary:** this launcher trains only the separate ArabicMultimodalGlyphModel raster prototype. It is not MX-Font and is not a merged checkpoint. The current handoff cannot be passed directly to the native MX-Font loader. See [the compatibility audit](../reports/model-architecture-compatibility-audit-2026-11-19.md).
+
 ## One-download data package
 
-Download the GitHub Actions artifact named **arabic-font-training-handoff** from the latest successful [training-handoff workflow run](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099). The verified archive is 9.95 MB with SHA-256:
+Download the GitHub Actions artifact named **arabic-font-training-handoff** from [workflow run 44539170273](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273). The verified archive is 10,070,054 bytes with SHA-256:
 
-`43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc`
+`5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9`
 
 Extract the artifact contents into the root of a fresh clone of this repository. Do not rename or rearrange the folders. It provides:
 
@@ -13,7 +15,7 @@ Extract the artifact contents into the root of a fresh clone of this repository.
 - `data/glyph_crops/` — isolated same-font reference metadata and images.
 - `data/manifests/font_rights.json` — exact conditional OFL 1.1 rights manifest.
 
-The ZIP was independently inspected: 1,732 episodes (1,134 train / 299 validation / 299 test), 20 font families, 52 approved font files, 1,732 target images, 6,928 reference images, zero missing image paths, and no family split leakage.
+The ZIP was independently inspected: 1,732 episodes (1,134 train / 299 validation / 299 test), 20 font families, 52 approved font files, 1,732 contextual target PNGs and 1,872 isolated reference PNGs. All 3,604 PNGs decoded and matched their SHA-256 metadata; zero files were missing or unlisted. Episodes make 6,928 reference uses from 1,831 distinct reference PNGs; 41 additional valid reference crops are not sampled. There is no family or font-hash split leakage.
 
 ## Environment and hardware preflight
 
@@ -81,8 +83,8 @@ The exact 52 Google Fonts source files are conditionally approved for this train
 
 - Data, rights and image integrity: automated and verified.
 - Combined one-download data artifact: built and independently inspected.
-- Model smoke and training-pipeline tests: 16/16 passed in dedicated CPU CI.
-- Main repository CI: 80 tests; 64 passed and 16 optional PyTorch tests skipped in that job.
+- Model smoke and training-pipeline tests: 16/16 passed in [dedicated CPU CI run 44538121400](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538121400). Checkpoint model-state round-trip and optimizer-state payload restoration are unit-tested; no real trained checkpoint exists yet.
+- Main repository CI [44538878182](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538878182): 83 tests; 67 passed and 16 optional PyTorch tests skipped in that job.
 - Real-data no-training preflight: passed.
 - User's actual Windows hardware preflight: still required.
 - Full dataset training, tiny-subset overfit, convergence and held-out-family quality: not yet demonstrated.

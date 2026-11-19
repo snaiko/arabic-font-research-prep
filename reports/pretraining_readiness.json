@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "2ac9329b17a5b5bae7900ae09270f0bdb479d4b3",
+  "repository_commit": "48d4a8be17c7bfdb62f84fa850a787e69c66600a",
   "training_allowed": true,
   "overall_status": "PARTIAL_READY_FOR_EXPERIMENTAL_IMAGE_ROUTE",
   "gates": [
@@ -10,9 +10,10 @@
       "evidence": [
         "docs/UPSTREAM_BASELINE.md",
         "https://github.com/clovaai/fewshot-font-generation/commit/9d2b6ace3e23199e2a896de329d4c16489b09a96",
-        "docs/AI_AGENT_EXECUTION_SPEC.md"
+        "docs/AI_AGENT_EXECUTION_SPEC.md",
+        "reports/model-architecture-compatibility-audit-2026-11-19.md"
       ],
-      "notes": "The pinned upstream MX-Font source is documented, but its dependency closure/native Arabic loader is not integrated. This blocks a native MX-Font training route only. The current image-reference raster trainer is a separate standalone experimental baseline and does not import MX-Font."
+      "notes": "Pinned upstream MX-Font remains the primary architecture. The new source audit confirms that the separate experimental raster model is not weight/checkpoint-compatible and the current episode dataset is not native MX-Font-ready."
     },
     {
       "id": "asset_rights_and_provenance",
@@ -96,9 +97,10 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44531266058",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44531024750",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535642258",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535642388"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535642388",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538121400"
       ],
-      "notes": "Dedicated CPU PyTorch workflow 44535642258 passed 16/16 tests. Main data CI 44535642388 passed 80 tests (64 passed, 16 optional PyTorch tests skipped in that job). Checkpoint and optimizer resume are unit-tested. No actual dataset training, convergence, or held-out-family quality run has occurred."
+      "notes": "Latest dedicated CPU workflow 44538121400 passed 16/16 tests; main data CI 44538878182 passed 67/83 with 16 optional PyTorch tests skipped. Model-state checkpoint round-trip and optimizer-state payload restoration using a no-op probe pass. No training-produced checkpoint or real resume cycle exists."
     },
     {
       "id": "hardware_and_resource_plan",
@@ -109,9 +111,10 @@
         "scripts/preflight_local_training.py",
         "START_LOCAL_TRAINING.bat",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535639834",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273"
       ],
-      "notes": "The exact local preflight script passed end-to-end on the GitHub Actions Linux runner (15.33 GB RAM, CPU-only, recommended batch 1), validating rights, exact splits, all image hashes and a real forward pass. Actual Windows hardware/GPU/VRAM/RAM/disk readings from the user's computer are still required."
+      "notes": "Latest CI local-preflight logic passed in run 44539170273 on GitHub-hosted Linux: 15.61 GB RAM, 85.79 GB free disk, CPU-only/no CUDA, recommended batch 1. Actual Windows hardware remains unknown."
     },
     {
       "id": "isolated_crop_and_episode_adapter",
@@ -365,18 +368,20 @@
       "evidence": [
         "scripts/build_contextual_style_episodes.py",
         "docs/CONTEXTUAL_EPISODE_DATASET.md",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530432867/artifacts/14533013474"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530432867/artifacts/14533013474",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273"
       ],
-      "notes": "1,732 deterministic episodes generated with four same-font isolated references per contextual target; zero targets skipped; 1,134 train / 299 validation / 299 test; 20 families; 238 multi-codepoint targets; no family split leakage; target and reference image SHA-256 values are pinned."
+      "notes": "Latest episode build 44539170273 passed: 1,732 episodes (1,134/299/299), 20 families, 238 multi-codepoint targets, four same-font references per target, no family/hash split leakage. The package is for the separate raster prototype, not native MX-Font."
     },
     {
       "id": "real_data_model_preflight",
       "status": "PASS",
       "evidence": [
         "scripts/preflight_multimodal_training.py",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530432867/artifacts/14533013474"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530432867/artifacts/14533013474",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273"
       ],
-      "notes": "No-training preflight verified all 1,732 target image hashes and all 6,928 style-reference image hashes across train/validation/test, validated all 52 approved font hashes, loaded a real batch, and passed a finite 128x128 image-route forward pass. The report confirms no optimizer, backward pass, weight update, checkpoint, or training occurred."
+      "notes": "Run 44539170273 verified all 1,732 target and 6,928 reference uses, 52 approved font hashes, and a finite 128x128 real-batch output. It created no optimizer/checkpoint and performed no backward pass, weight update or training."
     },
     {
       "id": "local_image_route_training_entrypoint",
@@ -399,9 +404,19 @@
       "evidence": [
         ".github/workflows/build-contextual-style-episodes.yml",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099",
-        "artifact SHA-256 43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc"
+        "artifact SHA-256 43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273"
       ],
-      "notes": "Latest 9.95 MB artifact includes all runtime data and the conditional rights manifest. Independent ZIP audit: 1,732 episodes, 20 families, 52 approved font files, 6,928 reference images, zero missing image paths and no family split leakage."
+      "notes": "Latest artifact from run 44539170273 is 10,070,054 bytes (SHA-256 5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9). Independent ZIP audit verified 1,732 target PNGs and 1,872 reference PNGs; all 3,604 image hashes match; 6,928 reference uses; zero missing/unlisted/corrupt files."
+    },
+    {
+      "id": "mxfont_architecture_and_data_contract_compatibility",
+      "status": "BLOCKED",
+      "notes": "Source audit found no direct weight/checkpoint mapping between upstream MX-Font and the separate experimental ArabicMultimodalGlyphModel. The current episode handoff lacks MX-Font's same-character cross-font content images and audited decomposition/primitive labels; it cannot be passed directly to the native MX-Font trainer.",
+      "evidence": [
+        "reports/model-architecture-compatibility-audit-2026-11-19.md",
+        "https://github.com/clovaai/fewshot-font-generation/commit/9d2b6ace3e23199e2a896de329d4c16489b09a96"
+      ]
     }
   ],
   "upstream": {
@@ -410,7 +425,7 @@
     "pin_verified_date": "2026-11-19",
     "license_status": "PARTIAL_AUDIT_BLOCKED",
     "baseline_reproduction": "NOT_RUN",
-    "compatibility_note": "Upstream train_MX.py uses CUDA APIs and NCCL; Windows/device compatibility is not established."
+    "compatibility_note": "The source-level compatibility audit found that native MX-Font and the separate experimental ArabicMultimodalGlyphModel have different module graphs, tensor shapes and latent semantics; no direct weight/checkpoint merge is supported. The current episode handoff is not native MX-Font-ready because same-character cross-font content images and audited decomposition/primitive labels are absent."
   },
   "data": {
     "existing_raster_dataset_description": "Verified published release corpus: 7,904 contextual raster samples, 52 font files, 20 font families; all 7,904 referenced image files exist in the extracted dataset. This does not establish asset-level ML-training permission or visual quality.",
@@ -428,64 +443,212 @@
     "component_caption_integrity_audit": "PASS: 1,732 source-bound records, 2,987 connected-component candidates, 3,464 Arabic/English captions, 20 families; 0 boundary-touching crops, 0 audit errors. All semantic identities remain unknown, captions machine-generated/unreviewed, and 0 records training-eligible.",
     "executable_model_baseline": "Experimental shared decoder with image, Unicode-codepoint text, and hybrid conditioning. All three routes pass CPU forward/backward smoke tests. It is not MX-Font, not a semantic Arabic language model, and not quality-validated.",
     "font_specific_shaping_regression": "PASS: 52/52 conditional OFL font files passed manifest/hash validation and each produced 10 HarfBuzz regression case outputs (520 records total). This is a reproducible shaping capture, not visual review.",
-    "contextual_fewshot_episodes": "PASS: 1,732 episodes; four same-font isolated reference glyphs per contextual target; zero skipped; train=1,134, validation=299, test=299; 20 families; 238 multi-codepoint targets; no family leakage; all target/reference image SHA-256 values pinned.",
-    "real_data_preflight": "PASS in run 44535639834: 1,732 target image hashes + 6,928 reference image hashes verified; 52 approved font hashes; real 128x128 forward pass; no training or optimizer activity.",
+    "contextual_fewshot_episodes": "PASS: 1,732 episodes; four same-font isolated references per contextual target; train=1,134, validation=299, test=299; 20 families; 238 multi-codepoint targets; no family or font-hash split leakage. Latest episode build run 44539170273.",
+    "real_data_preflight": "PASS in run 44539170273: all 1,732 target and 6,928 episode-reference uses SHA-256 verified across the three splits; 52 approved font hashes; real 128x128 finite forward output; no optimizer, backward, weight update, checkpoint or training.",
     "experimental_training_scope": "Ready for a controlled image-reference raster experiment only. Text-style prompts, native MX-Font integration, vectorization, OpenType tables and production font quality are not complete.",
     "model_memory_estimate": "73,604,738 parameters; FP32 weights 294,418,952 bytes (~294 MB); weights+gradients+AdamW moments estimated at 1,177,675,808 bytes (~1.18 GB), excluding activations and runtime overhead.",
     "local_hardware_preflight": "Updated scripts/preflight_local_training.py records CPU/GPU/VRAM/RAM/disk, validates all required artifacts and runs the real-data no-training preflight. Logic tests pass; the user's actual Windows machine has not yet been inspected.",
-    "experimental_model_size": "20,115,074 parameters; FP32 weights 80,460,296 bytes; estimated weights + gradients + Adam state 321,841,184 bytes (~307 MiB), excluding activations, batches, runtime and OS.",
+    "experimental_model_size": "20,115,074 parameters; FP32 weights 80,460,296 bytes; estimated weights + gradients + Adam state 321,841,184 bytes (~307 MiB), excluding activations, batches, runtime and OS. This is the separate experimental raster prototype, not MX-Font.",
     "shared_unicode_embedding": "One shared full-Unicode embedding table (16 dimensions) is used for target codepoints and style prompt codepoints, reducing duplicated memory.",
     "local_preflight": "Windows local preflight validates 52 fonts/20 families, exact 1,732 episode split counts (1,134/299/299), 238 multi-codepoint targets, four references per episode, and all image hashes; actual user hardware readings remain pending.",
-    "single_download_handoff": "PASS: arabic-font-training-handoff artifact from run 44537037099, 9,953,673 bytes, SHA-256 43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc; independent ZIP inspection found all 1,732 targets and 6,928 references with zero missing image paths.",
-    "handoff_artifact_url": "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099",
-    "local_preflight_ci": "PASS in run 44537037099: 52 approved font files/20 families; episodes 1,134/299/299; 238 multi-codepoint targets; 6,928 references; no family leakage; full no-training forward preflight. CI runner: 15.33 GB RAM, CPU-only, recommended batch 1. User Windows hardware still unmeasured."
+    "single_download_handoff": "PASS: artifact arabic-font-training-handoff from run 44539170273, 10,070,054 bytes, SHA-256 5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9. Independent ZIP inspection: 3,615 entries / 18,740,096 uncompressed bytes; 1,732 targets and 1,872 reference PNGs; all 3,604 images decoded and SHA-256 verified; 6,928 reference uses across 1,831 distinct sampled files, plus 41 valid reference crops not sampled; zero missing/unlisted/corrupt images.",
+    "handoff_artifact_url": "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273/artifacts/14537521518",
+    "local_preflight_ci": "PASS in run 44539170273: Linux CI runner reported 15.61 GB RAM, 85.79 GB free disk, CPU-only PyTorch/no CUDA, recommended batch 1. Verified 52 approved fonts/20 families, exact episode splits, all episode image hashes and one finite 128x128 forward pass. User Windows hardware remains unmeasured.",
+    "native_mxfont_compatibility": "BLOCKED: source audit found no direct weight/checkpoint mapping. The current handoff lacks MX-Font's same-character cross-font content images and audited primitive/decomposition labels.",
+    "handoff_image_inventory": "Independent ZIP audit: 1,732 contextual PNGs (160x160) and 1,872 isolated reference PNGs (128x128); all 3,604 files decoded and matched SHA-256 metadata. 6,928 episode reference uses draw from 1,831 distinct PNGs; 41 valid reference PNGs remain unused by the current sampler."
   },
   "tests": {
-    "repository_tests": "Latest main CI run 44537047233 passed 80 tests: 64 passed and 16 optional PyTorch tests skipped in the main data job. Dedicated CPU PyTorch run 44535642258 passed 16/16 model and training-pipeline tests.",
+    "repository_tests": "Latest main data CI run 44538878182: 83 tests, 67 passed and 16 optional PyTorch tests skipped. Dedicated CPU model run 44538121400: 16/16 passed.",
     "image_route": "PASS: CPU forward/backward smoke test in run 44520250916",
     "prompt_route": "PASS: CPU forward/backward Unicode-codepoint conditioning smoke test in run 44520250916; not semantic Arabic NLP",
     "hybrid_route": "PASS: CPU forward/backward confidence-gated fusion smoke test in run 44520250916",
-    "checkpoint_round_trip": "PASS: model and optimizer-state restore/resume smoke tests in run 44520250916",
+    "checkpoint_round_trip": "Model checkpoint save/restore and optimizer-state payload save/restore passed unit tests in run 44538121400. The optimizer payload test uses a no-op probe and does not call optimizer.step(). No training-produced checkpoint exists; end-to-end resume from a real trained checkpoint remains unverified.",
     "arabic_linguistic_metadata_audit": "PASS: 1,732 clusters / 2,022 codepoints / zero errors; contextual coverage PARTIAL 518/520 pairs in run 44520251086",
     "component_caption_builder": "PASS: 1,732 records / 2,987 component candidates in run 44520251086",
     "pinned_license_evidence": "PASS: 20 pinned official SIL OFL 1.1 license snapshots covering 52 exact font files. Conditional OFL AI training manifest generated and hash-validated for all 52 files in run 44527370231.",
-    "model_smoke_tests": "16/16 passed in dedicated CPU PyTorch run 44535642258, including shared Unicode embedding, parameter budget, all three routes, checkpoint restore, optimizer resume, and data/rights pipeline.",
+    "model_smoke_tests": "16/16 passed in dedicated CPU PyTorch run 44538121400, including forward-only routes, shared Unicode embedding, parameter budget, checkpoint model-state round-trip, optimizer-state payload restoration using a no-op probe, rights gates, image-hash rejection and four-reference episode validation.",
     "component_caption_audit": "PASS: 1,732 records / 2,987 components / 3,464 paired captions / zero errors in run 44520251086",
     "font_specific_shaping_regression": "PASS: GitHub Actions run 44527935025 generated 52 font-specific HarfBuzz reports across 20 families; 10 shaping cases per font (520 total font-case records).",
-    "real_data_preflight": "PASS in run 44535639834: all 1,732 target and 6,928 reference image hashes verified; 52 approved font hashes; real 128x128 forward pass; no optimizer/backward/weight update/checkpoint/training.",
+    "real_data_preflight": "PASS in run 44539170273: all 1,732 target and 6,928 reference uses verified; 52 approved font hashes; one real 128x128 forward pass; training_performed=false, optimizer_created=false, backward_pass_performed=false, weights_updated=false, checkpoint_created=false.",
     "local_hardware_preflight": "PASS on the GitHub Actions Linux runner in run 44537037099: rights, exact episode counts, 238 multi-codepoint targets, all image roots, full SHA-256 verification and a real model forward pass. Runner detected 15.33 GB RAM, no CUDA, and recommended batch 1. This does not replace running START_LOCAL_TRAINING.bat on the user's Windows PC.",
     "model_memory": "20,115,074 parameters; FP32 weights 80,460,296 bytes; estimated weights+gradients+Adam state 321,841,184 bytes (~307 MiB), excluding activations, batches, runtime and OS.",
-    "single_download_handoff": "PASS: artifact arabic-font-training-handoff from workflow run 44537037099, 9,953,673 bytes, SHA-256 43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc. Independent ZIP inspection: 1,732 episodes, 20 families, 52 approved fonts, 6,928 reference images, zero missing target/reference paths and zero family split leakage."
+    "single_download_handoff": "PASS: artifact from run 44539170273, 10,070,054 bytes, SHA-256 5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9; independent ZIP inspection verified all 3,604 PNG files and every manifest hash."
   },
   "hardware": {
-    "local_preflight": "not_run_in_this_preparation_update",
-    "device": "unknown",
+    "local_preflight": "not_run_on_user_windows_machine",
+    "device": "user Windows hardware unknown",
     "vram_gb": null,
     "ram_gb": null,
-    "free_disk_gb": null
+    "free_disk_gb": null,
+    "ci_runner": {
+      "os": "GitHub-hosted Linux",
+      "ram_gb": 15.61,
+      "free_disk_gb": 85.79,
+      "cuda_available": false,
+      "vram_gb": null,
+      "recommended_batch_size": 1
+    }
   },
   "resource_estimate": {
-    "status": "not_estimated",
-    "reason": "Requires actual hardware and completed model/data implementation."
+    "status": "CI_MODEL_ESTIMATE_ONLY",
+    "parameter_count": 20115074,
+    "fp32_weight_bytes": 80460296,
+    "estimated_weights_gradients_adam_bytes": 321841184,
+    "approx_mib": 307,
+    "excludes": [
+      "activations",
+      "batches",
+      "temporary workspaces",
+      "PyTorch/runtime allocations",
+      "operating system"
+    ],
+    "note": "This is not a measurement of the user's Windows machine."
   },
   "blockers": [
-    "The current trainer is a standalone experimental raster baseline, not native MX-Font. The native MX-Font dependency closure and Arabic loader adapter remain unfinished if that architecture is still required.",
-    "The current trainer learns the image-reference route only. The text-style route lacks reviewed semantic style prompts and a pretrained semantic Arabic text encoder.",
-    "The model outputs raster glyphs, not TTF/OTF fonts. Vectorization, contour cleanup, cmap/name/hmtx tables, GSUB/GPOS shaping and final font QA remain future work.",
-    "No actual dataset training has started, so tiny-subset overfit, convergence, held-out-family quality, and full-run metrics are unknown.",
+    "The current handoff and trainer belong to the separate experimental ArabicMultimodalGlyphModel raster prototype, not native MX-Font. The architecture audit found no direct weight/checkpoint merge.",
+    "Native MX-Font needs same-character content images from other fonts plus audited Arabic decomposition/primitive labels; the current 1,732-episode handoff does not contain that contract.",
+    "The user's actual Windows GPU/VRAM/RAM/disk preflight has not been run.",
+    "No real training checkpoint or end-to-end resume cycle exists because training has not been started.",
+    "The model outputs raster images, not TTF/OTF fonts; vectorization, OpenType tables, GSUB/GPOS, font compilation and production QA remain future work.",
     "The model-weight distribution license is separate from the OFL source-font manifest and remains unresolved.",
-    "SIL OFL is not a NonCommercial license. The project can distribute its own outputs for free, but downstream commercial use is not prohibited by OFL. Strict downstream NC use requires written permissions for a different license.",
+    "SIL OFL is not a NonCommercial license; downstream commercial use of generated font software is not prohibited by OFL, subject to its terms.",
     "Contextual shaping coverage remains 518/520 font-case pairs; two Aref Ruqaa tatweel cases are explicitly absent.",
-    "Expert visual/spelling/calligraphic validation and semantic component labels remain unapproved. These are required for production quality claims, not for the first self-supervised raster experiment.",
-    "Arabeyes GPL+Font Exception binaries passed technical screening but remain excluded from training pending explicit ML-training/model-output permission.",
-    "The user's actual Windows hardware/resource preflight has not yet been run. START_LOCAL_TRAINING.bat is ready; the CI memory estimate is not a substitute for the user's GPU/VRAM/RAM/disk readings."
+    "Expert visual/spelling/calligraphic validation and semantic component labels remain unapproved.",
+    "Arabeyes GPL+Font Exception binaries remain excluded from training pending explicit ML-training/model-output permission."
   ],
-  "recommended_next_step": "Download arabic-font-training-handoff from run 44537037099, extract into the root of a fresh repository clone, then run START_LOCAL_TRAINING.bat on the user's Windows machine. The local script will select a batch size from that machine's detected VRAM/RAM and write reports/local/machine_preflight.json. Only after this passes and the user explicitly approves should RUN_IMAGE_ROUTE_TRAINING.bat be used.",
+  "recommended_next_step": "Do not treat the experimental handoff as a merged MX-Font model. For the original plan, the next engineering task is a native MX-Font Arabic data-contract/adapter design: construct same-character cross-font content images, define audited primitive/decomposition labels, and specify where Unicode/joining metadata enters the pinned MX-Font feature/factor pipeline. Keep the raster prototype quarantined. If the user later explicitly chooses the separate raster experiment, first run START_LOCAL_TRAINING.bat on the actual Windows computer and obtain explicit approval; no training is authorized by this report.",
   "generated_date": "2026-11-19",
   "experimental_image_route_ready": true,
   "training_scope": "Experimental image-reference raster baseline only: target Unicode cluster plus four same-font reference glyph images -> 128x128 raster. It is not native MX-Font, does not train semantic text prompts, and does not produce TTF/OTF files.",
   "training_started": false,
   "training_authorized_by_user": false,
   "production_font_generation_ready": false,
-  "model_weight_distribution_license": "UNRESOLVED — separate from the source-font rights manifest"
+  "model_weight_distribution_license": "UNRESOLVED — separate from the source-font rights manifest",
+  "latest_verification": {
+    "verified_date": "2026-11-19",
+    "source_data_commit": "bd49ffc83e8e4db9a2b2dde2b33451d8e4ffe6b4",
+    "architecture_audit_commit": "48d4a8be17c7bfdb62f84fa850a787e69c66600a",
+    "runs": {
+      "main_data_ci": {
+        "id": 44538878182,
+        "url": "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538878182",
+        "status": "success",
+        "tests_total": 83,
+        "tests_passed": 67,
+        "tests_skipped": 16
+      },
+      "model_smoke": {
+        "id": 44538121400,
+        "url": "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538121400",
+        "status": "success",
+        "tests_passed": 16,
+        "tests_total": 16
+      },
+      "episode_handoff": {
+        "id": 44539170273,
+        "url": "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273",
+        "status": "success"
+      }
+    },
+    "workflow_run_inventory": {
+      "total_runs_reviewed": 259,
+      "success": 172,
+      "failure": 85,
+      "skipped": 2,
+      "latest_100": {
+        "success": 90,
+        "failure": 9,
+        "skipped": 1
+      },
+      "note": "The nine failures in the latest 100 runs were log-inspected and later green runs verify the corrected current code. Older failed runs belong to superseded commits and were not rerun against historical snapshots."
+    },
+    "artifact": {
+      "name": "arabic-font-training-handoff",
+      "artifact_id": 14537521518,
+      "url": "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273/artifacts/14537521518",
+      "size_bytes": 10070054,
+      "sha256": "5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9",
+      "archive_entries": 3615,
+      "uncompressed_bytes": 18740096
+    },
+    "dataset": {
+      "episodes": 1732,
+      "splits": {
+        "train": 1134,
+        "validation": 299,
+        "test": 299
+      },
+      "families": 20,
+      "font_hashes": 52,
+      "family_splits": {
+        "train": 14,
+        "validation": 3,
+        "test": 3
+      },
+      "multicodepoint_targets": 238,
+      "family_split_leakage": false,
+      "font_hash_split_leakage": false
+    },
+    "images": {
+      "target_pngs": 1732,
+      "target_pngs_sha256_verified": 1732,
+      "target_dimensions": "160x160 grayscale",
+      "reference_pngs": 1872,
+      "reference_pngs_sha256_verified": 1872,
+      "reference_dimensions": "128x128 grayscale",
+      "total_pngs": 3604,
+      "all_pngs_decoded": true,
+      "missing_files": 0,
+      "unlisted_files": 0,
+      "corrupt_images": 0,
+      "episode_reference_uses": 6928,
+      "distinct_reference_pngs_sampled": 1831,
+      "valid_reference_pngs_not_sampled": 41
+    },
+    "rights": {
+      "status": "CONDITIONAL_OFL_1_1_APPROVAL",
+      "approved_font_files": 52,
+      "families": 20,
+      "required_generated_font_license": "SIL Open Font License 1.1",
+      "noncommercial": false,
+      "downstream_commercial_use_prohibited": false
+    },
+    "preflight": {
+      "status": "PASS",
+      "training_performed": false,
+      "optimizer_created": false,
+      "backward_pass_performed": false,
+      "weights_updated": false,
+      "checkpoint_created": false,
+      "real_batch_loaded": true,
+      "forward_output_shape": [
+        1,
+        1,
+        128,
+        128
+      ]
+    },
+    "model": {
+      "type": "separate experimental raster prototype",
+      "parameter_count": 20115074,
+      "fp32_weight_bytes": 80460296,
+      "estimated_weights_gradients_adam_bytes": 321841184,
+      "ci_runner_ram_gb": 15.61,
+      "ci_runner_disk_free_gb": 85.79,
+      "cuda_available": false,
+      "recommended_batch_size": 1
+    },
+    "checkpoint": {
+      "model_state_round_trip_tested": true,
+      "optimizer_state_payload_tested_with_noop_probe": true,
+      "optimizer_step_executed": false,
+      "real_training_checkpoint_created": false,
+      "end_to_end_resume_from_trained_checkpoint_verified": false
+    },
+    "architecture_compatibility": {
+      "mxfont_and_prototype_direct_weight_merge_supported": false,
+      "current_dataset_native_mxfont_compatible": false,
+      "report": "reports/model-architecture-compatibility-audit-2026-11-19.md"
+    }
+  }
 }

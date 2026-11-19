@@ -2,7 +2,7 @@
 
 Research preparation for an Arabic font-generation system that learns a visual style from reference glyphs and predicts Arabic glyphs and shaped clusters.
 
-> **Current status (2026-11-19):** The standalone image-reference raster baseline is **partially ready for a controlled training experiment**: conditional OFL rights, 1,732 audited contextual episodes, 520 HarfBuzz regression reports, a successful no-training real-data preflight, and a compact 20.1M-parameter model. The workflow now assembles a single downloadable data handoff. **No model training has been started.** The complete production font generator is not ready.
+> **Current status (2026-11-19):** A separate experimental image-reference raster prototype has a passing data/forward preflight and a downloadable data handoff. It is **not MX-Font, not merged with MX-Font, and not a replacement for the selected upstream architecture**. The source-level compatibility audit found no direct checkpoint/weight mapping and confirmed that the current episode data is not native MX-Font-ready. No training has been started. Production TTF/OTF generation is not ready.
 
 ## Verified preparation
 
@@ -10,14 +10,21 @@ Research preparation for an Arabic font-generation system that learns a visual s
 - **Raster data:** 7,904 published samples from 52 font files and 20 families; family-safe split of 14 train / 3 validation / 3 test families; published corpus integrity audit passed.
 - **Isolated crops:** 1,872 single-codepoint glyph crops.
 - **Contextual targets:** 1,732 HarfBuzz-shaped cluster crops; 238 multi-codepoint clusters; independent glyph-ID mapping audit passed. Coverage is partial at 518/520 font-case pairs because two Aref Ruqaa tatweel cases do not render.
-- **Few-shot episodes:** 1,732 episodes, each pairing a contextual target with four isolated reference glyphs from the same exact font; target codepoints are excluded from references; target and reference image SHA-256 values are pinned; 1,134 train / 299 validation / 299 test episodes across 20 families. The real-data preflight loaded a batch and passed a no-gradient forward pass without updating weights ([artifact](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530432867/artifacts/14533013474)).
+- **Few-shot episodes:** 1,732 episodes, each pairing a contextual target with four isolated reference glyphs from the same exact font; target codepoints are excluded from references; 1,134 train / 299 validation / 299 test across 20 families. The combined handoff contains 1,732 target PNGs and 1,872 reference PNGs; all 3,604 images were decoded and SHA-256 verified. The 6,928 episode reference uses draw from 1,831 distinct reference PNGs; 41 valid reference crops are not sampled by this episode set. The real-data preflight passed without training ([latest handoff run](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273)).
 - **Shaping regression:** 52 conditionally approved fonts × 10 cases = 520 HarfBuzz regression reports; CI passed.
-- **Experimental model:** target Unicode content is now separate from image-style and text-style conditioning. Image, text and hybrid routes share one raster decoder. Six CPU PyTorch smoke tests passed; nine model/training-pipeline tests passed in the dedicated CPU workflow.
+- **Separate experimental model:** models/arabic_multimodal_glyph.py is a 20.1M-parameter raster prototype with image, codepoint-text and hybrid conditioning. It is not MX-Font and has no demonstrated weight/checkpoint compatibility with it. The image-reference route alone has a prepared trainer. The dedicated CPU workflow passed 16/16 tests; this is not evidence of training quality.
 - **Arabeyes research:** 36 binaries downloaded and checksum-verified; all passed one shaping smoke phrase and rendered previews. They remain excluded from training because GPL+Font Exception does not expressly settle ML training or model/output distribution.
+
+## Architecture boundary — read before using the handoff
+
+- The selected upstream architecture remains [MX-Font](docs/UPSTREAM_BASELINE.md), pinned to 9d2b6ace3e23199e2a896de329d4c16489b09a96.
+- models/arabic_multimodal_glyph.py is a separate experimental raster prototype. It does not implement MX-Font's localized expert bank, factorization, expert skip fusion, discriminator or decomposition objectives.
+- The two model graphs and checkpoint tensors are not directly merge-compatible. The current 1,732-episode handoff supplies a target Unicode cluster plus four same-font style references; native MX-Font additionally needs same-character content images from other fonts and audited character primitive/decomposition labels.
+- Do not describe this prototype as the merged model or pass this handoff to the native MX-Font trainer. See [Model Architecture Compatibility Audit](reports/model-architecture-compatibility-audit-2026-11-19.md).
 
 ## Training handoff
 
-The complete data package is available as [arabic-font-training-handoff (workflow run 44537037099)](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099). See [Local Training Handoff](docs/LOCAL_TRAINING.md) for the single-download data artifact, Windows preflight and launcher, explicit step-count requirements, checkpoint resume, and license conditions. The optional Windows launcher is [RUN_IMAGE_ROUTE_TRAINING.bat](RUN_IMAGE_ROUTE_TRAINING.bat); it requires typing TRAIN before starting.
+The complete data package for the separate raster prototype is available as [arabic-font-training-handoff (workflow run 44539170273)](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273). The artifact is 10,070,054 bytes with SHA-256 5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9. See [Local Training Handoff](docs/LOCAL_TRAINING.md) for the data package, Windows preflight, checkpoint interface, and license conditions. This package is not an MX-Font-native dataset. The optional Windows launcher is [RUN_IMAGE_ROUTE_TRAINING.bat](RUN_IMAGE_ROUTE_TRAINING.bat); it requires typing TRAIN before starting.
 
 The trainer `scripts/train_multimodal_glyph.py` uses the image-reference route only:
 - target Unicode cluster + four same-font reference glyphs → 128×128 grayscale target raster;
@@ -25,7 +32,7 @@ The trainer `scripts/train_multimodal_glyph.py` uses the image-reference route o
 - family-held-out validation and test;
 - per-font rights and data-leakage checks before loading.
 
-A separate workflow builds [contextual few-shot episodes](docs/CONTEXTUAL_EPISODE_DATASET.md) and runs a no-training real-data preflight. This preflight must report that no optimizer/backward/checkpoint operation occurred.
+A separate workflow builds [contextual few-shot episodes](docs/CONTEXTUAL_EPISODE_DATASET.md) and runs a no-training real-data preflight. The latest run [44539170273](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273) passed; it verified 1,732 target and 6,928 reference uses, loaded a real batch, and produced a finite 128×128 raster. It recorded no optimizer creation, backward pass, weight update, checkpoint creation or training.
 
 ## Remaining blockers for a complete production font generator
 
