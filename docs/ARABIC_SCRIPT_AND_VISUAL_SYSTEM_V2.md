@@ -87,3 +87,20 @@ Split by font family before rendering or annotation. No glyph from the same sour
 ## 7. Limits
 
 The registry generator creates linguistic metadata, not a font-specific visual truth set. The annotation schema describes data; it does not validate the artistic correctness of labels. The shaping suite verifies rendering behavior only when run against named font files and pinned HarfBuzz builds. No training permission is implied by Unicode metadata or by a font being downloadable.
+
+## 8. Independent annotation agreement tool
+
+After two annotators have completed the same pilot image set, export one JSONL file per annotator. Each line is one valid annotation record, and both files must contain exactly the same `render_sha256` sample keys.
+
+```bash
+python scripts/compare_glyph_annotations.py \
+  --annotator-a data/annotations/annotator_a.jsonl \
+  --annotator-b data/annotations/annotator_b.jsonl \
+  --iou-threshold 0.50 \
+  --resolution 256 \
+  --output reports/local/annotation_agreement.json
+```
+
+The tool verifies that both annotations refer to the same font hash, rendered image hash, codepoint, and glyph ID. It performs one-to-one greedy polygon matching within each component kind and reports per-kind precision, recall, F1, and mean matched IoU. Rasterized IoU is approximate; increase resolution for boundary-sensitive work. The matching method is deliberately reported, not hidden.
+
+Do not use a single aggregate score to conceal weak agreement on dots, hamza, marks, or counters. Review each component class separately. These metrics measure annotator consistency, not whether either annotator is linguistically or artistically correct. A reviewer must adjudicate disagreements before labels enter training.
