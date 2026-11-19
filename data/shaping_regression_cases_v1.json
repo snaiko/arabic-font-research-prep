@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "description": "Shaping regression inputs. Outputs are captured from the pinned shaper/font tuple; no glyph IDs or contextual forms are hard-coded as universal truth.",
+  "cases": [
+    {
+      "id": "dual_joining_chain",
+      "text": "ببب",
+      "script": "Arab",
+      "language": "ar",
+      "direction": "rtl",
+      "features": [
+        "rlig",
+        "calt"
+      ],
+      "purpose": "Check contextual joining across three dual-joining letters."
+    },
+    {
+      "id": "right_joining_break",
+      "text": "بب ا بب",
+      "script": "Arab",
+      "language": "ar",
+      "direction": "rtl",
+      "features": [
+        "rlig",
+        "calt"
+      ],
+      "purpose": "Check that right-joining letters prevent joining across their left side."
+    },
+    {
+      "id": "transparent_haraka",
+      "text": "بَب",
+      "script": "Arab",
+      "language": "ar",
+      "direction": "rtl",
+      "features": [
+        "rlig",
+        "calt"
+      ],
+      "purpose": "Check that transparent vowel marks do not break cursive joining."
+    },
+    {
+      "id": "lam_alef",
+      "text": "لا",
+      "script": "Arab",
+      "language": "ar",
+      "direction": "rtl",
+      "features": [
+        "rlig"
+      ],
+      "purpose": "Capture font-specific lam-alef substitution and multi-codepoint cluster mapping."
+    },
+    {
+      "id": "lam_alef_hamza",
+      "text": "لأ",
+      "script": "Arab",
+      "language": "ar",
+      "direction": "rtl",
+      "features": [
+        "rlig"
+      ],
+      "purpose": "Capture lam plus alef-with-hamza-above behavior."
+    },
+    {
+      "id": "zwj",
+      "text": "ب‍ب",
+      "script": "Arab",
+      "language": "ar",
+      "direction": "rtl",
+      "features": [
+        "rlig",
+        "calt"
+      ],
+      "purpose": "Record effect of ZERO WIDTH JOINER U+200D."
+    },
+    {
+      "id": "zwnj",
+      "text": "ب‌ب",
+      "script": "Arab",
+      "language": "ar",
+      "direction": "rtl",
+      "features": [
+        "rlig",
+        "calt"
+      ],
+      "purpose": "Record effect of ZERO WIDTH NON-JOINER U+200C."
+    },
+    {
+      "id": "tatweel",
+      "text": "بـب",
+      "script": "Arab",
+      "language": "ar",
+      "direction": "rtl",
+      "features": [
+        "rlig",
+        "calt"
+      ],
+      "purpose": "Capture tatweel joining/elongation behavior."
+    },
+    {
+      "id": "shadda_vowel",
+      "text": "بِّ",
+      "script": "Arab",
+      "language": "ar",
+      "direction": "rtl",
+      "features": [
+        "ccmp",
+        "mark",
+        "mkmk"
+      ],
+      "purpose": "Capture mark attachment and renderer ordering."
+    },
+    {
+      "id": "mixed_bidi",
+      "text": "ABC 123 العربية",
+      "script": "Arab",
+      "language": "ar",
+      "direction": "rtl",
+      "features": [
+        "rlig",
+        "calt"
+      ],
+      "purpose": "Exercise bidi runs with Latin and digits; retain logical source text."
+    }
+  ]
+}
