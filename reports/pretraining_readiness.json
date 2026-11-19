@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "48d4a8be17c7bfdb62f84fa850a787e69c66600a",
+  "repository_commit": "44a1be308400aad0d3a8352d3933e2df1a3b0ea2",
   "training_allowed": true,
   "overall_status": "PARTIAL_READY_FOR_EXPERIMENTAL_IMAGE_ROUTE",
   "gates": [
@@ -31,7 +31,7 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527370231/artifacts/14532290911",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527604462"
       ],
-      "notes": "Conditional project approval now documented for all 52 exact files across 20 families. The pinned SIL OFL 1.1 snapshots pass integrity checks. Official SIL OFL-FAQ 1.1-update8 Q1.25 and Q3.9 permit AI-based font generation subject to generated font software remaining OFL-1.1, preserving copyright/acknowledgements, and avoiding Reserved Font Names without permission. This is not an NC license and does not determine model-weight licensing."
+      "notes": "Conditional project approval is documented for all 52 exact font files across 20 families. This pass independently downloaded the 20 pinned OFL 1.1 license snapshots and verified all snapshot hashes (zero mismatches). Official OFL-FAQ 1.1-update8 Q1.25/Q3.9 requires released font software based on these sources to remain OFL 1.1 with notices and RFN conditions. OFL is not an NC license; downstream commercial use is not prohibited. This is a project policy mapping, not legal advice; model-weight licensing is separate."
     },
     {
       "id": "family_safe_data_integrity",
@@ -43,7 +43,7 @@
         "docs/TRAINING_CORPUS_AUDIT.md",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44476157196"
       ],
-      "notes": "GitHub Actions downloaded and audited the actual published font and glyph release archives. Result: 7,904 samples, 52 font files, 20 families, family splits train=14/validation=3/test=3, all 7,904 referenced images verified, zero audit errors. The prior duplicate warning was a false positive caused by the audit tool reading target_index instead of target_index_logical; fixed and covered by a regression test."
+      "notes": "Latest main CI run 44538878182 audited the actual published corpus: 7,904 samples, 52 font files, 20 families, train/validation/test family split 14/3/3, all 7,904 referenced images verified, zero errors. The downloaded audit artifact independently confirms these counts."
     },
     {
       "id": "arabic_target_glyph_crops",
@@ -55,7 +55,7 @@
         ".github/workflows/test-glyph-adapter.yml",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44515674785"
       ],
-      "notes": "Latest GitHub Actions run built 1,872 isolated single-codepoint crops from the published 52-font/20-family corpus and passed the independent crop audit with zero rejected crops. These are isolated forms only; they do not replace contextual joining, ligature, or combining-mark cluster supervision, and legal training permission remains separately blocked."
+      "notes": "Latest main CI run 44538878182 built and audited 1,872 isolated single-codepoint crops: 1,872 files found, zero unreferenced files, 52 font hashes, 20 families, zero audit errors. The separate handoff contains all 1,872 reference PNGs; all hashes and decodes pass."
     },
     {
       "id": "paired_prompt_and_geometry_supervision",
@@ -100,7 +100,7 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535642388",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538121400"
       ],
-      "notes": "Latest dedicated CPU workflow 44538121400 passed 16/16 tests; main data CI 44538878182 passed 67/83 with 16 optional PyTorch tests skipped. Model-state checkpoint round-trip and optimizer-state payload restoration using a no-op probe pass. No training-produced checkpoint or real resume cycle exists."
+      "notes": "Latest main data CI 44538878182: 83 tests, 67 passed and 16 optional PyTorch tests skipped. Dedicated CPU model run 44538121400: 16/16 passed. Model checkpoint round-trip and optimizer-state payload restoration use a no-op probe. The trainer source includes --resume and periodic/final checkpoint saving, but no real trained checkpoint or end-to-end real optimizer resume exists."
     },
     {
       "id": "hardware_and_resource_plan",
@@ -226,7 +226,7 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44510736687",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44510736687/artifacts/14523445736"
       ],
-      "notes": "Latest CI built 1,732 contextual cluster crops from 52 fonts/20 families. Independent audit reproduced all 1,732 glyph-ID mappings with zero integrity errors, preserved context-level non-rendering controls/separators, and verified images and split provenance. Coverage is PARTIAL: 518 of 520 font-case pairs are present; two Aref Ruqaa font files lack a renderable tatweel cluster and are explicitly reported/excluded. 238 multi-codepoint clusters remain. Integrity PASS for produced records does not establish visual/linguistic correctness or legal training rights."
+      "notes": "Latest main CI run 44538878182 independently audited 1,732 contextual clusters and reproduced 1,732 HarfBuzz glyph-ID mappings with zero integrity errors. Coverage remains 518/520 font-case pairs; the two missing pairs are Aref Ruqaa tatweel cases. 238 multi-codepoint clusters remain."
     },
     {
       "id": "expert_visual_linguistic_review",
@@ -371,7 +371,7 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530432867/artifacts/14533013474",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273"
       ],
-      "notes": "Latest episode build 44539170273 passed: 1,732 episodes (1,134/299/299), 20 families, 238 multi-codepoint targets, four same-font references per target, no family/hash split leakage. The package is for the separate raster prototype, not native MX-Font."
+      "notes": "Run 44539170273 passed: 1,732 episodes (1,134/299/299), 20 families, 52 exact font hashes, 238 multi-codepoint targets, four same-font references per target, zero family/hash split leakage, and zero target-codepoint leakage. The package is for the separate raster prototype, not native MX-Font."
     },
     {
       "id": "real_data_model_preflight",
@@ -381,7 +381,7 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530432867/artifacts/14533013474",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273"
       ],
-      "notes": "Run 44539170273 verified all 1,732 target and 6,928 reference uses, 52 approved font hashes, and a finite 128x128 real-batch output. It created no optimizer/checkpoint and performed no backward pass, weight update or training."
+      "notes": "Run 44539170273 verified all 1,732 target and 6,928 reference uses, 52 approved font hashes, and a finite 128x128 real-batch output. It created no optimizer/checkpoint and performed no backward pass, weight update, or training."
     },
     {
       "id": "local_image_route_training_entrypoint",
@@ -407,12 +407,12 @@
         "artifact SHA-256 43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273"
       ],
-      "notes": "Latest artifact from run 44539170273 is 10,070,054 bytes (SHA-256 5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9). Independent ZIP audit verified 1,732 target PNGs and 1,872 reference PNGs; all 3,604 image hashes match; 6,928 reference uses; zero missing/unlisted/corrupt files."
+      "notes": "Artifact from run 44539170273 is 10,070,054 bytes, SHA-256 5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9. This pass downloaded and audited the ZIP and all 3,604 manifest-listed PNGs: zero missing/unlisted/corrupt/hash-mismatched files. Targets are 160x160 RGB-encoded grayscale with identical channels; references are 128x128 L-mode grayscale."
     },
     {
       "id": "mxfont_architecture_and_data_contract_compatibility",
       "status": "BLOCKED",
-      "notes": "Source audit found no direct weight/checkpoint mapping between upstream MX-Font and the separate experimental ArabicMultimodalGlyphModel. The current episode handoff lacks MX-Font's same-character cross-font content images and audited decomposition/primitive labels; it cannot be passed directly to the native MX-Font trainer.",
+      "notes": "Source audit confirms no direct weight/checkpoint mapping between upstream MX-Font and the separate experimental ArabicMultimodalGlyphModel. Current episodes lack MX-Font's same-character cross-font content images and audited decomposition/primitive labels; this handoff cannot be passed directly to native MX-Font.",
       "evidence": [
         "reports/model-architecture-compatibility-audit-2026-11-19.md",
         "https://github.com/clovaai/fewshot-font-generation/commit/9d2b6ace3e23199e2a896de329d4c16489b09a96"
@@ -439,7 +439,7 @@
     "geometry_pilot": "PASS package generation: 40 samples from 8 eligible cases; 40 blank independent templates per annotator; human annotation/adjudication pending",
     "cluster_level_review_pack": "PASS generation and integrity validation: 100 drafts across 10 shaping cases; 35 multi-codepoint, 26 multi-glyph, 30 with non-rendering controls/separators; no visual/linguistic approval",
     "machine_visual_supervision": "1,732 records; 2,987 component candidates; paired Arabic/English synthetic factual captions; Unicode/ArabicShaping metadata. Latest CI generated all 1,732 with per-file conditional OFL rights eligibility (train=1,134/validation=299/test=299). Component semantics remain unknown; no expert visual/linguistic approval.",
-    "license_evidence": "20 pinned official SIL OFL 1.1 license snapshots for 52 font files, with hashes, copyright headers, reserved-name candidates and selected-clause checks. ML training permission is not explicit in the license text; legal approval remains unresolved.",
+    "license_evidence": "20 pinned official SIL OFL 1.1 license snapshots were independently downloaded and all 20 snapshot SHA-256 values matched the license-evidence audit. The OFL text itself is not an NC license. Official OFL-FAQ 1.1-update8 (November 2026), Q1.25 and Q3.9, supplies the current AI-font guidance: font software produced and released based on these OFL sources must remain under OFL 1.1 and meet the ordinary derivative-font conditions. This is a conservative project policy mapping, not legal advice; model-weight licensing remains separate.",
     "component_caption_integrity_audit": "PASS: 1,732 source-bound records, 2,987 connected-component candidates, 3,464 Arabic/English captions, 20 families; 0 boundary-touching crops, 0 audit errors. All semantic identities remain unknown, captions machine-generated/unreviewed, and 0 records training-eligible.",
     "executable_model_baseline": "Experimental shared decoder with image, Unicode-codepoint text, and hybrid conditioning. All three routes pass CPU forward/backward smoke tests. It is not MX-Font, not a semantic Arabic language model, and not quality-validated.",
     "font_specific_shaping_regression": "PASS: 52/52 conditional OFL font files passed manifest/hash validation and each produced 10 HarfBuzz regression case outputs (520 records total). This is a reproducible shaping capture, not visual review.",
@@ -455,21 +455,21 @@
     "handoff_artifact_url": "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273/artifacts/14537521518",
     "local_preflight_ci": "PASS in run 44539170273: Linux CI runner reported 15.61 GB RAM, 85.79 GB free disk, CPU-only PyTorch/no CUDA, recommended batch 1. Verified 52 approved fonts/20 families, exact episode splits, all episode image hashes and one finite 128x128 forward pass. User Windows hardware remains unmeasured.",
     "native_mxfont_compatibility": "BLOCKED: source audit found no direct weight/checkpoint mapping. The current handoff lacks MX-Font's same-character cross-font content images and audited primitive/decomposition labels.",
-    "handoff_image_inventory": "Independent ZIP audit: 1,732 contextual PNGs (160x160) and 1,872 isolated reference PNGs (128x128); all 3,604 files decoded and matched SHA-256 metadata. 6,928 episode reference uses draw from 1,831 distinct PNGs; 41 valid reference PNGs remain unused by the current sampler."
+    "handoff_image_inventory": "Independent ZIP and manifest audit: 1,732 contextual target PNGs (160x160 RGB-encoded grayscale; all R/G/B channels identical) and 1,872 isolated reference PNGs (128x128 grayscale/L mode). All 3,604 images decoded and matched their manifest SHA-256; zero missing, unlisted, corrupt, or hash-mismatched images. The loader converts targets to grayscale and resizes both routes to 128x128. Episodes use 6,928 reference instances drawn from 1,831 distinct reference PNGs; 41 additional valid reference crops remain unused by this episode sampler."
   },
   "tests": {
-    "repository_tests": "Latest main data CI run 44538878182: 83 tests, 67 passed and 16 optional PyTorch tests skipped. Dedicated CPU model run 44538121400: 16/16 passed.",
+    "repository_tests": "Main data CI run 44538878182: 83 tests, 67 passed and 16 optional PyTorch tests skipped because that workflow intentionally does not install PyTorch. Dedicated CPU model run 44538121400: 16/16 passed. All 28 evidence-linked Actions run IDs enumerated in this report were queried for job conclusions; all 28 completed successfully and no failed job was found in that inspected set.",
     "image_route": "PASS: CPU forward/backward smoke test in run 44520250916",
     "prompt_route": "PASS: CPU forward/backward Unicode-codepoint conditioning smoke test in run 44520250916; not semantic Arabic NLP",
     "hybrid_route": "PASS: CPU forward/backward confidence-gated fusion smoke test in run 44520250916",
-    "checkpoint_round_trip": "Model checkpoint save/restore and optimizer-state payload save/restore passed unit tests in run 44538121400. The optimizer payload test uses a no-op probe and does not call optimizer.step(). No training-produced checkpoint exists; end-to-end resume from a real trained checkpoint remains unverified.",
+    "checkpoint_round_trip": "Model-state save/restore and optimizer-state payload serialization/restoration are unit-tested. The optimizer payload test uses a no-op probe; it does not instantiate or step an optimizer. The trainer source contains --resume, restores model and optimizer state, validates saved dimensions and step bounds, and saves periodic/final checkpoints. No actual training-produced checkpoint exists, so an end-to-end resume from a real trained checkpoint remains unverified.",
     "arabic_linguistic_metadata_audit": "PASS: 1,732 clusters / 2,022 codepoints / zero errors; contextual coverage PARTIAL 518/520 pairs in run 44520251086",
     "component_caption_builder": "PASS: 1,732 records / 2,987 component candidates in run 44520251086",
     "pinned_license_evidence": "PASS: 20 pinned official SIL OFL 1.1 license snapshots covering 52 exact font files. Conditional OFL AI training manifest generated and hash-validated for all 52 files in run 44527370231.",
-    "model_smoke_tests": "16/16 passed in dedicated CPU PyTorch run 44538121400, including forward-only routes, shared Unicode embedding, parameter budget, checkpoint model-state round-trip, optimizer-state payload restoration using a no-op probe, rights gates, image-hash rejection and four-reference episode validation.",
+    "model_smoke_tests": "16/16 passed in dedicated CPU PyTorch run 44538121400. The current test suite uses forward-only/no-gradient checks for the three model routes, validates the checkpoint model-state round-trip and optimizer-state payload with a no-op probe, and tests rights/data rejection. No optimizer step or backward pass was run in this verification.",
     "component_caption_audit": "PASS: 1,732 records / 2,987 components / 3,464 paired captions / zero errors in run 44520251086",
     "font_specific_shaping_regression": "PASS: GitHub Actions run 44527935025 generated 52 font-specific HarfBuzz reports across 20 families; 10 shaping cases per font (520 total font-case records).",
-    "real_data_preflight": "PASS in run 44539170273: all 1,732 target and 6,928 reference uses verified; 52 approved font hashes; one real 128x128 forward pass; training_performed=false, optimizer_created=false, backward_pass_performed=false, weights_updated=false, checkpoint_created=false.",
+    "real_data_preflight": "PASS in run 44539170273: all 1,732 target and 6,928 reference uses SHA-256 verified across the three splits; 52 approved font hashes; one real 128x128 finite forward output; training_performed=false, optimizer_created=false, backward_pass_performed=false, weights_updated=false, checkpoint_created=false.",
     "local_hardware_preflight": "PASS on the GitHub Actions Linux runner in run 44537037099: rights, exact episode counts, 238 multi-codepoint targets, all image roots, full SHA-256 verification and a real model forward pass. Runner detected 15.33 GB RAM, no CUDA, and recommended batch 1. This does not replace running START_LOCAL_TRAINING.bat on the user's Windows PC.",
     "model_memory": "20,115,074 parameters; FP32 weights 80,460,296 bytes; estimated weights+gradients+Adam state 321,841,184 bytes (~307 MiB), excluding activations, batches, runtime and OS.",
     "single_download_handoff": "PASS: artifact from run 44539170273, 10,070,054 bytes, SHA-256 5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9; independent ZIP inspection verified all 3,604 PNG files and every manifest hash."
@@ -526,7 +526,8 @@
   "model_weight_distribution_license": "UNRESOLVED — separate from the source-font rights manifest",
   "latest_verification": {
     "verified_date": "2026-11-19",
-    "source_data_commit": "bd49ffc83e8e4db9a2b2dde2b33451d8e4ffe6b4",
+    "verification_scope": "Independent artifact download/inspection, full image-manifest hash and decode audit, OFL snapshot hash audit, source inspection of training/resume entrypoints, and GitHub Actions job/artifact review. No training or optimizer/backward execution.",
+    "source_code_commit": "44a1be308400aad0d3a8352d3933e2df1a3b0ea2",
     "architecture_audit_commit": "48d4a8be17c7bfdb62f84fa850a787e69c66600a",
     "runs": {
       "main_data_ci": {
@@ -551,25 +552,122 @@
       }
     },
     "workflow_run_inventory": {
-      "total_runs_reviewed": 259,
-      "success": 172,
-      "failure": 85,
-      "skipped": 2,
-      "latest_100": {
-        "success": 90,
-        "failure": 9,
-        "skipped": 1
-      },
-      "note": "The nine failures in the latest 100 runs were log-inspected and later green runs verify the corrected current code. Older failed runs belong to superseded commits and were not rerun against historical snapshots."
+      "status": "PARTIAL_ENUMERATION",
+      "evidence_linked_run_ids_inspected": 28,
+      "completed_success": 28,
+      "failed": 0,
+      "run_ids": [
+        44539170273,
+        44538878182,
+        44538121400,
+        44537037099,
+        44535642388,
+        44535642258,
+        44535639834,
+        44531266058,
+        44531024750,
+        44530432867,
+        44530248721,
+        44530248539,
+        44527935025,
+        44527604462,
+        44527370231,
+        44520251086,
+        44520250916,
+        44517742747,
+        44515674785,
+        44510736687,
+        44506521255,
+        44506507595,
+        44476157196,
+        44469089468,
+        44468103067,
+        44466347309,
+        44465453724,
+        44463443539
+      ],
+      "repository_wide_latest_runs_enumerated": false,
+      "note": "All 28 unique run IDs referenced by the current readiness report's gates, remaining gates, or latest-verification evidence were checked via their GitHub Actions job summaries. Every returned job was completed/success and none had a failed step. The available GitHub integration in this run does not expose a repository-wide list-workflow-runs operation; therefore this is not a claim that every run in the repository or the latest 100 runs was enumerated.",
+      "previous_reported_aggregate": {
+        "total_runs_reviewed": 259,
+        "success": 172,
+        "failure": 85,
+        "skipped": 2,
+        "latest_100": {
+          "success": 90,
+          "failure": 9,
+          "skipped": 1
+        },
+        "independently_reverified_this_pass": false,
+        "note": "These counts were present in the previous report but could not be re-enumerated or independently confirmed in this pass."
+      }
     },
-    "artifact": {
-      "name": "arabic-font-training-handoff",
-      "artifact_id": 14537521518,
-      "url": "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273/artifacts/14537521518",
-      "size_bytes": 10070054,
-      "sha256": "5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9",
-      "archive_entries": 3615,
-      "uncompressed_bytes": 18740096
+    "artifacts": {
+      "handoff": {
+        "name": "arabic-font-training-handoff",
+        "run_id": 44539170273,
+        "artifact_id": 14537521518,
+        "url": "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44539170273/artifacts/14537521518",
+        "size_bytes": 10070054,
+        "sha256": "5569fbfdf056438bbc712d01e2b6e604f1a6583783f215e02716d2289c1f90b9",
+        "archive_entries": 3615,
+        "uncompressed_bytes": 18740096,
+        "independently_downloaded_and_hashed": true
+      },
+      "episode_package": {
+        "name": "arabic-contextual-style-episodes",
+        "run_id": 44539170273,
+        "artifact_id": 14536894957,
+        "size_bytes": 364579,
+        "sha256": "3e6e84cced0e2f83ea132e10f5d93d0954fd7c9fbf77cfb480fb8efacc95e1f0",
+        "five_files_match_combined_handoff_byte_for_byte": true
+      },
+      "rights_manifest": {
+        "run_id": 44538878182,
+        "artifact_id": 14535974445,
+        "size_bytes": 6551,
+        "sha256": "01164955a6afa9f0c0ebebf9d050e7e67f2e6459e44f91d5df76b96f7e4676af",
+        "independently_downloaded_and_hashed": true
+      },
+      "pinned_license_evidence": {
+        "run_id": 44538878182,
+        "artifact_id": 14536099403,
+        "size_bytes": 45963,
+        "sha256": "36ad4bb69fd456c7f5090fa875270eedf0e8b3825a643cd9941ac10c3ae7a1c6",
+        "snapshots": 20,
+        "snapshot_sha256_mismatches": 0
+      },
+      "corpus_audit": {
+        "run_id": 44538878182,
+        "artifact_id": 14535879811,
+        "status": "PASS",
+        "samples": 7904,
+        "font_files": 52,
+        "families": 20,
+        "images_verified": 7904,
+        "errors": 0
+      },
+      "isolated_crop_audit": {
+        "run_id": 44538878182,
+        "artifact_id": 14535774891,
+        "status": "PASS",
+        "crops": 1872,
+        "image_files_found": 1872,
+        "unreferenced_files": 0,
+        "errors": 0
+      },
+      "contextual_cluster_audit": {
+        "run_id": 44538878182,
+        "artifact_id": 14536798954,
+        "status": "PARTIAL",
+        "clusters": 1732,
+        "independent_harfbuzz_mapping_checks": 1732,
+        "font_case_pairs_expected": 520,
+        "font_case_pairs_observed": 518,
+        "missing_pairs": 2,
+        "multi_codepoint_clusters": 238,
+        "errors": 0
+      }
     },
     "dataset": {
       "episodes": 1732,
@@ -587,31 +685,46 @@
       },
       "multicodepoint_targets": 238,
       "family_split_leakage": false,
-      "font_hash_split_leakage": false
+      "font_hash_split_leakage": false,
+      "references_per_episode": 4,
+      "target_codepoint_leakage_count": 0,
+      "reference_uses": 6928,
+      "distinct_reference_pngs_sampled": 1831,
+      "valid_reference_pngs_not_sampled": 41,
+      "episode_manifest_errors": 0
     },
     "images": {
       "target_pngs": 1732,
       "target_pngs_sha256_verified": 1732,
-      "target_dimensions": "160x160 grayscale",
+      "target_dimensions": "160x160 RGB PNG; all three channels identical (grayscale-encoded)",
+      "target_mode": "RGB",
+      "target_rgb_channel_mismatches": 0,
       "reference_pngs": 1872,
       "reference_pngs_sha256_verified": 1872,
       "reference_dimensions": "128x128 grayscale",
+      "reference_mode": "L",
       "total_pngs": 3604,
       "all_pngs_decoded": true,
       "missing_files": 0,
       "unlisted_files": 0,
       "corrupt_images": 0,
-      "episode_reference_uses": 6928,
-      "distinct_reference_pngs_sampled": 1831,
-      "valid_reference_pngs_not_sampled": 41
+      "hash_mismatches": 0,
+      "target_unique_pixel_hashes": 1135,
+      "reference_unique_pixel_hashes": 1872
     },
     "rights": {
       "status": "CONDITIONAL_OFL_1_1_APPROVAL",
       "approved_font_files": 52,
+      "unique_font_hashes": 52,
       "families": 20,
-      "required_generated_font_license": "SIL Open Font License 1.1",
+      "unique_family_license_snapshots": 20,
+      "snapshot_hash_mismatches": 0,
+      "generated_font_license": "SIL Open Font License 1.1",
+      "reserved_font_names_must_be_respected": true,
+      "copyright_and_acknowledgements_must_be_preserved": true,
       "noncommercial": false,
-      "downstream_commercial_use_prohibited": false
+      "downstream_commercial_use_prohibited": false,
+      "model_weight_license": "separate and unresolved"
     },
     "preflight": {
       "status": "PASS",
@@ -638,10 +751,20 @@
       "cuda_available": false,
       "recommended_batch_size": 1
     },
+    "training_entrypoint": {
+      "file": "scripts/train_multimodal_glyph.py",
+      "explicit_max_steps_required": true,
+      "resume_flag_present": true,
+      "periodic_and_final_checkpoint_save_present": true,
+      "restores_model_and_optimizer_state_in_source": true,
+      "real_adamw_resume_cycle_tested": false,
+      "no_training_run_started": true
+    },
     "checkpoint": {
       "model_state_round_trip_tested": true,
       "optimizer_state_payload_tested_with_noop_probe": true,
       "optimizer_step_executed": false,
+      "backward_pass_executed": false,
       "real_training_checkpoint_created": false,
       "end_to_end_resume_from_trained_checkpoint_verified": false
     },
@@ -649,6 +772,16 @@
       "mxfont_and_prototype_direct_weight_merge_supported": false,
       "current_dataset_native_mxfont_compatible": false,
       "report": "reports/model-architecture-compatibility-audit-2026-11-19.md"
-    }
+    },
+    "user_machine": {
+      "windows_hardware_preflight": "NOT_RUN",
+      "gpu_vram_ram_disk": "UNKNOWN"
+    },
+    "remaining_gates": []
+  },
+  "readiness_interpretation": {
+    "original_mxfont_plan": "BLOCKED — native MX-Font data contract, Arabic decomposition labels, and full upstream dependency/reproduction gates remain incomplete.",
+    "separate_experimental_image_route": "PARTIAL_READY — dataset, rights policy, image integrity, no-training forward preflight, and model smoke tests pass.",
+    "user_authorization": "NOT_GRANTED — no optimizer/backward/training/checkpoint creation was performed in this verification."
   }
 }
