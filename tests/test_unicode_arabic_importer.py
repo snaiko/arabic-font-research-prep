@@ -27,5 +27,6 @@ class UnicodeImporterTests(unittest.TestCase):
             context={r["codepoint"]:r for r in data["contextual_joining_properties"]}
             self.assertEqual(context["U+0640"]["joining_type"],"C")
             self.assertEqual(context["U+0640"]["script"],"Common")
+            self.assertEqual(context["U+0640"]["role"],"letter")
 
 if __name__=="__main__": unittest.main()
