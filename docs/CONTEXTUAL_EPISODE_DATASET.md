@@ -39,3 +39,8 @@ The latest workflow-run artifact is produced by `.github/workflows/build-context
 ## Scope
 
 These episodes provide image-style supervision for the contextual cluster generator. They do not provide reviewed natural-language style prompts, semantic component labels, or proof that a predicted cluster is linguistically or artistically correct. HarfBuzz remains the deterministic text-shaping system for arbitrary text; the generator learns the appearance of recorded shaped clusters.
+
+
+## Image integrity
+
+The episode builder also pins SHA-256 for each target raster and each of its four style-reference rasters. The local trainer recomputes and verifies those hashes immediately before loading the images. A modified or corrupted target/reference image therefore fails closed rather than silently entering training.
