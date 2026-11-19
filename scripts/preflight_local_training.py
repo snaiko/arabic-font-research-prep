@@ -296,6 +296,11 @@ def main():
     }
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (REPORT.parent / "recommended_batch_size.bat").write_text(
+        "@echo off\r\nset RECOMMENDED_BATCH_SIZE="
+        + str(report["recommended_batch_size"]) + "\r\n",
+        encoding="ascii",
+    )
     print(json.dumps(report, ensure_ascii=False, indent=2))
     print("\nPreflight finished. No training was started. Report: " + str(REPORT.relative_to(ROOT)))
     return 0 if ready else 2
