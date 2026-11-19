@@ -6,6 +6,7 @@ rem Edit these values before starting a run.
 set MAX_STEPS=1000
 set BATCH_SIZE=8
 set LATENT_DIM=64
+set EMBEDDING_DIM=32
 set DEVICE=auto
 set OUTPUT_DIR=runs\arabic-contextual-baseline
 set EPISODES_DIR=data\contextual_style_episodes
@@ -20,6 +21,7 @@ echo This starts a real training run. It is NOT a preflight.
 echo Steps: %MAX_STEPS%
 echo Batch: %BATCH_SIZE%
 echo Latent dimension: %LATENT_DIM%
+echo Embedding dimension: %EMBEDDING_DIM%
 echo Device: %DEVICE%
 echo Output: %OUTPUT_DIR%
 echo.
@@ -65,7 +67,7 @@ if /I not "%CONFIRM%"=="TRAIN" (
 
 where py >nul 2>nul
 if %errorlevel%==0 (
-  py -3 -m scripts.train_multimodal_glyph --episodes-dir "%EPISODES_DIR%" --target-root "%TARGET_ROOT%" --reference-root "%REFERENCE_ROOT%" --rights-manifest "%RIGHTS_MANIFEST%" --output-dir "%OUTPUT_DIR%" --max-steps %MAX_STEPS% --batch-size %BATCH_SIZE% --latent-dim %LATENT_DIM% --device %DEVICE%
+  py -3 -m scripts.train_multimodal_glyph --episodes-dir "%EPISODES_DIR%" --target-root "%TARGET_ROOT%" --reference-root "%REFERENCE_ROOT%" --rights-manifest "%RIGHTS_MANIFEST%" --output-dir "%OUTPUT_DIR%" --max-steps %MAX_STEPS% --batch-size %BATCH_SIZE% --latent-dim %LATENT_DIM% --embedding-dim %EMBEDDING_DIM% --device %DEVICE%
 ) else (
   python -m scripts.train_multimodal_glyph --episodes-dir "%EPISODES_DIR%" --target-root "%TARGET_ROOT%" --reference-root "%REFERENCE_ROOT%" --rights-manifest "%RIGHTS_MANIFEST%" --output-dir "%OUTPUT_DIR%" --max-steps %MAX_STEPS% --batch-size %BATCH_SIZE% --latent-dim %LATENT_DIM% --device %DEVICE%
 )
