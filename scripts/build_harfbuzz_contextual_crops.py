@@ -6,7 +6,7 @@ including attached marks. Multi-codepoint clusters (e.g. lam-alef) are retained
 as clusters and never falsely labelled as single characters.
 """
 from __future__ import annotations
-import argparse, hashlib, json
+import argparse, hashlib, json, unicodedata
 from collections import defaultdict
 from pathlib import Path
 from fontTools.ttLib import TTFont
@@ -41,6 +41,27 @@ def shape_clusters(font_path: Path, text: str, case: dict, out_dir: Path, font_h
     infos=list(buf.glyph_infos); positions=list(buf.glyph_positions)
     clusters=sorted(set(info.cluster for info in infos))
     if not clusters: return []
+    # HarfBuzz clusters cover rendered source spans. Explicitly preserve
+    # whitespace/format controls that intentionally produce no glyph image.
+    covered=set()
+    for pos, cluster_start in enumerate(clusters):
+        cluster_end=clusters[pos+1] if pos+1<len(clusters) else len(text)
+        covered.update(range(cluster_start, cluster_end))
+    nonrendering=[]
+    for index, char in enumerate(text):
+        if index in covered:
+            continue
+        category=unicodedata.category(char)
+        if not (category.startswith("C") or category.startswith("Z")):
+            raise ValueError(
+                f"visible source character U+{ord(char):04X} at index {index} "
+                "has no HarfBuzz glyph cluster"
+            )
+        nonrendering.append({
+            "index": index, "char": char,
+            "codepoint": f"U+{ord(char):04X}",
+            "unicode_category": category
+        })
     tt=TTFont(font_path)
     glyph_set=tt.getGlyphSet(); order=tt.getGlyphOrder()
     scale=1.0
@@ -88,6 +109,7 @@ def shape_clusters(font_path: Path, text: str, case: dict, out_dir: Path, font_h
             "case_id":case["id"],"source_text":text,"cluster":cluster,
             "logical_start":start,"logical_end":end,"logical_text":logical,
             "logical_codepoints":[f"U+{ord(c):04X}" for c in logical],
+            "nonrendering_source_codepoints":nonrendering,
             "glyph_ids":[g[0] for g in glyphs],
             "glyph_count":len(glyphs),"sample_type":"harfbuzz_shaped_cluster",
             "direction":case.get("direction","rtl"),"script":case.get("script","Arab"),
