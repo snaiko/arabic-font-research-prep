@@ -69,3 +69,7 @@ This repository now includes a Windows preflight launcher and a handoff specific
 - [Font rights and batch HarfBuzz guide](docs/FONT_RIGHTS_AND_BATCH_SHAPING.md)
 - Copy `data/manifests/font_rights.template.json` to a private local `font_rights.json`, fill it only after reviewing exact per-file license evidence, and run `scripts/validate_font_rights_manifest.py`.
 - Run `scripts/run_batch_shaping_regression.py` to produce one versioned HarfBuzz report per approved font. The empty template intentionally blocks execution; no font is pre-approved by this repository.
+
+## Local corpus integrity audit
+
+Run `python scripts/audit_training_corpus.py --samples data/training_samples/samples.jsonl --font-root data/raw_fonts --image-root data/training_samples --output reports/local/dataset_audit.json` on the extracted local corpus before crop generation. See [the audit guide](docs/TRAINING_CORPUS_AUDIT.md). This checks family leakage, duplicate sample identities, file hashes and optional source-asset rights evidence; it does not itself clear legal or visual-review gates.
