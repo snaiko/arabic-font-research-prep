@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "1fc32e691528b2c93ab84c75ddd5b7ad5e59e480",
+  "repository_commit": "905a2df302840c31d5fa2ba24c0ebc1bd5000bd3",
   "training_allowed": true,
   "overall_status": "PARTIAL_READY_FOR_EXPERIMENTAL_IMAGE_ROUTE",
   "gates": [
@@ -94,18 +94,23 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530248539",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530248721",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44531266058",
-        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44531024750"
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44531024750",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535642258",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535642388"
       ],
-      "notes": "Latest main CI run 44531266058 passed 78 tests (64 passed, 14 optional PyTorch tests skipped). Dedicated CPU PyTorch run 44531024750 passed 14/14 tests. These cover model routes, target conditioning, checkpoint/optimizer resume, data loading, rights/split checks, image hash verification and model parameter budget. No actual dataset training or convergence evaluation has been run."
+      "notes": "Dedicated CPU PyTorch workflow 44535642258 passed 16/16 tests. Main data CI 44535642388 passed 80 tests (64 passed, 16 optional PyTorch tests skipped in that job). Checkpoint and optimizer resume are unit-tested. No actual dataset training, convergence, or held-out-family quality run has occurred."
     },
     {
       "id": "hardware_and_resource_plan",
-      "status": "UNKNOWN",
+      "status": "PARTIAL",
       "evidence": [
         "START_LOCAL_TRAINING.bat",
-        "scripts/preflight_local_training.py"
+        "scripts/preflight_local_training.py",
+        "scripts/preflight_local_training.py",
+        "START_LOCAL_TRAINING.bat",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535639834"
       ],
-      "notes": "The local Windows preflight must be run on the actual machine; current GPU, VRAM, RAM, disk, backend compatibility, and runtime estimates are not established here."
+      "notes": "A Windows local preflight now inspects CPU/GPU/VRAM/RAM/disk, validates the complete audited rights and episode corpus, verifies every image SHA-256 and runs a real no-training forward pass. The script is unit-tested and its cloud-side model footprint is known; the user's actual Windows hardware readings have not yet been collected."
     },
     {
       "id": "isolated_crop_and_episode_adapter",
@@ -413,13 +418,16 @@
     "executable_model_baseline": "Experimental shared decoder with image, Unicode-codepoint text, and hybrid conditioning. All three routes pass CPU forward/backward smoke tests. It is not MX-Font, not a semantic Arabic language model, and not quality-validated.",
     "font_specific_shaping_regression": "PASS: 52/52 conditional OFL font files passed manifest/hash validation and each produced 10 HarfBuzz regression case outputs (520 records total). This is a reproducible shaping capture, not visual review.",
     "contextual_fewshot_episodes": "PASS: 1,732 episodes; four same-font isolated reference glyphs per contextual target; zero skipped; train=1,134, validation=299, test=299; 20 families; 238 multi-codepoint targets; no family leakage; all target/reference image SHA-256 values pinned.",
-    "real_data_preflight": "PASS: 1,732 target image hashes and 6,928 reference image hashes verified; 52 conditional OFL-approved font hashes checked; real batch loaded; finite 128x128 forward pass; no optimizer/backward/weight update/checkpoint/training.",
+    "real_data_preflight": "PASS in run 44535639834: 1,732 target image hashes + 6,928 reference image hashes verified; 52 approved font hashes; real 128x128 forward pass; no training or optimizer activity.",
     "experimental_training_scope": "Ready for a controlled image-reference raster experiment only. Text-style prompts, native MX-Font integration, vectorization, OpenType tables and production font quality are not complete.",
     "model_memory_estimate": "73,604,738 parameters; FP32 weights 294,418,952 bytes (~294 MB); weights+gradients+AdamW moments estimated at 1,177,675,808 bytes (~1.18 GB), excluding activations and runtime overhead.",
-    "local_hardware_preflight": "Updated scripts/preflight_local_training.py records CPU/GPU/VRAM/RAM/disk, validates all required artifacts and runs the real-data no-training preflight. Logic tests pass; the user's actual Windows machine has not yet been inspected."
+    "local_hardware_preflight": "Updated scripts/preflight_local_training.py records CPU/GPU/VRAM/RAM/disk, validates all required artifacts and runs the real-data no-training preflight. Logic tests pass; the user's actual Windows machine has not yet been inspected.",
+    "experimental_model_size": "20,115,074 parameters; FP32 weights 80,460,296 bytes; estimated weights + gradients + Adam state 321,841,184 bytes (~307 MiB), excluding activations, batches, runtime and OS.",
+    "shared_unicode_embedding": "One shared full-Unicode embedding table (16 dimensions) is used for target codepoints and style prompt codepoints, reducing duplicated memory.",
+    "local_preflight": "Windows local preflight validates 52 fonts/20 families, exact 1,732 episode split counts (1,134/299/299), 238 multi-codepoint targets, four references per episode, and all image hashes; actual user hardware readings remain pending."
   },
   "tests": {
-    "repository_tests": "GitHub Actions run 44531266058 passed 78 tests (64 passed, 14 optional PyTorch tests skipped in the main data job).",
+    "repository_tests": "GitHub Actions run 44535642388 passed 80 tests: 64 passed, 16 optional PyTorch tests skipped in the main data job; dedicated CPU PyTorch run 44535642258 passed 16/16 model and training-pipeline tests.",
     "image_route": "PASS: CPU forward/backward smoke test in run 44520250916",
     "prompt_route": "PASS: CPU forward/backward Unicode-codepoint conditioning smoke test in run 44520250916; not semantic Arabic NLP",
     "hybrid_route": "PASS: CPU forward/backward confidence-gated fusion smoke test in run 44520250916",
@@ -427,11 +435,12 @@
     "arabic_linguistic_metadata_audit": "PASS: 1,732 clusters / 2,022 codepoints / zero errors; contextual coverage PARTIAL 518/520 pairs in run 44520251086",
     "component_caption_builder": "PASS: 1,732 records / 2,987 component candidates in run 44520251086",
     "pinned_license_evidence": "PASS: 20 pinned official SIL OFL 1.1 license snapshots covering 52 exact font files. Conditional OFL AI training manifest generated and hash-validated for all 52 files in run 44527370231.",
-    "model_smoke_tests": "14/14 passed in dedicated CPU PyTorch run 44531024750.",
+    "model_smoke_tests": "16/16 passed in dedicated CPU PyTorch run 44535642258, including shared Unicode embedding, parameter budget, all three routes, checkpoint restore, optimizer resume, and data/rights pipeline.",
     "component_caption_audit": "PASS: 1,732 records / 2,987 components / 3,464 paired captions / zero errors in run 44520251086",
     "font_specific_shaping_regression": "PASS: GitHub Actions run 44527935025 generated 52 font-specific HarfBuzz reports across 20 families; 10 shaping cases per font (520 total font-case records).",
-    "real_data_preflight": "PASS in run 44530432867: all 1,732 target and 6,928 reference image hashes verified, plus real 128x128 forward pass with no training.",
-    "local_hardware_preflight": "Unit-tested in main CI; actual Windows hardware/GPU/RAM/disk inspection must still be run on the user's PC using START_LOCAL_TRAINING.bat."
+    "real_data_preflight": "PASS in run 44535639834: all 1,732 target and 6,928 reference image hashes verified; 52 approved font hashes; real 128x128 forward pass; no optimizer/backward/weight update/checkpoint/training.",
+    "local_hardware_preflight": "Local Windows preflight script and launcher added; validates full 52-font/20-family rights manifest, exact episode counts (1,134/299/299), 20 families, 238 multi-codepoint targets, four same-font references, hashes and real forward pass. Unit-tested; actual user Windows hardware/GPU/RAM/disk inspection still required.",
+    "model_memory": "20,115,074 parameters; FP32 weights 80,460,296 bytes; estimated weights+gradients+Adam state 321,841,184 bytes (~307 MiB), excluding activations, batches, runtime and OS."
   },
   "hardware": {
     "local_preflight": "not_run_in_this_preparation_update",
@@ -456,7 +465,7 @@
     "Arabeyes GPL+Font Exception binaries passed technical screening but remain excluded from training pending explicit ML-training/model-output permission.",
     "The user's actual Windows hardware/resource preflight has not yet been run. START_LOCAL_TRAINING.bat is ready; the CI memory estimate is not a substitute for the user's GPU/VRAM/RAM/disk readings."
   ],
-  "recommended_next_step": "The experimental image-reference raster pipeline is prepared. Run START_LOCAL_TRAINING.bat on the user's Windows machine to obtain actual hardware and recommended batch size. Only after the user explicitly approves, run RUN_IMAGE_ROUTE_TRAINING.bat for a controlled experiment. Production font-generation work remains separate.",
+  "recommended_next_step": "The cloud-side experimental image-reference raster pipeline is ready for a controlled run. The only required user-device step before a training run is to extract the listed artifacts, install Python/PyTorch/Pillow, and run START_LOCAL_TRAINING.bat. Review reports/local/machine_preflight.json. Then, only with explicit user approval, run RUN_IMAGE_ROUTE_TRAINING.bat. Do not call this a finished TTF/OTF font generator.",
   "generated_date": "2026-11-19",
   "experimental_image_route_ready": true,
   "training_scope": "Experimental image-reference raster baseline only: target Unicode cluster plus four same-font reference glyph images -> 128x128 raster. It is not native MX-Font, does not train semantic text prompts, and does not produce TTF/OTF files.",
