@@ -3,8 +3,12 @@
 from __future__ import annotations
 import argparse, json
 from pathlib import Path
-from validate_font_rights_manifest import validate
-from run_shaping_regression import run
+try:
+    from validate_font_rights_manifest import validate
+    from run_shaping_regression import run
+except ImportError:
+    from scripts.validate_font_rights_manifest import validate
+    from scripts.run_shaping_regression import run
 
 def require_minimum_families(manifest, minimum=3):
     families={item["family_id"] for item in manifest.get("fonts",[])}
