@@ -36,6 +36,7 @@ class MultimodalTrainingPipelineTests(unittest.TestCase):
             "logical_text": "بَ",
             "font_sha256": "a" * 64,
             "family": "family-a",
+            "split": split,
         }
         refs = [
             {
@@ -56,21 +57,36 @@ class MultimodalTrainingPipelineTests(unittest.TestCase):
             "reference_count": 4,
         }
 
-    def test_rights_gate_rejects_unapproved_hash(self):
-        episode = self.make_episode(Path(tempfile.mkdtemp()), Path(tempfile.mkdtemp()))
-        rights = {
+    def rights(self, digest="a" * 64, family="family-a"):
+        return {
             "policy": {
                 "status": "CONDITIONAL_OFL_1_1_APPROVAL",
                 "output_font_license": "SIL Open Font License 1.1",
             },
             "fonts": [{
-                "sha256": "b" * 64,
+                "sha256": digest,
+                "family_id": family,
                 "ml_training_allowed": True,
                 "review_status": "approved",
             }],
         }
+
+    def test_rights_gate_rejects_unapproved_hash(self):
+        episode = self.make_episode(Path(tempfile.mkdtemp()), Path(tempfile.mkdtemp()))
         with self.assertRaisesRegex(ValueError, "not approved"):
-            validate_rights([episode], rights)
+            validate_rights([episode], self.rights(digest="b" * 64))
+
+    def test_rights_gate_rejects_family_mismatch(self):
+        episode = self.make_episode(Path(tempfile.mkdtemp()), Path(tempfile.mkdtemp()))
+        episode["family"] = "wrong-family"
+        with self.assertRaisesRegex(ValueError, "family does not match"):
+            validate_rights([episode], self.rights())
+
+    def test_rights_gate_rejects_target_split_mismatch(self):
+        episode = self.make_episode(Path(tempfile.mkdtemp()), Path(tempfile.mkdtemp()))
+        episode["target"]["split"] = "validation"
+        with self.assertRaisesRegex(ValueError, "provenance or split"):
+            validate_rights([episode], self.rights())
 
     def test_dataset_and_collate_shapes(self):
         with tempfile.TemporaryDirectory() as td:
