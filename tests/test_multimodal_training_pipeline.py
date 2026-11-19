@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import unittest
@@ -28,7 +29,8 @@ class MultimodalTrainingPipelineTests(unittest.TestCase):
         image.save(path)
 
     def make_episode(self, target_root, ref_root, split="train"):
-        self.make_image(target_root / "images/target.png")
+        target_path = target_root / "images/target.png"
+        self.make_image(target_path)
         for index in range(4):
             self.make_image(ref_root / f"images/ref{index}.png", index * 3)
         target = {
@@ -38,21 +40,23 @@ class MultimodalTrainingPipelineTests(unittest.TestCase):
             "family": "family-a",
             "split": split,
         }
-        refs = [
-            {
+        refs = []
+        for index in range(4):
+            ref_path = ref_root / f"images/ref{index}.png"
+            refs.append({
                 "image": f"images/ref{index}.png",
+                "image_sha256": hashlib.sha256(ref_path.read_bytes()).hexdigest(),
                 "codepoint": f"U+{0x0621+index:04X}",
                 "font_sha256": "a" * 64,
                 "family": "family-a",
                 "split": split,
-            }
-            for index in range(4)
-        ]
+            })
         return {
             "font_sha256": "a" * 64,
             "family": "family-a",
             "split": split,
             "target": target,
+            "target_image_sha256": hashlib.sha256(target_path.read_bytes()).hexdigest(),
             "style_references": refs,
             "reference_count": 4,
         }
