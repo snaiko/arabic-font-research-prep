@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "3ea651fdea6630ea42b1b23f5840e2d95a4ea9df",
+  "repository_commit": "a84deeb9882724cc5721d544429b46b8e8431ca7",
   "training_allowed": false,
   "overall_status": "BLOCKED",
   "gates": [
@@ -67,22 +67,24 @@
     },
     {
       "id": "image_prompt_hybrid_model_paths",
-      "status": "FAIL",
+      "status": "PARTIAL",
       "evidence": [
-        "docs/DUAL_MODE_MODEL_SPEC.md",
-        "configs/dual_mode_training.yaml",
-        "configs/model.yaml"
+        "models/arabic_multimodal_glyph.py",
+        "docs/EXECUTABLE_MULTIMODAL_BASELINE.md",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520250916"
       ],
-      "notes": "The unified architecture is specified, but executable image encoder, prompt encoder, shared latent alignment, shared generator, and hybrid path have not been verified in this repository."
+      "notes": "Executable shared raster decoder and image/text/hybrid conditioning paths now pass CPU forward/backward smoke tests. Text conditioning is a Unicode codepoint GRU, not a pretrained semantic Arabic language encoder; this is an experimental baseline, not the pinned MX-Font adapter or a quality-validated generator."
     },
     {
       "id": "tests_and_checkpoint_recovery",
-      "status": "FAIL",
+      "status": "PARTIAL",
       "evidence": [
-        "docs/PRETRAINING_COMPLETION_PLAN.md",
-        "docs/AI_AGENT_EXECUTION_SPEC.md"
+        "tests/test_multimodal_model_smoke.py",
+        "models/arabic_multimodal_glyph.py",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520250916",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520251086"
       ],
-      "notes": "Required unit tests, forward/backward smoke tests, tiny-subset overfit, checkpoint round-trip, and resume tests have not been evidenced."
+      "notes": "The latest base CI run passed 51 tests (4 optional PyTorch tests skipped there); a dedicated CPU PyTorch workflow separately passed 4 tests covering image/text/hybrid forward and backward, model checkpoint round-trip, optimizer-state resume, and Unicode codepoint encoding. Full dataset training, tiny-subset overfit, convergence, held-out-family evaluation, and real hardware resume remain unverified."
     },
     {
       "id": "hardware_and_resource_plan",
@@ -308,6 +310,28 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44517742747/artifacts/14525149976"
       ],
       "notes": "CI generated 1,732 paired Arabic/English factual caption records and 2,987 8-connected raster component candidates. All component semantic identities are explicitly unknown; captions are synthetic and unreviewed. No record is expert-approved or training-eligible."
+    },
+    {
+      "id": "component_caption_integrity_audit",
+      "status": "PASS",
+      "evidence": [
+        "scripts/audit_arabic_component_supervision.py",
+        "tests/test_arabic_component_supervision_audit.py",
+        "docs/ARABIC_COMPONENT_CAPTION_AUDIT.md",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520251086",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520251086/artifacts/14527697540"
+      ],
+      "notes": "Independent audit passed on all 1,732 records: 2,987 component candidates, 3,464 paired Arabic/English captions, 20 families, split counts train=1,134/validation=299/test=299, zero errors, zero boundary-touching ink, and zero training-eligible records. This is integrity/geometric QA, not semantic or expert visual approval."
+    },
+    {
+      "id": "executable_multimodal_smoke",
+      "status": "PASS",
+      "evidence": [
+        "models/arabic_multimodal_glyph.py",
+        "tests/test_multimodal_model_smoke.py",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44520250916"
+      ],
+      "notes": "All three conditioning routes passed CPU forward/backward smoke tests. The text branch encodes Unicode codepoints, not word meaning or natural-language semantics."
     }
   ],
   "upstream": {
@@ -323,24 +347,28 @@
     "isolated_target_crops": "1,872 isolated single-codepoint crops generated and independently audited in GitHub Actions run 44515674785; contextual forms/ligatures/marks are handled by separate cluster data.",
     "paired_prompt_geometry_records": "PARTIAL: 1,732 records have paired synthetic Arabic/English factual captions, Unicode/HarfBuzz metadata, and measurable component geometry. They are not reviewed style prompts or expert labels; all remain training-ineligible.",
     "asset_level_training_permission": "not_fully_audited",
-    "contextual_cluster_dataset": "1,732 clusters; 518/520 font-case pairs; zero integrity errors in generated rows; two explicit tatweel coverage exclusions; 238 multi-codepoint clusters; not visually/linguistically or rights cleared",
+    "contextual_cluster_dataset": "1,732 clusters; 518/520 font-case pairs; 1,732 independent HarfBuzz mapping checks; 238 multi-codepoint clusters; zero integrity errors in generated rows; two explicit Aref Ruqaa tatweel exclusions.",
     "component_geometry_annotations": "PARTIAL: 2,987 connected raster component candidates across 1,732 clusters; normalized geometry and candidate roles are present, but semantic identity is unknown for every component and no human adjudication exists.",
     "font_ml_training_rights": "BLOCKED: 52 exact font files across 20 families matched pinned Google Fonts source revisions; 20 official SIL OFL 1.1 license texts were snapshotted and hashed. None explicitly addresses ML training; 0 approvals; active manifest remains empty.",
     "visual_linguistic_review_pack": "Automated Unicode/ArabicShaping audit PASS for all 1,732 clusters / 2,022 codepoints with zero errors. Human visual, spelling and artistic review remains pending.",
     "geometry_pilot": "PASS package generation: 40 samples from 8 eligible cases; 40 blank independent templates per annotator; human annotation/adjudication pending",
     "cluster_level_review_pack": "PASS generation and integrity validation: 100 drafts across 10 shaping cases; 35 multi-codepoint, 26 multi-glyph, 30 with non-rendering controls/separators; no visual/linguistic approval",
     "machine_visual_supervision": "1,732 records; 2,987 component candidates; paired Arabic/English synthetic factual captions; Unicode/ArabicShaping metadata; zero audit errors. Component semantics remain unknown; not gold labels; 0 rights-approved and 0 training-eligible records.",
-    "license_evidence": "20 pinned official SIL OFL 1.1 license snapshots for 52 font files, with hashes, copyright headers, reserved-name candidates and selected-clause checks. ML training permission is not explicit in the license text; legal approval remains unresolved."
+    "license_evidence": "20 pinned official SIL OFL 1.1 license snapshots for 52 font files, with hashes, copyright headers, reserved-name candidates and selected-clause checks. ML training permission is not explicit in the license text; legal approval remains unresolved.",
+    "component_caption_integrity_audit": "PASS: 1,732 source-bound records, 2,987 connected-component candidates, 3,464 Arabic/English captions, 20 families; 0 boundary-touching crops, 0 audit errors. All semantic identities remain unknown, captions machine-generated/unreviewed, and 0 records training-eligible.",
+    "executable_model_baseline": "Experimental shared decoder with image, Unicode-codepoint text, and hybrid conditioning. All three routes pass CPU forward/backward smoke tests. It is not MX-Font, not a semantic Arabic language model, and not quality-validated."
   },
   "tests": {
-    "repository_tests": "44 unit tests passed in GitHub Actions run 44517742747",
+    "repository_tests": "51 tests passed in GitHub Actions run 44520251086 (4 optional PyTorch tests skipped in this job)",
     "image_route": "not_verified",
     "prompt_route": "not_verified",
     "hybrid_route": "not_verified",
     "checkpoint_round_trip": "not_verified",
-    "arabic_linguistic_metadata_audit": "PASS: 1,732 clusters / 2,022 codepoints / zero errors in run 44517742747",
+    "arabic_linguistic_metadata_audit": "PASS: 1,732 clusters / 2,022 codepoints / zero errors; contextual coverage PARTIAL 518/520 pairs in run 44520251086",
     "component_caption_builder": "PASS: 1,732 records / 2,987 component candidates in run 44517742747",
-    "pinned_license_evidence": "PASS: 52 font files / 20 official license snapshots / zero rights approvals in run 44517742747"
+    "pinned_license_evidence": "PASS evidence retrieval: 52 font files / 20 official license snapshots; zero ML-training approvals",
+    "model_smoke_tests": "4/4 passed in dedicated CPU PyTorch run 44520250916: image/text/hybrid forward-backward, checkpoint round-trip, optimizer-state resume, Unicode codepoint encoding",
+    "component_caption_audit": "PASS: 1,732 records / 2,987 components / 3,464 paired captions / zero errors in run 44520251086"
   },
   "hardware": {
     "local_preflight": "not_run_in_this_preparation_update",
@@ -372,8 +400,14 @@
     "Contextual shaping coverage remains partial: two Aref Ruqaa font files cannot render the tatweel case; the missing font/case pairs are excluded and explicitly reported.",
     "Machine-derived measurements and component candidates are available for 1,732 clusters, with a Unicode metadata audit PASS; expert visual decomposition and artistic/spelling validation remain unestablished.",
     "The per-font evidence candidate scan found 52 font files across 20 families and zero ML-training approvals; do not train on these assets until rights are explicitly cleared.",
-    "The license evidence audit found no explicit machine-learning training permission in any of the 20 pinned OFL 1.1 license texts; 0 of 52 font files are approved for training."
+    "The license evidence audit found no explicit machine-learning training permission in any of the 20 pinned OFL 1.1 license texts; 0 of 52 font files are approved for training.",
+    "Per-font ML-training permission remains unresolved: 0 of 52 font files are approved; the 20 pinned SIL OFL 1.1 license texts do not explicitly settle ML-training use.",
+    "Expert visual, spelling, and calligraphic correctness cannot be inferred from raster geometry or HarfBuzz metadata; the generated review packs remain drafts.",
+    "Component semantic labels (body, dots, hamza, marks) remain unknown; the independent geometry audit verifies measurements only.",
+    "Text prompt conditioning is currently Unicode-codepoint encoding, not semantic Arabic understanding; natural-language style prompts are not yet validated.",
+    "Full dataset training, tiny-subset overfit, convergence, held-out-family evaluation, and hardware-specific resume remain untested.",
+    "Contextual shaping coverage remains 518/520 font-case pairs; two Aref Ruqaa font files lack a renderable tatweel cluster."
   ],
-  "recommended_next_step": "Continue automated expansion of Arabic style descriptions and component geometry signals; retain fail-closed rights and visual/linguistic gates, and exclude unverified font-derived data from training.",
+  "recommended_next_step": "Keep training disabled. Resolve per-file training rights, obtain trustworthy visual/linguistic ground truth or a justified self-supervised alternative, complete the MX-Font dependency/native-loader audit, and validate the experimental baseline on a legally cleared tiny dataset before any full training.",
   "generated_date": "2026-11-19"
 }
