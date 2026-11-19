@@ -516,7 +516,7 @@ This section supersedes any earlier statement about the current handoff image mo
 
 ### GitHub Actions review
 
-I queried the job summaries for all **28 unique run IDs referenced by this report's gates, remaining gates, and verification evidence**. All 28 returned completed/success jobs; no failed job was found in this inspected set. The latest relevant runs were:
+I queried the job summaries for all **28 unique run IDs referenced by this report's gates and verification evidence**. All 28 returned completed/success jobs; no failed job was found in this inspected set. The latest relevant runs were:
 
 - [Main data CI 44538878182](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538878182): **83 tests**, 67 passed and 16 optional PyTorch tests skipped. The run's job completed successfully, including rights-manifest generation, corpus audit, crop generation/audits, and artifact uploads.
 - [Dedicated CPU model smoke 44538121400](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44538121400): **16/16 tests passed**. The checkpoint optimizer-state test uses a no-op probe, not a real optimizer step.
