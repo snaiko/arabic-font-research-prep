@@ -6,7 +6,7 @@ from pathlib import Path
 from PIL import Image
 
 HEX64=re.compile(r"^[0-9a-f]{64}$")
-CP=re.compile(r"^U\\+[0-9A-F]{4,6}$")
+CP=re.compile(r"^U\+[0-9A-F]{4,6}$")
 PENDING={"pending","pass","fail","uncertain"}
 
 def sha(path):
