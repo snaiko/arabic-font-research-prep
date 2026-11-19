@@ -2,7 +2,7 @@
 
 Research preparation for an Arabic font-generation system that learns a visual style from reference glyphs and predicts Arabic glyphs and shaped clusters.
 
-> **Current status (2026-11-19):** The standalone image-reference raster baseline is **partially ready for a controlled training experiment**: conditional OFL rights, 1,732 audited contextual episodes, 520 HarfBuzz regression reports, and a successful no-training real-data preflight. **No model training has been started.** The complete production font generator is not ready.
+> **Current status (2026-11-19):** The standalone image-reference raster baseline is **partially ready for a controlled training experiment**: conditional OFL rights, 1,732 audited contextual episodes, 520 HarfBuzz regression reports, a successful no-training real-data preflight, and a compact 20.1M-parameter model. The workflow now assembles a single downloadable data handoff. **No model training has been started.** The complete production font generator is not ready.
 
 ## Verified preparation
 
@@ -17,7 +17,7 @@ Research preparation for an Arabic font-generation system that learns a visual s
 
 ## Training handoff
 
-See [Local Training Handoff](docs/LOCAL_TRAINING.md) for artifact paths, Windows command syntax, explicit step-count requirements, checkpoint resume, and license conditions. The optional Windows launcher is [RUN_IMAGE_ROUTE_TRAINING.bat](RUN_IMAGE_ROUTE_TRAINING.bat); it requires typing TRAIN before starting.
+See [Local Training Handoff](docs/LOCAL_TRAINING.md) for the single-download data artifact, Windows preflight and launcher, explicit step-count requirements, checkpoint resume, and license conditions. The optional Windows launcher is [RUN_IMAGE_ROUTE_TRAINING.bat](RUN_IMAGE_ROUTE_TRAINING.bat); it requires typing TRAIN before starting.
 
 The trainer `scripts/train_multimodal_glyph.py` uses the image-reference route only:
 - target Unicode cluster + four same-font reference glyphs → 128×128 grayscale target raster;
