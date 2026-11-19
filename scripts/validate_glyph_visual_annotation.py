@@ -3,7 +3,7 @@
 from __future__ import annotations
 import re
 
-HEX = re.compile(r"^U\\+[0-9A-F]{4,6}$")
+HEX = re.compile(r"^U\+[0-9A-F]{4,6}$")
 SHA = re.compile(r"^[0-9a-f]{64}$")
 KINDS = {"body","dot","hamza","diacritic","other_mark","counter","join_region","stroke_segment","ornament","uncertain"}
 RELATIONS = {"attached_to","above","below","inside","overlaps","joins","part_of","ambiguous_with"}
