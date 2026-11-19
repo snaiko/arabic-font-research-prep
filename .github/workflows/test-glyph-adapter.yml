@@ -62,6 +62,15 @@ jobs:
           gh release download arabic-glyph-dataset-v1 --repo "${GITHUB_REPOSITORY}" --pattern "arabic-glyph-training-dataset.zip" --dir .audit/glyph
           unzip -oq .audit/font/arabic-font-corpus.zip -d .
           unzip -oq .audit/glyph/arabic-glyph-training-dataset.zip -d data/training_samples
+      - name: Build per-font rights evidence candidates (not approvals)
+        run: |
+          python scripts/build_font_rights_candidates.py --fonts-jsonl data/raw_fonts/fonts.jsonl --font-root data/raw_fonts --output reports/font_rights_evidence_candidates.json
+      - name: Upload per-font rights evidence candidates
+        uses: actions/upload-artifact@v4
+        with:
+          name: font-rights-evidence-candidates
+          path: reports/font_rights_evidence_candidates.json
+          if-no-files-found: error
       - name: Audit the actual published training corpus
         run: |
           python scripts/audit_training_corpus.py --samples data/training_samples/samples.jsonl --font-root data/raw_fonts --image-root data/training_samples --output reports/local/dataset_audit.json
