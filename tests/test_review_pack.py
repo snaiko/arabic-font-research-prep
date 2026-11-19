@@ -48,6 +48,7 @@ class ReviewPackTests(unittest.TestCase):
             self.assertEqual(validate(b),[])
             self.assertEqual(a["glyph_instance"]["render_sha256"],b["glyph_instance"]["render_sha256"])
             self.assertTrue((out/"index.html").is_file())
-            self.assertTrue((out/"images"/"0001_"+row["font_sha256"][:0]+".png").exists() is False or True)
+            self.assertEqual(len(list((out/"images").glob("*.png"))),1)
+            self.assertEqual(len((out/"visual_linguistic_review.jsonl").read_text().splitlines()),1)
 
 if __name__=="__main__": unittest.main()
