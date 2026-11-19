@@ -174,6 +174,36 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44469089468"
       ],
       "notes": "Fail-closed audit tool and tests are implemented. GitHub Actions run 44476157196 downloaded the published release archives and audited the actual published corpus successfully; all 30 repository unit tests passed."
+    },
+    {
+      "id": "contextual_harfbuzz_cluster_integrity",
+      "status": "PASS",
+      "evidence": [
+        "scripts/build_harfbuzz_contextual_crops.py",
+        "scripts/audit_harfbuzz_contextual_crops.py",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44490579652"
+      ],
+      "notes": "CI built 1,736 HarfBuzz cluster crops from 52 font files/20 families across 10 shaping cases; independently reproduced all 1,736 glyph-ID mappings over 520 font-case pairs, checked logical source spans and explicit non-rendering controls/separators, verified image readability and provenance, and reported 238 multi-codepoint clusters with zero errors. This is integrity/shaping consistency, not human visual or linguistic validation."
+    },
+    {
+      "id": "expert_visual_linguistic_review",
+      "status": "BLOCKED",
+      "evidence": [
+        "scripts/build_harfbuzz_contextual_crops.py",
+        "docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md"
+      ],
+      "notes": "No complete expert-reviewed visual/linguistic gold set exists. Representative visual inspection is not a full review; HarfBuzz agreement does not prove glyph appearance, orthographic correctness, or rendering equivalence."
+    },
+    {
+      "id": "component_geometry_annotation_dataset",
+      "status": "BLOCKED",
+      "evidence": [
+        "schemas/glyph_visual_annotation.schema.json",
+        "scripts/validate_glyph_visual_annotation.py",
+        "scripts/compare_glyph_annotations.py",
+        "tests/test_glyph_visual_annotation.py"
+      ],
+      "notes": "No populated, independently double-annotated and adjudicated glyph-component dataset exists. Geometry validator now rejects degenerate/self-intersecting polygons and invalid references; passing structural checks cannot prove component boundaries are correct."
     }
   ],
   "upstream": {
@@ -188,7 +218,10 @@
     "existing_raster_dataset_description": "Verified published release corpus: 7,904 contextual raster samples, 52 font files, 20 font families; all 7,904 referenced image files exist in the extracted dataset. This does not establish asset-level ML-training permission or visual quality.",
     "isolated_target_crops": "not_ready",
     "paired_prompt_geometry_records": "not_verified",
-    "asset_level_training_permission": "not_fully_audited"
+    "asset_level_training_permission": "not_fully_audited",
+    "contextual_cluster_dataset": "1,736 clusters integrity-audited; not visually/linguistically cleared and not rights-cleared",
+    "component_geometry_annotations": "no adjudicated annotation dataset",
+    "font_ml_training_rights": "blocked; per-file approval manifest remains empty"
   },
   "tests": {
     "repository_tests": "30 unit tests passed in GitHub Actions run 44476157196",
@@ -218,7 +251,10 @@
     "Populate provenance-reviewed prompt/geometry pairs and implement image, prompt, and hybrid model paths sharing one generator.",
     "Pass leakage, model forward/backward, checkpoint round-trip/resume, held-out-family evaluation, and local hardware/resource gates.",
     "Run HarfBuzz regression suite against legally cleared font families and review cluster mappings, contextual joins, lam-alef, ZWJ/ZWNJ, and mark attachment.",
-    "Create independently annotated glyph-instance samples with two annotators and adjudication; annotation schema alone is not training data."
+    "Create independently annotated glyph-instance samples with two annotators and adjudication; annotation schema alone is not training data.",
+    "Complete expert visual and linguistic review of representative and stratified contextual clusters using independently rendered comparisons; adjudicate all errors.",
+    "Create two independent component annotations per selected glyph instance, compute per-kind agreement, adjudicate disagreements, and promote only adjudicated labels.",
+    "Populate exact per-file font rights records with authoritative license evidence and ML-training permission; keep all unapproved font-derived data excluded from training."
   ],
   "recommended_next_step": "Complete exact per-file font rights approvals, then run batch HarfBuzz across at least three distinct approved families. Generate and visually inspect target crops and build a two-annotator pilot. Other model, paired-data, hardware, and checkpoint gates remain blocked.",
   "generated_date": "2026-11-19"
