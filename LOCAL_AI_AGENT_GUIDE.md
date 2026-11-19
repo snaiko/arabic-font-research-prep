@@ -82,3 +82,22 @@ Pinned upstream metadata/license; platform-specific environment files; dataset c
 - Never tune on test families.
 - Never upload private user fonts, checkpoints, or machine reports to a public repository without explicit permission.
 - Do not overwrite or delete existing user data or checkpoints.
+
+
+## Arabic character-system v2 handoff
+
+Before training, complete the following on the local machine using only fonts whose exact files have documented permission for ML training:
+
+1. Generate/refresh the complete Unicode 17 Arabic-script registry:
+   `python scripts/import_unicode_arabic_registry.py --download`
+2. For at least three distinct cleared font families, run:
+   `python scripts/run_shaping_regression.py --font "PATH_TO_FONT.otf" --output "reports/local/SHAPING_FONT_NAME.json"`
+   Preserve each font SHA-256 and HarfBuzz version. Review dual/right joining, transparent marks, lam-alef clusters, ZWJ/ZWNJ, tatweel, and mark attachment. Do not claim a universal glyph form from one font.
+3. Build a stratified glyph-instance pilot from those fonts. Keep all derivatives of each font family in the same split. Each glyph image must record the exact render hash, font hash, glyph ID, cluster/context, shaper version, script, language, direction, and feature set.
+4. Have two annotators independently label the exact same images using `schemas/glyph_visual_annotation.schema.json`. Do not share their labels before the independent pass is complete. Keep uncertainty explicit.
+5. Compare the two JSONL files:
+   `python scripts/compare_glyph_annotations.py --annotator-a data/annotations/annotator_a.jsonl --annotator-b data/annotations/annotator_b.jsonl --output reports/local/annotation_agreement.json`
+   Review per-kind precision/recall/F1 and mean polygon IoU; adjudicate disagreements. Raster IoU is approximate and is not a correctness score.
+6. Update readiness evidence only after artifacts exist and are inspected. The registry and comparison-tool CI tests passing do not mean fonts were shaped or human annotations were completed.
+
+Do not upload raw font files, private renderings, annotator identity information, or local machine reports to the public repository without explicit user permission. Do not start training while any rights, data, model, hardware, or evaluation gate is blocked.
