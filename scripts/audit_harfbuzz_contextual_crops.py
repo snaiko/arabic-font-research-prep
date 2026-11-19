@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Strict integrity audit for HarfBuzz-shaped Arabic cluster crop datasets."""
 from __future__ import annotations
-import argparse, hashlib, json
+import argparse, hashlib, json, unicodedata
 from collections import defaultdict
 from pathlib import Path
 from PIL import Image
@@ -74,6 +74,21 @@ def audit(manifest, crop_root, font_root, cases_path, samples_path):
         expected=cache[key].get(cluster)
         if expected is None or row.get("glyph_ids")!=expected:
             errors.append(f"row {n}: glyph IDs do not match independent HarfBuzz re-shape")
+        if expected is not None:
+            ordered=sorted(cache[key])
+            covered=set()
+            for pos,cidx in enumerate(ordered):
+                cend=ordered[pos+1] if pos+1<len(ordered) else len(text)
+                covered.update(range(cidx,cend))
+            expected_nonrendered=[]
+            for idx,char in enumerate(text):
+                if idx not in covered:
+                    cat=unicodedata.category(char)
+                    if not (cat.startswith("C") or cat.startswith("Z")):
+                        errors.append(f"row {n}: visible source character U+{ord(char):04X} has no shaped glyph cluster")
+                    expected_nonrendered.append({"index":idx,"char":char,"codepoint":f"U+{ord(char):04X}","unicode_category":cat})
+            if row.get("nonrendering_source_codepoints") != expected_nonrendered:
+                errors.append(f"row {n}: non-rendering controls/separators are missing or incorrectly mapped")
         if row.get("glyph_count")!=len(row.get("glyph_ids",[])) or not row.get("glyph_ids"):
             errors.append(f"row {n}: glyph count mismatch/empty glyph list")
         if row.get("renderer")!="HarfBuzz+FontTools-outline+CairoSVG":
