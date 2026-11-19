@@ -52,7 +52,8 @@ def components(image_path, threshold=245):
 def build(manifest,crop_root,registry_path,output):
     rows=load_jsonl(manifest)
     registry=json.loads(Path(registry_path).read_text(encoding="utf-8"))
-    lookup={r["codepoint"]:r for r in registry["records"]}\n    context_lookup={r["codepoint"]:r for r in registry.get("contextual_joining_properties",[])}
+    lookup={r["codepoint"]:r for r in registry["records"]}
+    context_lookup={r["codepoint"]:r for r in registry.get("contextual_joining_properties",[])}
     root=Path(crop_root).resolve(); out=Path(output); out.parent.mkdir(parents=True,exist_ok=True)
     seen=set(); count=0; caption_rows=0; component_total=0
     with out.open("w",encoding="utf-8") as dst:
