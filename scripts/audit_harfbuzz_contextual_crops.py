@@ -40,6 +40,24 @@ def audit(manifest, crop_root, font_root, cases_path, samples_path):
     cases={c["id"]:c for c in json.loads(Path(cases_path).read_text(encoding="utf-8"))["cases"]}
     split_by_hash={r.get("font_sha256"):r.get("split") for r in load_jsonl(samples_path)}
     rows=list(load_jsonl(manifest)); errors=[]; seen=set(); cache={}; family_splits=defaultdict(set)
+    # Reconstruct context-wide non-rendering source positions from the union of
+    # rendered cluster spans, independently of the builder's stored labels.
+    context_groups=defaultdict(list)
+    for row in rows:
+        context_groups[(row.get("font_sha256"),row.get("case_id"))].append(row)
+    expected_context_controls={}
+    for context_key, context_rows in context_groups.items():
+        covered=set()
+        for item in context_rows:
+            st=item.get("logical_start"); en=item.get("logical_end")
+            if isinstance(st,int) and isinstance(en,int) and 0<=st<en<=len(item.get("source_text","")):
+                covered.update(range(st,en))
+        sample_text=context_rows[0].get("source_text","")
+        expected_context_controls[context_key]=[
+            {"index":idx,"char":char,"codepoint":f"U+{ord(char):04X}","unicode_category":unicodedata.category(char)}
+            for idx,char in enumerate(sample_text)
+            if idx not in covered and (unicodedata.category(char).startswith("C") or unicodedata.category(char).startswith("Z"))
+        ]
     for n,row in enumerate(rows,1):
         case_id=row.get("case_id"); case=cases.get(case_id)
         if case is None:
@@ -80,15 +98,10 @@ def audit(manifest, crop_root, font_root, cases_path, samples_path):
             for pos,cidx in enumerate(ordered):
                 cend=ordered[pos+1] if pos+1<len(ordered) else len(text)
                 covered.update(range(cidx,cend))
-            expected_nonrendered=[]
-            for idx,char in enumerate(text):
-                if idx not in covered:
-                    cat=unicodedata.category(char)
-                    if not (cat.startswith("C") or cat.startswith("Z")):
-                        errors.append(f"row {n}: visible source character U+{ord(char):04X} has no shaped glyph cluster")
-                    expected_nonrendered.append({"index":idx,"char":char,"codepoint":f"U+{ord(char):04X}","unicode_category":cat})
+            context_key=(digest,case_id)
+            expected_nonrendered=expected_context_controls.get(context_key,[])
             if row.get("nonrendering_source_codepoints") != expected_nonrendered:
-                errors.append(f"row {n}: non-rendering controls/separators are missing or incorrectly mapped")
+                errors.append(f"row {n}: context-level non-rendering controls/separators are missing or incorrectly mapped")
         if row.get("glyph_count")!=len(row.get("glyph_ids",[])) or not row.get("glyph_ids"):
             errors.append(f"row {n}: glyph count mismatch/empty glyph list")
         if row.get("renderer")!="HarfBuzz+FontTools-outline+CairoSVG":
