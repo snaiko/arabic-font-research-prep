@@ -25,7 +25,7 @@ def fetch(url: str) -> bytes:
         return response.read()
 
 def raw_url(blob_url: str) -> str:
-    match=re.fullmatch(r"https://github\\.com/google/fonts/blob/([0-9a-f]{40})/(ofl/[A-Za-z0-9._/-]+/OFL\\.txt)",blob_url)
+    match=re.fullmatch(r"https://github[.]com/google/fonts/blob/([0-9a-f]{40})/(ofl/[A-Za-z0-9._/-]+/OFL[.]txt)",blob_url)
     if not match: raise ValueError(f"unexpected or unpinned Google Fonts license URL: {blob_url}")
     return f"https://raw.githubusercontent.com/google/fonts/{match.group(1)}/{match.group(2)}"
 
