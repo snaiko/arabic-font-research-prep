@@ -15,7 +15,7 @@ class ArabicComponentSupervisionTests(unittest.TestCase):
               "case_id":"mark","cluster":0,"source_text":"بَ","logical_text":"بَ",
               "logical_start":0,"logical_end":2,"logical_codepoints":["U+0628","U+064E"],
               "glyph_ids":[7,8],"glyph_count":2}
-            manifest.write_text(json.dumps(row,ensure_ascii=False)+"\\n",encoding="utf-8")
+            manifest.write_text(json.dumps(row,ensure_ascii=False)+"\n",encoding="utf-8")
             registry={"unicode_version":"17.0.0","records":[
               {"codepoint":"U+0628","character":"ب","unicode_name":"ARABIC LETTER BEH","general_category":"Lo","role":"letter","joining_type":"D","joining_group":"Beh","is_combining_mark":False},
               {"codepoint":"U+064E","character":"َ","unicode_name":"ARABIC FATHA","general_category":"Mn","role":"mark","joining_type":"T","joining_group":"No_Joining_Group","is_combining_mark":True}]}
@@ -35,7 +35,7 @@ class ArabicLinguisticAuditTests(unittest.TestCase):
             row={"case_id":"case","source_text":"بَ","logical_start":0,"logical_end":2,
               "logical_text":"بَ","logical_codepoints":["U+0628","U+064E"],"font_sha256":"a"*64,
               "cluster":0,"glyph_ids":[7,8],"glyph_count":2}
-            m=root/"m.jsonl"; m.write_text(json.dumps(row,ensure_ascii=False)+"\\n",encoding="utf-8")
+            m=root/"m.jsonl"; m.write_text(json.dumps(row,ensure_ascii=False)+"\n",encoding="utf-8")
             cases=root/"cases.json"; cases.write_text(json.dumps({"cases":[{"id":"case","text":"بَ"}]},ensure_ascii=False),encoding="utf-8")
             registry={"unicode_version":"17.0.0","records":[
               {"codepoint":"U+0628","character":"ب","general_category":"Lo","joining_type":"D","is_combining_mark":False},
