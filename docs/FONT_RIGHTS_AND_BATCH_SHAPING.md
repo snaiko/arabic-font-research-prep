@@ -41,3 +41,18 @@ The runner stops before shaping if any manifest entry fails the rights/hash gate
 
 ## 5. Interpretation
 A successful technical run does not prove the license interpretation is legally correct or that shaping is visually correct. Keep all unapproved font-derived data excluded from training. The rights gate remains blocked until authorized per-file review is complete.
+
+
+## 6. Pinned license text evidence (automated)
+
+The CI pipeline now fetches and snapshots the exact license text at the immutable Google Fonts revision for every distinct family license. It verifies the OFL 1.1 marker and selected redistribution/reserved-name clauses, records each snapshot SHA-256, copyright header, and possible Reserved Font Names, and retains all 20 license snapshots for the 52-file corpus.
+
+Run:
+
+```bash
+python scripts/audit_google_fonts_licenses.py \
+  --candidates reports/font_rights_evidence_candidates.json \
+  --output-dir reports/font_license_evidence
+```
+
+A successful evidence audit means source and text retrieval/integrity passed. It does **not** make a legal determination that the proposed machine-learning training use is permitted. The snapshot report therefore remains `REVIEW_REQUIRED`, `approved_font_count: 0`, and `ml_training_allowed: false`. The workflow artifact is named `pinned-font-license-evidence`.
