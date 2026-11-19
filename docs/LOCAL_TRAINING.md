@@ -15,7 +15,7 @@ Extract the artifact contents into the root of a fresh clone of this repository.
 - `data/glyph_crops/` — isolated same-font reference metadata and images.
 - `data/manifests/font_rights.json` — exact conditional OFL 1.1 rights manifest.
 
-The ZIP was independently inspected: 1,732 episodes (1,134 train / 299 validation / 299 test), 20 font families, 52 approved font files, 1,732 contextual target PNGs and 1,872 isolated reference PNGs. All 3,604 PNGs decoded and matched their SHA-256 metadata; zero files were missing or unlisted. Episodes make 6,928 reference uses from 1,831 distinct reference PNGs; 41 additional valid reference crops are not sampled. There is no family or font-hash split leakage.
+The ZIP was independently inspected: 1,732 episodes (1,134 train / 299 validation / 299 test), 20 font families, 52 approved font files, 1,732 contextual target PNGs and 1,872 isolated reference PNGs. All 3,604 PNGs decoded and matched their SHA-256 metadata; zero files were missing, unlisted, corrupt or hash-mismatched. Target PNGs are 160×160 RGB files with identical R/G/B channels (grayscale encoded as RGB); reference PNGs are 128×128 grayscale (L mode). The dataset loader converts targets to grayscale before resizing both targets and references to 128×128. Episodes make 6,928 reference uses from 1,831 distinct reference PNGs; 41 additional valid reference crops are not sampled. There is no family or font-hash split leakage.
 
 ## Environment and hardware preflight
 
