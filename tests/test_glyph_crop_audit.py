@@ -16,7 +16,7 @@ class GlyphCropAuditTests(unittest.TestCase):
                    "unicode_char":"ب","sample_type":"isolated_single_codepoint",
                    "contextual_joining_supervision":False}
             manifest = root / "glyph_crops.jsonl"
-            manifest.write_text(json.dumps(row, ensure_ascii=False)+"\\n", encoding="utf-8")
+            manifest.write_text(json.dumps(row, ensure_ascii=False)+"\n", encoding="utf-8")
             report = audit(manifest, root, root)
             self.assertEqual(report["status"], "FAIL")
             self.assertTrue(any("blank crop" in e for e in report["errors"]))
