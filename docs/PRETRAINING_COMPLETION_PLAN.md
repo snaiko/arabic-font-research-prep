@@ -10,7 +10,7 @@ Prepare the repository and local Windows environment so a separate AI coding/tra
 - A Google Fonts collection/validation pipeline and raster dataset release workflow exist.
 - A Windows preflight launcher exists.
 - The current raster dataset contains contextual full-line renders with logical target indices; it is not yet a verified isolated-glyph episode dataset.
-- An executable, repository-pinned MX-Font adapter/training implementation has not been verified in this project.
+- An immutable MX-Font source pin is recorded. A project-side isolated single-codepoint crop builder and target-excluded few-shot episode sampler now exist, but they are an intermediate format only; the official native MX-Font adapter, Arabic component/decomposition supervision, and executable training integration are not implemented.
 - The dual-mode image + text prompt model is specified conceptually, but its prompt encoder, shared-latent alignment, paired data, and tests must still be implemented by the local AI agent.
 - The SVG/font geometry extractor is an initial metadata utility, not a complete vectorization or calligraphy understanding system.
 
@@ -41,6 +41,14 @@ Prepare the repository and local Windows environment so a separate AI coding/tra
 - Reject blank, clipped, unsupported, ambiguous, or .notdef samples. Generate visual contact sheets and an audit report.
 - Keep font families disjoint across train/validation/test. Check duplicates and near-duplicates across splits.
 - Do not claim that the four context strings automatically produce four valid forms for every letter; derive joining properties and inspect actual shaped glyph output.
+
+### WP2A — Isolated glyph crops and few-shot episodes
+
+- Run `scripts/build_isolated_glyph_crops.py` to render each isolated Arabic codepoint directly from its source font with RAQM. Do not crop connected word images without a tested HarfBuzz cluster-to-pixel mapping.
+- Run `scripts/build_mxfont_episodes.py` to create same-font episodes with target codepoints excluded from style references and family splits inherited unchanged.
+- Treat this as an intermediate format. Implement a separate adapter to the pinned upstream MX-Font loader after inspecting its actual schema.
+- MX-Font uses weak component supervision and decomposition/primals labels. Arabic decomposition labels must be linguistically and visually defensible and manually audited; do not synthesize arbitrary component labels to satisfy the loader.
+- Isolated crops do not provide joining-form, ligature, or mark supervision.
 
 ### WP3 — Geometry and prompt supervision
 
