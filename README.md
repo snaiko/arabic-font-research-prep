@@ -2,7 +2,7 @@
 
 Research preparation for an Arabic font-generation system that learns a visual style from reference glyphs and predicts Arabic glyphs and shaped clusters.
 
-> **Current status (2026-11-19):** The image-reference raster baseline now has a conditional OFL rights manifest, 1,732 audited contextual episodes, a local training entry point, and a successful no-training real-data/model preflight. **No model training has been started.** Full project readiness remains BLOCKED pending the gates listed below.
+> **Current status (2026-11-19):** The standalone image-reference raster baseline is **partially ready for a controlled training experiment**: conditional OFL rights, 1,732 audited contextual episodes, 520 HarfBuzz regression reports, and a successful no-training real-data preflight. **No model training has been started.** The complete production font generator is not ready.
 
 ## Verified preparation
 
@@ -27,7 +27,7 @@ The trainer `scripts/train_multimodal_glyph.py` uses the image-reference route o
 
 A separate workflow builds [contextual few-shot episodes](docs/CONTEXTUAL_EPISODE_DATASET.md) and runs a no-training real-data preflight. This preflight must report that no optimizer/backward/checkpoint operation occurred.
 
-## Remaining blockers
+## Remaining blockers for a complete production font generator
 
 Overall readiness is still **BLOCKED**:
 1. Expert visual, spelling, readability and calligraphic validation is not complete. Machine geometry and HarfBuzz mapping are not a substitute for human ground truth.
@@ -54,4 +54,4 @@ The project can distribute its own model and generated fonts for free, but SIL O
 - [Upstream baseline and dependency pin](docs/UPSTREAM_BASELINE.md)
 - [Font rights and batch shaping](docs/FONT_RIGHTS_AND_BATCH_SHAPING.md)
 
-**Do not start a long training run until the remaining gates are resolved and the user explicitly approves training.**
+Before starting the experimental run, perform the Windows hardware preflight and obtain the user's explicit go-ahead. Do not describe the system as a finished font generator until vectorization/OpenType and production visual-quality gates are complete.
