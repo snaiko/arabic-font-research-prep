@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "6becf73854af7937f4fa1f92fde79ac273ac0dc3",
+  "repository_commit": "3e2839b0b0c9b1a3c3085a8e580a893744cede3c",
   "training_allowed": false,
   "overall_status": "BLOCKED",
   "gates": [
@@ -38,13 +38,15 @@
     },
     {
       "id": "arabic_target_glyph_crops",
-      "status": "FAIL",
+      "status": "PASS",
       "evidence": [
-        "scripts/build_arabic_glyph_dataset.py",
-        "docs/ARABIC_GLYPH_DATASET.md",
-        "LOCAL_AI_AGENT_GUIDE.md"
+        "scripts/build_isolated_glyph_crops.py",
+        "scripts/audit_glyph_crops.py",
+        "tests/test_glyph_crop_audit.py",
+        ".github/workflows/test-glyph-adapter.yml",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44515674785"
       ],
-      "notes": "Existing samples are contextual full-line renders with logical target indices, not audited isolated target-glyph crops with verified HarfBuzz cluster mapping."
+      "notes": "Latest GitHub Actions run built 1,872 isolated single-codepoint crops from the published 52-font/20-family corpus and passed the independent crop audit with zero rejected crops. These are isolated forms only; they do not replace contextual joining, ligature, or combining-mark cluster supervision, and legal training permission remains separately blocked."
     },
     {
       "id": "paired_prompt_and_geometry_supervision",
@@ -237,6 +239,19 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44510736687/artifacts/14523365576"
       ],
       "notes": "Latest CI generated 100 stratified cluster-level drafts (10 for each of 10 shaping cases). Independent validation matched all 100 records to source clusters, checked schema-critical metadata and image hashes/dimensions, and reported zero errors. The pack contains 35 multi-codepoint samples, 26 multi-glyph samples, and 30 samples carrying omitted source controls/separators. All records remain drafts; this is not visual or linguistic approval."
+    },
+    {
+      "id": "machine_derived_visual_supervision",
+      "status": "PASS",
+      "evidence": [
+        "scripts/build_arabic_visual_supervision.py",
+        "tests/test_arabic_visual_supervision.py",
+        "docs/ARABIC_VISUAL_SUPERVISION.md",
+        ".github/workflows/test-glyph-adapter.yml",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44515674785",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44515674785/artifacts/14525941407"
+      ],
+      "notes": "GitHub Actions generated 1,732 deterministic paired records from contextual clusters, with 1,135 unique raster hashes. Each record includes canonical Unicode/HarfBuzz metadata and measurable raster geometry (ink bounds, centroid, ink ratio, row/column occupancy). This is machine-derived measurement supervision, not expert component segmentation or linguistic/artistic approval. The empty rights manifest yielded 0 rights-approved records; all 1,732 are explicitly training_eligible=false."
     }
   ],
   "upstream": {
@@ -249,18 +264,19 @@
   },
   "data": {
     "existing_raster_dataset_description": "Verified published release corpus: 7,904 contextual raster samples, 52 font files, 20 font families; all 7,904 referenced image files exist in the extracted dataset. This does not establish asset-level ML-training permission or visual quality.",
-    "isolated_target_crops": "not_ready",
+    "isolated_target_crops": "1,872 isolated single-codepoint crops generated and independently audited in GitHub Actions run 44515674785; contextual forms/ligatures/marks are handled by separate cluster data.",
     "paired_prompt_geometry_records": "not_verified",
     "asset_level_training_permission": "not_fully_audited",
     "contextual_cluster_dataset": "1,732 clusters; 518/520 font-case pairs; zero integrity errors in generated rows; two explicit tatweel coverage exclusions; 238 multi-codepoint clusters; not visually/linguistically or rights cleared",
     "component_geometry_annotations": "no adjudicated annotation dataset",
-    "font_ml_training_rights": "blocked; per-file approval manifest remains empty",
+    "font_ml_training_rights": "blocked; evidence-candidate scan covers 52 font files/20 families, approved_count=0; per-file ML-training permission manifest remains empty.",
     "visual_linguistic_review_pack": "PASS generation: 100 samples, 10 per shaping case; human review pending",
     "geometry_pilot": "PASS package generation: 40 samples from 8 eligible cases; 40 blank independent templates per annotator; human annotation/adjudication pending",
-    "cluster_level_review_pack": "PASS generation and integrity validation: 100 drafts across 10 shaping cases; 35 multi-codepoint, 26 multi-glyph, 30 with non-rendering controls/separators; no visual/linguistic approval"
+    "cluster_level_review_pack": "PASS generation and integrity validation: 100 drafts across 10 shaping cases; 35 multi-codepoint, 26 multi-glyph, 30 with non-rendering controls/separators; no visual/linguistic approval",
+    "machine_visual_supervision": "1,732 records generated; deterministic raster measurements plus Unicode/HarfBuzz metadata; not human-verified component labels; 0 rights-approved and 0 training-eligible records."
   },
   "tests": {
-    "repository_tests": "39 unit tests passed in GitHub Actions run 44510736687",
+    "repository_tests": "40 unit tests passed in GitHub Actions run 44515674785",
     "image_route": "not_verified",
     "prompt_route": "not_verified",
     "hybrid_route": "not_verified",
@@ -279,7 +295,7 @@
   },
   "blockers": [
     "Populate and independently review the per-file font rights manifest with authoritative license evidence and exact SHA-256 values; run batch HarfBuzz only after the gate passes.",
-    "Run the isolated-crop builder on the downloaded licensed font corpus and review generated crops; this adapter is not contextual joining/ligature supervision.",
+    "Isolated single-codepoint crops have now been generated and audited (1,872); complete contextual supervision, expert visual/linguistic validation, and per-file ML training rights remain separate gates.",
     "Complete per-font asset-level ML-training rights review.",
     "Implement and test an adapter to the pinned upstream MX-Font native loader; current project episodes are an intermediate schema.",
     "Develop and audit expert-reviewed Arabic visual decomposition/component labels required for MX-Font weak component supervision, or document a justified alternative objective. The starter registry covers joining metadata only.",
@@ -293,7 +309,9 @@
     "Populate exact per-file font rights records with authoritative license evidence and ML-training permission; keep all unapproved font-derived data excluded from training.",
     "Complete the generated visual/linguistic review pack with two independent human reviews and adjudicate every fail/uncertain item.",
     "Complete the independent two-annotator geometry pilot, compute per-class agreement, and adjudicate disagreements; do not train on draft annotations.",
-    "Contextual shaping coverage remains partial: two Aref Ruqaa font files cannot render the tatweel case; the missing font/case pairs are excluded and explicitly reported."
+    "Contextual shaping coverage remains partial: two Aref Ruqaa font files cannot render the tatweel case; the missing font/case pairs are excluded and explicitly reported.",
+    "Machine-derived raster measurements are available for 1,732 contextual clusters, but expert visual decomposition/component labels and independent linguistic/artistic validation are not established.",
+    "The per-font evidence candidate scan found 52 font files across 20 families and zero ML-training approvals; do not train on these assets until rights are explicitly cleared."
   ],
   "recommended_next_step": "Continue automated expansion of Arabic style descriptions and component geometry signals; retain fail-closed rights and visual/linguistic gates, and exclude unverified font-derived data from training.",
   "generated_date": "2026-11-19"
