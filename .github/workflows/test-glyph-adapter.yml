@@ -17,6 +17,9 @@ on:
       - "tests/**"
       - ".github/workflows/test-glyph-adapter.yml"
       - ".github/workflows/build-contextual-style-episodes.yml"
+      - "RUN_IMAGE_ROUTE_TRAINING.bat"
+      - "START_LOCAL_TRAINING.bat"
+      - "docs/LOCAL_TRAINING.md"
   pull_request:
     paths:
       - "scripts/**"
