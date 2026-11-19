@@ -11,6 +11,11 @@ if %errorlevel%==0 (
   python scripts\preflight_local_training.py
 )
 echo.
-echo Preflight finished. No training was started.
-echo Read LOCAL_AI_AGENT_GUIDE.md and reports\local\machine_preflight.json
+if errorlevel 1 (
+  echo Preflight is BLOCKED. Read blocking_reasons in reports\local\machine_preflight.json.
+) else (
+  echo Preflight PASSED for the experimental image-reference raster route.
+)
+echo No training was started.
+echo Read reports\local\machine_preflight.json
 pause
