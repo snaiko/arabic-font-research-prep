@@ -21,10 +21,9 @@ python scripts/import_unicode_arabic_registry.py --download
 Inputs are downloaded from the official Unicode 17.0 UCD:
 - `UnicodeData.txt` — names and General_Category.
 - `Scripts.txt` — Script=Arabic membership.
-- `DerivedJoiningType.txt` — complete Joining_Type including transparent marks.
 - `ArabicShaping.txt` — explicit Joining_Group and descriptive schematic names.
 
-The generated file is `data/arabic_script_registry_v2.json`. SHA-256 hashes of all four source files are embedded. The importer does not silently use the Python runtime's potentially older Unicode database.
+The generated file is `data/arabic_script_registry_v2.json`. SHA-256 hashes of all four source files are embedded. The importer follows the default Joining_Type rule documented in `ArabicShaping.txt`: unlisted Mn/Me/Cf code points are Transparent (T), and other unlisted code points are Non_Joining (U). It does not silently use the Python runtime's potentially older Unicode database.
 
 The v1 hand-curated core registry remains a readable starter set; v2 is the comprehensive Unicode Script=Arabic registry. Persian, Urdu and other languages use Arabic script and are included as script characters, but language-specific orthographic inventories and fonts must be tagged separately in training examples.
 
