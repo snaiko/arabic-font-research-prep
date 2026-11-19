@@ -1,0 +1,29 @@
+name: Test multimodal Arabic glyph model
+on:
+  push:
+    paths:
+      - "models/**"
+      - "tests/test_multimodal_model_smoke.py"
+      - "requirements-model-smoke.txt"
+      - ".github/workflows/test-multimodal-model.yml"
+  pull_request:
+    paths:
+      - "models/**"
+      - "tests/test_multimodal_model_smoke.py"
+      - "requirements-model-smoke.txt"
+      - ".github/workflows/test-multimodal-model.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  model-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install CPU PyTorch
+        run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
+      - name: Run model forward/backward and checkpoint tests
+        run: python -m unittest discover -s tests -p "test_multimodal_model_smoke.py" -v
