@@ -424,7 +424,7 @@ This remains an experimental **raster** training handoff, not a completed TTF/OT
 
 ### Verified combined artifact
 
-The combined data package was successfully built in [workflow run 44536155715](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44536155715). Artifact name: **arabic-font-training-handoff**; size: **9,953,674 bytes**; SHA-256: `30cb94b9218ff0444dcf63c4910ea55d855cbc14c7064bf55908a11d8923c84e`.
+The combined data package was successfully built in [workflow run 44537037099](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099). Artifact name: **arabic-font-training-handoff**; size: **9,953,674 bytes**; SHA-256: `43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc`.
 
 I downloaded and inspected the ZIP independently:
 - 3,619 archive entries, 18,304,447 uncompressed bytes.
@@ -435,3 +435,12 @@ I downloaded and inspected the ZIP independently:
 - The folder structure matches the Windows training launcher.
 
 The latest workflow revision also runs the full local preflight script on its CI runner before packaging. This is an additional end-to-end test of the local preflight code; it is not a substitute for running it on the user's Windows machine.
+
+
+### End-to-end local preflight result
+
+The updated episode workflow [44537037099](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099) passed all stages, including execution of the exact `scripts/preflight_local_training.py` used by the Windows launcher, against the complete real dataset.
+
+The CI runner reported 15.33 GB RAM, CPU-only PyTorch (no CUDA), and a recommended batch size of 1. The preflight returned `READY_FOR_EXPERIMENTAL_IMAGE_ROUTE` with no blockers, verified the full 52-file/20-family rights manifest, all 1,732 episodes, 238 multi-codepoint targets, 6,928 references, and a finite real 128×128 forward output. It explicitly recorded that no optimizer, backward pass, weight update, checkpoint or training occurred.
+
+**Important:** this is the GitHub-hosted Linux runner's hardware report. The user's Windows GPU/VRAM/RAM/disk remain unknown until START_LOCAL_TRAINING.bat is run on that computer.
