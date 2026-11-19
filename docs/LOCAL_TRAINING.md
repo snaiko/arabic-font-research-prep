@@ -1,38 +1,45 @@
 # Local training handoff
 
-## Training inputs
+## One-download data package
 
-Use the GitHub Actions artifacts from a successful data-pipeline run:
+Download the GitHub Actions artifact named **arabic-font-training-handoff** from the latest successful [training-handoff workflow run](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44536155715). The verified archive is 9.95 MB with SHA-256:
 
-1. `conditional-ofl-font-rights-manifest` — exact 52-file/20-family conditional OFL rights manifest.
-2. `arabic-contextual-style-episodes` — train/validation/test few-shot episodes and a no-training preflight report.
-3. `arabic-harfbuzz-contextual-clusters` — contextual target images.
-4. `isolated-arabic-glyph-crops` — same-font isolated style-reference images.
+`30cb94b9218ff0444dcf63c4910ea55d855cbc14c7064bf55908a11d8923c84e`
 
-Extract the artifacts so the local paths are:
+Extract the artifact contents into the root of a fresh clone of this repository. Do not rename or rearrange the folders. It provides:
 
-- `data/manifests/font_rights.json`
-- `data/contextual_style_episodes/train.jsonl`, `validation.jsonl`, `test.jsonl`
-- `data/contextual_glyph_crops/contextual_clusters.jsonl` and `images/`
-- `data/glyph_crops/glyph_crops.jsonl` and `images/`
+- `data/contextual_style_episodes/` — train, validation, test and preflight JSON.
+- `data/contextual_glyph_crops/` — contextual target metadata and images.
+- `data/glyph_crops/` — isolated same-font reference metadata and images.
+- `data/manifests/font_rights.json` — exact conditional OFL 1.1 rights manifest.
 
-The episode builder creates four reference glyphs from the exact same font as each target, excludes all target codepoints from the references, and preserves family-level splits.
+The ZIP was independently inspected: 1,732 episodes (1,134 train / 299 validation / 299 test), 20 font families, 52 approved font files, 1,732 target images, 6,928 reference images, zero missing image paths, and no family split leakage.
 
-## Environment
+## Environment and hardware preflight
 
-Install a compatible PyTorch build for the machine and Pillow:
+Use Python 3.10 or newer. Install a compatible PyTorch build for the machine and Pillow:
 
-```bash
+```powershell
 python -m pip install torch Pillow
 ```
 
-Run `START_LOCAL_TRAINING.bat` first. It records CPU/GPU/VRAM/RAM/disk, validates the 52-file/20-family rights manifest and episode splits, verifies all 1,732 target plus 6,928 reference image hashes, and performs one no-training model forward pass. It does not start training. Check `reports/local/machine_preflight.json` and its recommended batch size before proceeding. `--device auto` selects CUDA when PyTorch detects it; otherwise it uses CPU. The project has not yet verified the user's Windows GPU, VRAM, RAM, or runtime.
+If an NVIDIA GPU is present, install the PyTorch build matching the installed CUDA driver from the official PyTorch installation selector; otherwise the CPU build is sufficient for the preflight, though training may be slow.
 
-## Explicit training command
+Run `START_LOCAL_TRAINING.bat` first. This does **not** train. It records CPU/GPU/VRAM/RAM/free disk, validates the complete 52-file/20-family rights manifest, validates exact episode counts (1,134/299/299), 20-family separation, 238 multi-codepoint targets, and exactly four same-font references per target. It then verifies all 1,732 target and 6,928 reference image SHA-256 values and performs one real 128×128 forward pass.
 
-The trainer requires an explicit `--max-steps`; it will not start an unbounded run by default.
+Read `reports/local/machine_preflight.json`. It reports blockers and a recommended batch size. The CI-runner hardware reading is not a substitute for this Windows preflight on the actual training computer.
 
-```bash
+## Explicit training launcher
+
+Only after the local preflight reports `READY_FOR_EXPERIMENTAL_IMAGE_ROUTE`, and after the user explicitly decides to start, run:
+
+`RUN_IMAGE_ROUTE_TRAINING.bat`
+
+The launcher rechecks the required data folders and preflight status. It asks the user to type `TRAIN` before it starts a real training run. Defaults are 1,000 total steps, batch size 2, latent dimension 64, Unicode embedding dimension 16, and automatic CUDA/CPU selection. These can be changed at the top of the batch file.
+
+The equivalent PowerShell command is:
+
+```powershell
 python -m scripts.train_multimodal_glyph `
   --episodes-dir data/contextual_style_episodes `
   --target-root data/contextual_glyph_crops `
@@ -50,43 +57,35 @@ The backticks shown above are PowerShell line-continuation characters.
 
 To resume from a saved checkpoint, pass `--resume runs/arabic-contextual-baseline/checkpoints/last.pt` and set `--max-steps` to the desired total step count, not the number of additional steps.
 
-## What this trainer actually learns
+## Model and training scope
 
-- It trains the **image-reference route**: target Unicode cluster + four same-font reference glyph images → target contextual raster.
-- It uses a pixel L1 loss plus a raster edge loss.
-- It evaluates on family-held-out validation and test splits and saves optimizer/model state.
-- It does not train the text-style route; the current captions are not reviewed semantic style prompts.
-- It does not convert raster predictions into TTF/OTF files. Vectorization, contour cleanup, font tables, naming, shaping, and final font QA are separate stages.
-- It does not replace HarfBuzz for arbitrary text shaping.
+The model shares one 16-dimensional full-Unicode embedding table between target codepoints and text-style prompt codepoints. Latest CPU preflight measured:
+
+- 20,115,074 parameters.
+- FP32 model weights: 80,460,296 bytes.
+- Estimated weights + gradients + Adam state: 321,841,184 bytes (about 307 MiB).
+
+This estimate excludes activations, batches, temporary workspaces, runtime allocations, and the operating system. Actual memory use depends on the local hardware and batch size.
+
+The trainer learns only the **image-reference raster route**: target Unicode cluster + four same-font reference glyph images → target contextual raster. It uses pixel L1 loss plus an edge loss, evaluates on family-held-out validation and test splits, and saves model and optimizer state for resume.
+
+It does not train the text-style route, because the corpus does not yet contain reviewed semantic style prompts. It does not convert raster predictions into TTF/OTF files. Vectorization, contour cleanup, font tables, naming, shaping and final font QA are separate stages. It does not replace HarfBuzz for arbitrary text shaping.
 
 ## License conditions
 
-The exact 52 Google Fonts source files are conditionally approved for this training pipeline only if generated font software based on them is released under SIL OFL 1.1, copyright notices and acknowledgements are preserved, and recorded Reserved Font Names are not reused without written permission. OFL is not a NonCommercial license: downstream commercial use is not prohibited by OFL. The project itself can distribute its own outputs for free.
+The exact 52 Google Fonts source files are conditionally approved for this training pipeline only if generated font software based on them is released under SIL OFL 1.1, copyright notices and acknowledgements are preserved, and recorded Reserved Font Names are not reused without written permission.
 
-The model-weight license is separate and must be decided independently. Arabeyes GPL+Font Exception fonts are not included in the active rights manifest.
+**OFL is not a NonCommercial license:** downstream commercial use is not prohibited by OFL. The project itself can distribute its outputs for free, but that does not prevent downstream commercial use. The model-weight license is separate and must be decided independently. Arabeyes GPL+Font Exception fonts are not included in the active rights manifest.
 
 ## Current status
 
-The data/rights preflight is automated. The project has not started this training script on the full dataset. Tiny-subset overfit, convergence, held-out-family quality, font vectorization, and local hardware preflight still need to be demonstrated before claiming the generator is ready for production use.
+- Data, rights and image integrity: automated and verified.
+- Combined one-download data artifact: built and independently inspected.
+- Model smoke and training-pipeline tests: 16/16 passed in dedicated CPU CI.
+- Main repository CI: 80 tests; 64 passed and 16 optional PyTorch tests skipped in that job.
+- Real-data no-training preflight: passed.
+- User's actual Windows hardware preflight: still required.
+- Full dataset training, tiny-subset overfit, convergence and held-out-family quality: not yet demonstrated.
+- Production TTF/OTF font generation: not ready.
 
-
-## Single-download data artifact
-
-The workflow packages all runtime data into one GitHub Actions artifact named **arabic-font-training-handoff**. A verified artifact is available in [workflow run 44536155715](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44536155715) (9.95 MB; SHA-256: 30cb94b9218ff0444dcf63c4910ea55d855cbc14c7064bf55908a11d8923c84e). Download the artifact from the run's Artifacts section, extract its contents into the root of a fresh repository clone, and keep the included data folder structure unchanged. It supplies all four required paths:
-- data/contextual_style_episodes/
-- data/contextual_glyph_crops/
-- data/glyph_crops/
-- data/manifests/font_rights.json
-
-The older individual artifacts remain available for audit/history, but the combined artifact is the recommended local handoff. Its ZIP contents were independently inspected: all 1,732 target images and 6,928 reference images resolve, all 52 approved font hashes are present, and no family crosses train/validation/test. It contains data only, not trained model weights.
-
-## Windows one-click launcher
-
-After extracting the four artifacts into the paths above, run `RUN_IMAGE_ROUTE_TRAINING.bat`. It checks the required manifests and folders, displays the step/batch/device settings, and requires typing `TRAIN` before it starts the actual run. Edit `MAX_STEPS`, `BATCH_SIZE`, `LATENT_DIM`, `EMBEDDING_DIM`, or `DEVICE` at the top of the batch file before starting.
-
-The launcher also refuses to start unless `reports/local/machine_preflight.json` says `READY_FOR_EXPERIMENTAL_IMAGE_ROUTE` and `training_allowed=true`. It is provided for the later training handoff; it has not been run as part of this preparation work.
-
-
-## Model memory estimate
-
-The latest CPU preflight measured **73,604,738 parameters**. FP32 model weights occupy about **294 MB**. Weights + gradients + the two AdamW moment buffers have an estimated lower bound of about **1.18 GB**, excluding activations, temporary workspaces, the OS, and other processes. This is why the launcher defaults to batch size 4 and embedding width 32. The local hardware preflight recommends a batch size based on detected VRAM/RAM; use its recommendation rather than assuming the default fits every GPU.
+No model training has been started.
