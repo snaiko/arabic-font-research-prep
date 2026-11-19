@@ -19,7 +19,10 @@ def build(fonts_jsonl, font_root):
         rel=Path(row["file"])
         if rel.is_absolute() or ".." in rel.parts:
             raise ValueError(f"line {line_no}: unsafe font path")
-        path=(root/rel).resolve()
+        # Collection manifests may store paths relative to the repository root
+        # (data/raw_fonts/...), while --font-root points at that directory.
+        candidate_rel=Path(*rel.parts[2:]) if len(rel.parts)>=3 and rel.parts[:2]==Path("data/raw_fonts").parts else rel
+        path=(root/candidate_rel).resolve()
         try: path.relative_to(root)
         except ValueError: raise ValueError(f"line {line_no}: font path escapes root")
         if not path.is_file(): raise ValueError(f"line {line_no}: missing font file {rel}")
