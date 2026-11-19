@@ -60,3 +60,13 @@ The episode sampler groups by exact font hash and inherited family split, select
 - Added a per-glyph-instance visual annotation schema and validator for body, individual dots, hamza, marks, counters, join regions, strokes, ornaments, uncertainty, and component relations. This is a schema/protocol, not an annotated dataset.
 - Added Arabic shaping regression strings and a HarfBuzz runner to capture font-specific glyph IDs, clusters, and advances. It has not yet been run against a cleared font file, so no shaping results are claimed.
 - The full system and annotation policy are documented in `docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md`.
+
+
+## Latest readiness work — 2026-11-19
+
+- Added a fail-closed local corpus audit: `scripts/audit_training_corpus.py`. It checks family-level split leakage, duplicate sample identities, font SHA-256 consistency, optional local font/image existence and path safety, and optional source-asset rights evidence.
+- Added tests for clean data, family leakage, duplicate samples, and unapproved source assets.
+- Added a separate per-font rights gate and batch HarfBuzz runner; the batch runner requires at least three distinct approved families and exact file-hash matches.
+- GitHub Actions run [44469089468](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44469089468) passed script compilation, Unicode registry generation/validation, and all 29 unit tests.
+
+**Important:** these are verified tooling milestones only. The private local font archive has not been audited by this run. No font rights manifest approvals, real HarfBuzz reports, visual crop review, two-person annotation pilot, paired prompt/geometry corpus, executable unified model paths, upstream baseline reproduction, or local hardware report have been supplied. Those evidence-dependent gates remain BLOCKED/UNKNOWN/FAIL as recorded in `reports/pretraining_readiness.json`. Training remains disabled.
