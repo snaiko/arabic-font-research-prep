@@ -226,7 +226,7 @@ Status: **PASS for executable smoke paths; PARTIAL for project architecture read
 
 The dedicated model workflow passed four tests covering all three conditioning routes, model checkpoint round-trip, optimizer-state restoration/resume, and Arabic Unicode codepoint encoding.
 
-The main data workflow passed **51 tests**; four optional PyTorch tests are skipped in that job and run separately in the dedicated model workflow.
+The main data workflow ran **51 tests: 47 passed and 4 optional PyTorch tests were skipped** in that job. Those four tests were run separately and all passed in the dedicated model workflow.
 
 Status: **PASS for smoke tests and checkpoint/optimizer-state resume.** A real dataset training run, tiny-subset overfit, convergence, held-out-family evaluation, and the user's hardware-specific training/resume remain unverified.
 
