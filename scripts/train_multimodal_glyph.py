@@ -202,7 +202,7 @@ def main():
     parser.add_argument("--rights-manifest", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--max-steps", type=int, required=True, help="explicit step count; no implicit long run")
-    parser.add_argument("--batch-size", type=int, default=8)
+    parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--latent-dim", type=int, default=64)
     parser.add_argument("--embedding-dim", type=int, default=32)
     parser.add_argument("--learning-rate", type=float, default=1e-4)
