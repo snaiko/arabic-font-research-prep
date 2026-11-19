@@ -62,6 +62,8 @@ def main():
     dataset = datasets["train"]
     batch = collate_batch([dataset[0]])
     model = ArabicMultimodalGlyphModel(latent_dim=64).eval()
+    parameter_count = sum(parameter.numel() for parameter in model.parameters())
+    parameter_bytes = sum(parameter.numel() * parameter.element_size() for parameter in model.parameters())
     with torch.no_grad():
         output = model(
             "image",
@@ -92,6 +94,9 @@ def main():
         "required_generated_font_license": rights.get("policy", {}).get("output_font_license"),
         "real_batch_loaded": True,
         "forward_output_shape": list(image.shape),
+        "model_parameter_count": parameter_count,
+        "model_parameter_bytes_fp32": parameter_bytes,
+        "estimated_weights_gradients_adam_state_bytes": parameter_bytes * 4,
         "output_min": float(image.min()),
         "output_max": float(image.max()),
         "notes": [
