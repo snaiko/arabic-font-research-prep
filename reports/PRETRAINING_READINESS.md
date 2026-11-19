@@ -382,3 +382,41 @@ The Windows preflight has been updated to match the new experimental image-route
 The compact model has **73,604,738 parameters**. FP32 weights occupy approximately **294 MB**. Weights + gradients + AdamW moments have a lower-bound estimate of **1.18 GB**, excluding activations and runtime overhead. This is a model-side estimate only; the user's actual Windows hardware still needs inspection.
 
 **Current handoff:** the experimental image-reference raster route is prepared for a controlled run. The user's Windows preflight and explicit go-ahead are still required before training starts. Production TTF/OTF generation remains incomplete.
+
+
+## Final local-handoff and memory optimization update — 2026-11-19
+
+### Verified model-size reduction
+
+The original full-Unicode text encoders each allocated a separate 1,114,112-row embedding table. Both target text and style prompts are Unicode codepoint sequences, so the implementation now shares one 16-dimensional Unicode embedding table between them.
+
+Latest real-data no-training preflight: [run 44535639834](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535639834).
+
+- Parameters: **20,115,074**.
+- FP32 weights: **80,460,296 bytes**.
+- Estimated weights + gradients + Adam state: **321,841,184 bytes (~307 MiB)**.
+- This estimate excludes activations, image batches, PyTorch/runtime allocations, and the operating system; actual device memory needs must be measured locally.
+- All 1,732 target and 6,928 reference image hashes still verified.
+- A real 128×128 output passed the finite-value check.
+- No optimizer, backward pass, weight update, checkpoint, or training was performed.
+
+### Latest automated tests
+
+- Main repository CI [44535642388](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535642388): **80 tests**, 64 passed and 16 optional PyTorch tests skipped in that job.
+- Dedicated CPU PyTorch CI [44535642258](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44535642258): **16/16 passed**, including shared-embedding identity, parameter budget, all conditioning routes, checkpoint/optimizer resume, rights gates, image hash rejection and four-reference episode validation.
+
+### Single-download local dataset package
+
+The workflow now builds one combined artifact named **arabic-font-training-handoff**, containing:
+- contextual episode train/validation/test JSONL and preflight report;
+- contextual target metadata and image files;
+- isolated same-font reference metadata and image files;
+- the exact 52-font conditional OFL rights manifest.
+
+Its folder structure matches the Windows launcher paths, so the user does not need to assemble four separate artifacts manually. The artifact will be available after the latest main CI run succeeds and the dependent episode-build workflow completes. No training weights are included.
+
+### Remaining device-specific action
+
+The local Windows preflight must still be run on the user's computer to record actual CPU, RAM, GPU, VRAM and free disk. It also revalidates the complete 52-font/20-family manifest, exact 1,732-episode split counts, 238 multi-codepoint targets, four references per episode, image hashes, and a real forward pass. Only after that preflight and the user's explicit confirmation should the training launcher be run.
+
+This remains an experimental **raster** training handoff, not a completed TTF/OTF generator. OFL 1.1 also remains non-NonCommercial: it does not prohibit downstream commercial use.
