@@ -15,7 +15,7 @@ class ArabicCharacterSystemTests(unittest.TestCase):
         p=payload(); p["records"][0]["character"]="ت"
         self.assertTrue(any("mismatch" in e for e in validate(p)))
     def test_rejects_impossible_form(self):
-        p=payload(); p["records"][0]["forms_supported_by_joining_type"]=["isol","fina","medi"]
+        p=payload(); p["records"][0]["joining_type"]="R"; p["records"][0]["forms_supported_by_joining_type"]=["isol","fina","medi"]
         self.assertTrue(any("conflict" in e for e in validate(p)))
     def test_rejects_duplicate_codepoint(self):
         p=payload(); p["records"].append(dict(p["records"][0]))
