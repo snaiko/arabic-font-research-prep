@@ -35,7 +35,7 @@ Only after the local preflight reports `READY_FOR_EXPERIMENTAL_IMAGE_ROUTE`, and
 
 `RUN_IMAGE_ROUTE_TRAINING.bat`
 
-The launcher rechecks the required data folders and preflight status. It asks the user to type `TRAIN` before it starts a real training run. Defaults are 1,000 total steps, batch size 2, latent dimension 64, Unicode embedding dimension 16, and automatic CUDA/CPU selection. These can be changed at the top of the batch file.
+The launcher rechecks the required data folders and preflight status. It asks the user to type `TRAIN` before it starts a real training run. Defaults are 1,000 total steps, automatically selected batch size based on detected VRAM/RAM, latent dimension 64, Unicode embedding dimension 16, and automatic CUDA/CPU selection. You can override the batch size or other settings at the top of the batch file.
 
 The equivalent PowerShell command is:
 
