@@ -48,6 +48,30 @@ class MXFontUnicodeAdapterTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "batch size"):
             self.adapter(self.factors, self.ids[:1])
 
+    def test_backward_reaches_unicode_encoder_and_adapter_after_projection_opens(self):
+        # At zero initialization the bridge is an identity. Open the residual
+        # projections to model a trained adapter, then verify real gradients.
+        with torch.no_grad():
+            for block in self.adapter.adapters.values():
+                block["residual"].weight.normal_(0, 0.01)
+                block["residual"].bias.normal_(0, 0.01)
+        result = self.adapter(self.factors, self.ids)
+        loss = result["last"].square().mean() + result["skip"].square().mean()
+        loss.backward()
+        self.assertIsNotNone(self.adapter.content_encoder.embedding.weight.grad)
+        self.assertGreater(
+            self.adapter.content_encoder.embedding.weight.grad.abs().sum().item(), 0.0
+        )
+        for block in self.adapter.adapters.values():
+            self.assertIsNotNone(block["residual"].weight.grad)
+            self.assertGreater(block["residual"].weight.grad.abs().sum().item(), 0.0)
+
+    def test_non_content_entries_are_passed_through_unchanged(self):
+        style_factor = torch.randn(2, 3, 64, 4, 4)
+        factors = {**self.factors, "style": style_factor}
+        result = self.adapter(factors, self.ids)
+        self.assertIs(result["style"], style_factor)
+
 
 if __name__ == "__main__":
     unittest.main()
