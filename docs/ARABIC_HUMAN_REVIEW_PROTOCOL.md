@@ -72,3 +72,9 @@ The pack can support a future review decision only after:
 - font rights are separately approved per exact file/hash.
 
 Passing Python tests or creating this pack does not satisfy any of those human gates. Training remains blocked until the readiness report explicitly records evidence for each gate.
+
+## Cluster-level annotation data
+
+The glyph-instance schema remains reserved for a defensible one-codepoint/one-glyph instance. A separate cluster-level schema and pack preserve the complete HarfBuzz cluster: logical source span, all source codepoints, all glyph IDs, non-rendering controls/separators, shaping case, font identity, and rendered crop. This is required for lam-alef ligatures, mark-bearing clusters, and other many-to-many mappings.
+
+The workflow generates a deterministic stratified draft pack (10 examples per available shaping case by default) and validates each record against the source manifest and image SHA-256. Every generated assessment remains `pending` and every record remains `draft`. Automated validation establishes structural/provenance integrity only; it cannot certify Arabic orthography or artistic correctness. This pack is not a request for the project owner to perform manual review, and it does not unlock training by itself.
