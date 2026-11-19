@@ -21,6 +21,14 @@ class CorpusAuditTests(unittest.TestCase):
             p=Path(d)/"samples.jsonl"; row=self.row()
             self.write(p,[row,row])
             with self.assertRaises(AuditFailure): audit(p)
+    def test_distinct_logical_target_positions_are_not_duplicates(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/"samples.jsonl"
+            first=self.row(); second=self.row()
+            first["target_index_logical"]=0; second["target_index_logical"]=1
+            first.pop("target_index",None); second.pop("target_index",None)
+            self.write(p,[first,second])
+            self.assertEqual(audit(p)["status"],"PASS")
     def test_unapproved_source_asset_fails(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/"samples.jsonl"; a=Path(d)/"assets.jsonl"
