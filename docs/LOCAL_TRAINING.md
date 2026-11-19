@@ -67,3 +67,10 @@ The model-weight license is separate and must be decided independently. Arabeyes
 ## Current status
 
 The data/rights preflight is automated. The project has not started this training script on the full dataset. Tiny-subset overfit, convergence, held-out-family quality, font vectorization, and local hardware preflight still need to be demonstrated before claiming the generator is ready for production use.
+
+
+## Windows one-click launcher
+
+After extracting the four artifacts into the paths above, run `RUN_IMAGE_ROUTE_TRAINING.bat`. It checks the required manifests and folders, displays the step/batch/device settings, and requires typing `TRAIN` before it starts the actual run. Edit `MAX_STEPS`, `BATCH_SIZE`, `LATENT_DIM`, or `DEVICE` at the top of the batch file before starting.
+
+The launcher is provided for the later training handoff; it has not been run as part of this preparation work.
