@@ -92,6 +92,18 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44463443539"
       ],
       "notes": "Intermediate adapter code is committed. GitHub Actions successfully compiled both scripts and passed four deterministic episode-sampler unit tests. The crop builder has not been run against the user's local font archive; this PASS covers code compilation and sampler tests only."
+    },
+    {
+      "id": "arabic_character_registry",
+      "status": "PASS",
+      "evidence": [
+        "data/arabic_character_system_v1.json",
+        "scripts/validate_arabic_character_system.py",
+        "tests/test_arabic_character_system.py",
+        "docs/ARABIC_CHARACTER_SYSTEM.md",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44465453724"
+      ],
+      "notes": "Unicode 17.0 joining metadata registry structure validates; CI passed. Scope is basic Arabic alphabet plus two common extensions. Visual-family/dot metadata is explicitly provisional and does not constitute audited MX-Font component/decomposition labels."
     }
   ],
   "upstream": {
@@ -130,11 +142,11 @@
     "Run the isolated-crop builder on the downloaded licensed font corpus and review generated crops; this adapter is not contextual joining/ligature supervision.",
     "Complete per-font asset-level ML-training rights review.",
     "Implement and test an adapter to the pinned upstream MX-Font native loader; current project episodes are an intermediate schema.",
-    "Develop and audit Arabic decomposition/component labels required for MX-Font weak component supervision, or document a justified alternative objective.",
+    "Develop and audit expert-reviewed Arabic visual decomposition/component labels required for MX-Font weak component supervision, or document a justified alternative objective. The starter registry covers joining metadata only.",
     "Complete the upstream dependency/license audit and reproduce the baseline in a supported environment; CUDA/NCCL Windows compatibility remains unverified.",
     "Populate provenance-reviewed prompt/geometry pairs and implement image, prompt, and hybrid model paths sharing one generator.",
     "Pass leakage, model forward/backward, checkpoint round-trip/resume, held-out-family evaluation, and local hardware/resource gates."
   ],
-  "recommended_next_step": "The local agent should run the crop builder and audit its outputs, then implement the native MX-Font data adapter and Arabic component-label strategy. Do not start training.",
+  "recommended_next_step": "The local agent should run the isolated-crop builder and review contact sheets, then implement the native MX-Font data adapter and an expert-reviewed Arabic visual decomposition protocol. The new character registry is a validated linguistic metadata milestone, not a component-label dataset. Do not start training.",
   "generated_date": "2026-11-19"
 }
