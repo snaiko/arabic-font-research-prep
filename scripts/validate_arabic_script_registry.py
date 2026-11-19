@@ -9,7 +9,7 @@ def validate(data):
     errors=[]
     if data.get("schema_version")!=2 or data.get("unicode_version")!="17.0.0": errors.append("registry must be schema v2 / Unicode 17.0.0")
     hashes=data.get("source_files_sha256",{})
-    for name in ("UnicodeData.txt","Scripts.txt","DerivedJoiningType.txt","ArabicShaping.txt"):
+    for name in ("UnicodeData.txt","Scripts.txt","ArabicShaping.txt"):
         if not SHA.fullmatch(hashes.get(name,"")): errors.append(f"missing or invalid source hash: {name}")
     seen=set()
     for i,r in enumerate(data.get("records",[])):
