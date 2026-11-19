@@ -15,7 +15,6 @@ class UnicodeImporterTests(unittest.TestCase):
                 "0628;ARABIC LETTER BEH;Lo;0;R;;;;;N;;;;;\n"
                 "064B;ARABIC FATHATAN;Mn;27;NSM;;;;;N;;;;;\n")
             (root/"Scripts.txt").write_text("0627..0628 ; Arabic\n064B ; Arabic\n")
-            (root/"DerivedJoiningType.txt").write_text("0627 ; R\n0628 ; D\n064B ; T\n")
             (root/"ArabicShaping.txt").write_text("0627; ALEF; R; ALEF\n0628; BEH; D; BEH\n")
             data=build(root); rows={r["codepoint"]:r for r in data["records"]}
             self.assertEqual(rows["U+0627"]["possible_forms_by_joining_type"],["isol","fina"])
