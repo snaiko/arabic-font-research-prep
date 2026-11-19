@@ -17,7 +17,7 @@ Research preparation for an Arabic font-generation system that learns a visual s
 
 ## Training handoff
 
-See [Local Training Handoff](docs/LOCAL_TRAINING.md) for artifact paths, Windows command syntax, explicit step-count requirements, checkpoint resume, and license conditions.
+See [Local Training Handoff](docs/LOCAL_TRAINING.md) for artifact paths, Windows command syntax, explicit step-count requirements, checkpoint resume, and license conditions. The optional Windows launcher is [RUN_IMAGE_ROUTE_TRAINING.bat](RUN_IMAGE_ROUTE_TRAINING.bat); it requires typing TRAIN before starting.
 
 The trainer `scripts/train_multimodal_glyph.py` uses the image-reference route only:
 - target Unicode cluster + four same-font reference glyphs → 128×128 grayscale target raster;
