@@ -1,7 +1,13 @@
 import tempfile, unittest
-import torch
-from models.arabic_multimodal_glyph import ArabicMultimodalGlyphModel, encode_unicode_batch
+try:
+    import torch
+except ModuleNotFoundError:
+    torch = None
 
+if torch is not None:
+    from models.arabic_multimodal_glyph import ArabicMultimodalGlyphModel, encode_unicode_batch
+
+@unittest.skipIf(torch is None, "PyTorch is installed only in the dedicated model-smoke workflow")
 class MultimodalModelSmokeTests(unittest.TestCase):
     def setUp(self):
         torch.manual_seed(7)
