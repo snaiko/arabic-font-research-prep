@@ -1,0 +1,573 @@
+{
+  "schema_version": 1,
+  "system_id": "arabic-character-system-v1",
+  "unicode_version": "17.0.0",
+  "status": "normative_properties_plus_provisional_visual_metadata",
+  "sources": [
+    {
+      "name": "Unicode Standard 17.0 Chapter 9",
+      "url": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-9/"
+    },
+    {
+      "name": "Unicode Character Database ArabicShaping.txt",
+      "url": "https://www.unicode.org/Public/17.0.0/ucd/ArabicShaping.txt"
+    },
+    {
+      "name": "W3C Arabic & Persian Layout Requirements",
+      "url": "https://www.w3.org/TR/alreq/"
+    }
+  ],
+  "form_labels": [
+    "isol",
+    "init",
+    "medi",
+    "fina"
+  ],
+  "records": [
+    {
+      "codepoint": "U+0621",
+      "character": "ء",
+      "unicode_name": "HAMZA",
+      "joining_type": "U",
+      "joining_group": "No_Joining_Group",
+      "visual_family": "hamza",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0627",
+      "character": "ا",
+      "unicode_name": "ALEF",
+      "joining_type": "R",
+      "joining_group": "ALEF",
+      "visual_family": "alef",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0628",
+      "character": "ب",
+      "unicode_name": "BEH",
+      "joining_type": "D",
+      "joining_group": "BEH",
+      "visual_family": "beh",
+      "dot_pattern": "one_below",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0629",
+      "character": "ة",
+      "unicode_name": "TEH_MARBUTA",
+      "joining_type": "R",
+      "joining_group": "TEH MARBUTA",
+      "visual_family": "teh_marbuta",
+      "dot_pattern": "two_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "fina"
+      ],
+      "scope": "extended_common",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+062A",
+      "character": "ت",
+      "unicode_name": "TEH",
+      "joining_type": "D",
+      "joining_group": "BEH",
+      "visual_family": "beh",
+      "dot_pattern": "two_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+062B",
+      "character": "ث",
+      "unicode_name": "THEH",
+      "joining_type": "D",
+      "joining_group": "BEH",
+      "visual_family": "beh",
+      "dot_pattern": "three_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+062C",
+      "character": "ج",
+      "unicode_name": "JEEM",
+      "joining_type": "D",
+      "joining_group": "HAH",
+      "visual_family": "hah",
+      "dot_pattern": "one_below",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+062D",
+      "character": "ح",
+      "unicode_name": "HAH",
+      "joining_type": "D",
+      "joining_group": "HAH",
+      "visual_family": "hah",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+062E",
+      "character": "خ",
+      "unicode_name": "KHAH",
+      "joining_type": "D",
+      "joining_group": "HAH",
+      "visual_family": "hah",
+      "dot_pattern": "one_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+062F",
+      "character": "د",
+      "unicode_name": "DAL",
+      "joining_type": "R",
+      "joining_group": "DAL",
+      "visual_family": "dal",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0630",
+      "character": "ذ",
+      "unicode_name": "THAL",
+      "joining_type": "R",
+      "joining_group": "DAL",
+      "visual_family": "dal",
+      "dot_pattern": "one_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0631",
+      "character": "ر",
+      "unicode_name": "REH",
+      "joining_type": "R",
+      "joining_group": "REH",
+      "visual_family": "reh",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0632",
+      "character": "ز",
+      "unicode_name": "ZAIN",
+      "joining_type": "R",
+      "joining_group": "REH",
+      "visual_family": "reh",
+      "dot_pattern": "one_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0633",
+      "character": "س",
+      "unicode_name": "SEEN",
+      "joining_type": "D",
+      "joining_group": "SEEN",
+      "visual_family": "seen",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0634",
+      "character": "ش",
+      "unicode_name": "SHEEN",
+      "joining_type": "D",
+      "joining_group": "SEEN",
+      "visual_family": "seen",
+      "dot_pattern": "three_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0635",
+      "character": "ص",
+      "unicode_name": "SAD",
+      "joining_type": "D",
+      "joining_group": "SAD",
+      "visual_family": "sad",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0636",
+      "character": "ض",
+      "unicode_name": "DAD",
+      "joining_type": "D",
+      "joining_group": "SAD",
+      "visual_family": "sad",
+      "dot_pattern": "one_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0637",
+      "character": "ط",
+      "unicode_name": "TAH",
+      "joining_type": "D",
+      "joining_group": "TAH",
+      "visual_family": "tah",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0638",
+      "character": "ظ",
+      "unicode_name": "ZAH",
+      "joining_type": "D",
+      "joining_group": "TAH",
+      "visual_family": "tah",
+      "dot_pattern": "one_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0639",
+      "character": "ع",
+      "unicode_name": "AIN",
+      "joining_type": "D",
+      "joining_group": "AIN",
+      "visual_family": "ain",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+063A",
+      "character": "غ",
+      "unicode_name": "GHAIN",
+      "joining_type": "D",
+      "joining_group": "AIN",
+      "visual_family": "ain",
+      "dot_pattern": "one_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0641",
+      "character": "ف",
+      "unicode_name": "FEH",
+      "joining_type": "D",
+      "joining_group": "FEH",
+      "visual_family": "feh",
+      "dot_pattern": "one_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0642",
+      "character": "ق",
+      "unicode_name": "QAF",
+      "joining_type": "D",
+      "joining_group": "QAF",
+      "visual_family": "qaf",
+      "dot_pattern": "two_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0643",
+      "character": "ك",
+      "unicode_name": "KAF",
+      "joining_type": "D",
+      "joining_group": "KAF",
+      "visual_family": "kaf",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0644",
+      "character": "ل",
+      "unicode_name": "LAM",
+      "joining_type": "D",
+      "joining_group": "LAM",
+      "visual_family": "lam",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0645",
+      "character": "م",
+      "unicode_name": "MEEM",
+      "joining_type": "D",
+      "joining_group": "MEEM",
+      "visual_family": "meem",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0646",
+      "character": "ن",
+      "unicode_name": "NOON",
+      "joining_type": "D",
+      "joining_group": "NOON",
+      "visual_family": "noon",
+      "dot_pattern": "one_above",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0647",
+      "character": "ه",
+      "unicode_name": "HEH",
+      "joining_type": "D",
+      "joining_group": "HEH",
+      "visual_family": "heh",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0648",
+      "character": "و",
+      "unicode_name": "WAW",
+      "joining_type": "R",
+      "joining_group": "WAW",
+      "visual_family": "waw",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+0649",
+      "character": "ى",
+      "unicode_name": "ALEF_MAKSURA",
+      "joining_type": "R",
+      "joining_group": "YEH BARREE",
+      "visual_family": "alef_maksura",
+      "dot_pattern": "none",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "fina"
+      ],
+      "scope": "extended_common",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    },
+    {
+      "codepoint": "U+064A",
+      "character": "ي",
+      "unicode_name": "YEH",
+      "joining_type": "D",
+      "joining_group": "YEH",
+      "visual_family": "yeh",
+      "dot_pattern": "two_below",
+      "forms_supported_by_joining_type": [
+        "isol",
+        "init",
+        "medi",
+        "fina"
+      ],
+      "scope": "core",
+      "visual_family_status": "provisional_human_grouping_not_unicode_property",
+      "component_annotation_status": "not_annotated"
+    }
+  ],
+  "notes": [
+    "Joining_Type and Joining_Group are Unicode properties. visual_family and dot_pattern are provisional visual metadata and are not normative Unicode properties.",
+    "forms_supported_by_joining_type describes structurally possible contextual forms only; the actual form label must come from a shaping engine for the exact context.",
+    "This starter registry covers the basic Arabic alphabet plus two common extensions. It is not full Arabic-script coverage: Persian, Urdu, Quranic marks, ligatures, presentation forms, and extended Arabic blocks require separate versioned records.",
+    "No MX-Font component/decomposition labels are provided. Never treat visual_family as a verified component decomposition."
+  ]
+}
