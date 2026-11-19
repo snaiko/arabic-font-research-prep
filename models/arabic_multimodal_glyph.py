@@ -75,7 +75,7 @@ class ArabicMultimodalGlyphModel(nn.Module):
       text: target_ids + style_prompt_ids
       hybrid: target_ids + reference_images + style_prompt_ids
     """
-    def __init__(self, latent_dim=256, vocab_size=0x110000, embedding_dim=128):
+    def __init__(self, latent_dim=256, vocab_size=0x110000, embedding_dim=32):
         super().__init__()
         self.content_encoder = UnicodeSequenceEncoder(
             vocab_size, embedding_dim, latent_dim
