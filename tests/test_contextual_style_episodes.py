@@ -1,4 +1,8 @@
+import tempfile
 import unittest
+from pathlib import Path
+
+from PIL import Image, ImageDraw
 
 from scripts.build_contextual_style_episodes import build_episodes
 
@@ -57,6 +61,29 @@ class ContextualStyleEpisodeTests(unittest.TestCase):
         episodes, skipped = build_episodes([self.target(0)], refs, refs_per_episode=4)
         self.assertEqual(episodes, [])
         self.assertEqual(sum(skipped.values()), 1)
+
+    def test_pins_target_and_reference_image_hashes(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            target_root = root / "targets"
+            reference_root = root / "references"
+            target_image = target_root / "context/0.png"
+            target_image.parent.mkdir(parents=True)
+            Image.new("L", (16, 16), 255).save(target_image)
+            for index in range(1, 8):
+                path = reference_root / f"isolated/{index}.png"
+                path.parent.mkdir(parents=True, exist_ok=True)
+                image = Image.new("L", (16, 16), 255)
+                ImageDraw.Draw(image).rectangle((index, index, index + 3, index + 3), fill=0)
+                image.save(path)
+            episodes, skipped = build_episodes(
+                [self.target(0)], self.references(), refs_per_episode=4,
+                target_root=target_root, reference_root=reference_root
+            )
+            self.assertEqual(skipped, {})
+            episode = episodes[0]
+            self.assertEqual(len(episode["target_image_sha256"]), 64)
+            self.assertTrue(all(len(ref["image_sha256"]) == 64 for ref in episode["style_references"]))
 
     def test_rejects_duplicate_target_identity(self):
         with self.assertRaisesRegex(ValueError, "duplicate contextual target identity"):
