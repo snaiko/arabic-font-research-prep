@@ -52,14 +52,16 @@ def download_ucd(directory):
 
 def build(data_dir):
     names = parse_unicode_data(data_dir / "UnicodeData.txt")
-    scripts = parse_property_file(data_dir / "Scripts.txt", "Arabic")
-    groups, schematic, joining_types = {}, {}, {}
+    all_scripts = parse_property_file(data_dir / "Scripts.txt")
+    scripts = {cp: value for cp, value in all_scripts.items() if value == "Arabic"}
+    groups, schematic, joining_types, all_shaping = {}, {}, {}, {}
     for raw in (data_dir / "ArabicShaping.txt").read_text(encoding="utf-8").splitlines():
         line = raw.split("#", 1)[0].strip()
         if not line: continue
         f = [x.strip() for x in line.split(";")]
         if len(f) < 4: continue
         cp = int(f[0], 16)
+        all_shaping[cp] = {"schematic_name": f[1], "joining_type": f[2], "joining_group": f[3].replace(" ", "_")}
         if cp in scripts:
             schematic[cp] = f[1]
             joining_types[cp] = f[2]
@@ -81,11 +83,22 @@ def build(data_dir):
             "possible_forms_by_joining_type": FORM_MAP[jt], "is_combining_mark": category.startswith("M"),
             "visual_annotation_status": "not_annotated"
         })
+    contextual_properties = []
+    for cp, props in sorted(all_shaping.items()):
+        if cp in scripts or cp not in names: continue
+        name, category = names[cp]
+        contextual_properties.append({
+            "codepoint": f"U+{cp:04X}", "character": chr(cp), "unicode_name": name,
+            "general_category": category, "script": all_scripts.get(cp, "Unknown"),
+            "joining_type": props["joining_type"], "joining_group": props["joining_group"],
+            "schematic_name": props["schematic_name"], "is_combining_mark": category.startswith("M")
+        })
     hashes = {name: hashlib.sha256((data_dir / name).read_bytes()).hexdigest() for name in FILES}
     return {
         "schema_version": 2, "system_id": "arabic-script-registry-unicode-17.0.0",
         "unicode_version": VERSION, "coverage": "all assigned code points with Script=Arabic in Unicode 17.0",
         "source_files_sha256": hashes, "records": records,
+        "contextual_joining_properties": contextual_properties,
         "policy": {
             "joining_type_and_group": "Normative UCD properties. ArabicShaping.txt defines explicit non-default types; unlisted Mn/Me/Cf default to T and all other unlisted code points to U.",
             "schematic_name": "Descriptive comment only; not a formal Unicode property.",
