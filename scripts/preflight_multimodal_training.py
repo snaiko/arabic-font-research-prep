@@ -43,9 +43,23 @@ def main():
     if not counts["train"] or not counts["validation"] or not counts["test"]:
         raise ValueError(f"all three episode splits are required: {counts}")
 
-    dataset = ContextualEpisodeDataset(
-        paths["train"], args.target_root, args.reference_root
-    )
+    # Iterate every episode in every split once. Dataset loading verifies each
+    # target and each reference image SHA-256 against the episode manifest.
+    image_integrity = {}
+    datasets = {}
+    for split in ("train", "validation", "test"):
+        dataset = ContextualEpisodeDataset(paths[split], args.target_root, args.reference_root)
+        datasets[split] = dataset
+        reference_count = 0
+        for index in range(len(dataset)):
+            sample = dataset[index]
+            reference_count += sample["reference_images"].shape[0]
+        image_integrity[split] = {
+            "targets_verified": len(dataset),
+            "references_verified": reference_count,
+        }
+
+    dataset = datasets["train"]
     batch = collate_batch([dataset[0]])
     model = ArabicMultimodalGlyphModel(latent_dim=64).eval()
     with torch.no_grad():
@@ -71,6 +85,9 @@ def main():
         "total_episodes": len(all_rows),
         "families": len({row["family"] for row in all_rows}),
         "approved_font_hashes": len(approved_hashes),
+        "image_integrity": image_integrity,
+        "total_target_images_sha256_verified": sum(x["targets_verified"] for x in image_integrity.values()),
+        "total_reference_images_sha256_verified": sum(x["references_verified"] for x in image_integrity.values()),
         "rights_policy": rights.get("policy", {}).get("status"),
         "required_generated_font_license": rights.get("policy", {}).get("output_font_license"),
         "real_batch_loaded": True,
