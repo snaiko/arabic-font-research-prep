@@ -53,6 +53,17 @@ jobs:
           test -n "$RIGHTS_MANIFEST"
           echo "Using rights manifest: $RIGHTS_MANIFEST"
           python -m scripts.preflight_multimodal_training --episodes-dir reports/contextual_style_episodes --target-root .audit/contextual --reference-root .audit/isolated --rights-manifest "$RIGHTS_MANIFEST" --output reports/contextual_style_episodes/preflight.json
+      - name: Exercise the exact Windows local-preflight logic on the CI runner
+        run: |
+          mkdir -p data/contextual_style_episodes data/contextual_glyph_crops data/glyph_crops data/manifests
+          cp -a reports/contextual_style_episodes/. data/contextual_style_episodes/
+          cp -a .audit/contextual/. data/contextual_glyph_crops/
+          cp -a .audit/isolated/. data/glyph_crops/
+          RIGHTS_MANIFEST="$(find .audit/rights -name font_rights.json -type f -print -quit)"
+          test -n "$RIGHTS_MANIFEST"
+          cp "$RIGHTS_MANIFEST" data/manifests/font_rights.json
+          python scripts/preflight_local_training.py > reports/ci_local_preflight.json
+          cat reports/ci_local_preflight.json
       - name: Assemble one complete local training data handoff
         run: |
           mkdir -p reports/training_handoff/data/contextual_style_episodes
