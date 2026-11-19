@@ -420,3 +420,18 @@ Its folder structure matches the Windows launcher paths, so the user does not ne
 The local Windows preflight must still be run on the user's computer to record actual CPU, RAM, GPU, VRAM and free disk. It also revalidates the complete 52-font/20-family manifest, exact 1,732-episode split counts, 238 multi-codepoint targets, four references per episode, image hashes, and a real forward pass. Only after that preflight and the user's explicit confirmation should the training launcher be run.
 
 This remains an experimental **raster** training handoff, not a completed TTF/OTF generator. OFL 1.1 also remains non-NonCommercial: it does not prohibit downstream commercial use.
+
+
+### Verified combined artifact
+
+The combined data package was successfully built in [workflow run 44536155715](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44536155715). Artifact name: **arabic-font-training-handoff**; size: **9,953,674 bytes**; SHA-256: `30cb94b9218ff0444dcf63c4910ea55d855cbc14c7064bf55908a11d8923c84e`.
+
+I downloaded and inspected the ZIP independently:
+- 3,619 archive entries, 18,304,447 uncompressed bytes.
+- Episode split counts: 1,134 / 299 / 299.
+- 20 font families; no family split leakage.
+- 52 approved font files in the rights manifest.
+- 1,732 target image paths and 6,928 reference image paths; **zero missing paths**.
+- The folder structure matches the Windows training launcher.
+
+The latest workflow revision also runs the full local preflight script on its CI runner before packaging. This is an additional end-to-end test of the local preflight code; it is not a substitute for running it on the user's Windows machine.
