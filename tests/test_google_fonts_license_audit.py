@@ -2,7 +2,7 @@ import json, tempfile, unittest
 from pathlib import Path
 from scripts.audit_google_fonts_licenses import audit, raw_url
 
-OFL="""Copyright 2020 Example Authors
+OFL="""Copyright 2020 Example Authors, with Reserved Font Name ExampleReserved
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
 The OFL allows the licensed fonts to be used, studied, modified and redistributed freely.
@@ -25,7 +25,7 @@ class LicenseEvidenceTests(unittest.TestCase):
             candidate.write_text(json.dumps(data),encoding="utf-8")
             result=audit(candidate,root/"out",fetcher=lambda u:OFL.encode())
             self.assertEqual(result["status"],"PASS")
-            self.assertEqual(result["unique_license_files"],1)
+            self.assertEqual(result["unique_license_files"],1)\n            self.assertIn("ExampleReserved",result["license_records"][0]["reserved_font_name_candidates"])
             self.assertEqual(result["rights_decision"]["approved_font_count"],0)
             self.assertFalse(result["rights_decision"]["ml_training_allowed"])
             self.assertTrue((root/"out/licenses/license-01-example.txt").is_file())
