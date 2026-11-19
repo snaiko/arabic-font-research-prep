@@ -10,8 +10,9 @@ if %errorlevel%==0 (
 ) else (
   python scripts\preflight_local_training.py
 )
+set PREFLIGHT_EXIT=%errorlevel%
 echo.
-if errorlevel 1 (
+if not "%PREFLIGHT_EXIT%"=="0" (
   echo Preflight is BLOCKED. Read blocking_reasons in reports\local\machine_preflight.json.
 ) else (
   echo Preflight PASSED for the experimental image-reference raster route.
