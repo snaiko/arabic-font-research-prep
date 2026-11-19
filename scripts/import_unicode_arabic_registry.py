@@ -90,6 +90,9 @@ def build(data_dir):
         contextual_properties.append({
             "codepoint": f"U+{cp:04X}", "character": chr(cp), "unicode_name": name,
             "general_category": category, "script": all_scripts.get(cp, "Unknown"),
+            "role": ("letter" if category.startswith("L") else "mark" if category.startswith("M") else
+                     "number" if category.startswith("N") else "punctuation" if category.startswith("P") else
+                     "symbol" if category.startswith("S") else "other"),
             "joining_type": props["joining_type"], "joining_group": props["joining_group"],
             "schematic_name": props["schematic_name"], "is_combining_mark": category.startswith("M")
         })
