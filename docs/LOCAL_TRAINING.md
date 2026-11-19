@@ -33,7 +33,7 @@ Check available hardware before selecting a device. `--device auto` selects CUDA
 The trainer requires an explicit `--max-steps`; it will not start an unbounded run by default.
 
 ```bash
-python scripts/train_multimodal_glyph.py ^
+python -m scripts.train_multimodal_glyph ^
   --episodes-dir data/contextual_style_episodes ^
   --target-root data/contextual_glyph_crops ^
   --reference-root data/glyph_crops ^
