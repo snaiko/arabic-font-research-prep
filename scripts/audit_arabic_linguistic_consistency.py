@@ -56,7 +56,7 @@ def main():
     p.add_argument("--registry",required=True); p.add_argument("--output",required=True)
     a=p.parse_args(); result=audit(a.manifest,a.cases,a.registry)
     Path(a.output).parent.mkdir(parents=True,exist_ok=True)
-    Path(a.output).write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+    Path(a.output).write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(result,ensure_ascii=False,indent=2))
     raise SystemExit(0 if result["status"]=="PASS" else 2)
 if __name__=="__main__": main()
