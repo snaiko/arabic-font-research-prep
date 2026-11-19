@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "e4b7816c4768989f841a1b9af5e0642228b0dc5b",
+  "repository_commit": "28594fc86e238d59952420bb4338ceaf1b55f1a3",
   "training_allowed": false,
   "overall_status": "BLOCKED",
   "gates": [
@@ -223,6 +223,19 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44506521255"
       ],
       "notes": "CI successfully generated and uploaded arabic-human-review-pack. Verified artifact: 100 visual/linguistic samples (10 per each of 10 shaping cases, 10 font families represented per case) and 40 geometry pilot samples drawn from the full eligible corpus, balanced over eight eligible cases. Separate 40-record draft ledgers for annotators A/B and adjudication tracker were included. This PASS certifies package generation and tests only; no human review or label approval has occurred."
+    },
+    {
+      "id": "cluster_level_annotation_pack",
+      "status": "PASS",
+      "evidence": [
+        "scripts/build_arabic_cluster_review_pack.py",
+        "scripts/validate_arabic_cluster_annotation.py",
+        "schemas/arabic_cluster_visual_annotation.schema.json",
+        ".github/workflows/test-glyph-adapter.yml",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44509676611",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44509676611/artifacts/14522830341"
+      ],
+      "notes": "CI generated 100 stratified cluster-level drafts (10 per shaping case). Independent validation matched all 100 records to source clusters, verified image integrity and metadata, and reported zero errors. Records preserve multi-codepoint and multi-glyph clusters and remain drafts; this does not certify visual or linguistic correctness."
     }
   ],
   "upstream": {
@@ -242,10 +255,11 @@
     "component_geometry_annotations": "no adjudicated annotation dataset",
     "font_ml_training_rights": "blocked; per-file approval manifest remains empty",
     "visual_linguistic_review_pack": "PASS generation: 100 samples, 10 per shaping case; human review pending",
-    "geometry_pilot": "PASS package generation: 40 samples from 8 eligible cases; 40 blank independent templates per annotator; human annotation/adjudication pending"
+    "geometry_pilot": "PASS package generation: 40 samples from 8 eligible cases; 40 blank independent templates per annotator; human annotation/adjudication pending",
+    "cluster_level_review_pack": "PASS generation and integrity validation: 100 drafts across 10 shaping cases; no visual/linguistic approval"
   },
   "tests": {
-    "repository_tests": "30 unit tests passed in GitHub Actions run 44476157196",
+    "repository_tests": "39 unit tests passed in GitHub Actions run 44509676611",
     "image_route": "not_verified",
     "prompt_route": "not_verified",
     "hybrid_route": "not_verified",
@@ -277,8 +291,9 @@
     "Create two independent component annotations per selected glyph instance, compute per-kind agreement, adjudicate disagreements, and promote only adjudicated labels.",
     "Populate exact per-file font rights records with authoritative license evidence and ML-training permission; keep all unapproved font-derived data excluded from training.",
     "Complete the generated visual/linguistic review pack with two independent human reviews and adjudicate every fail/uncertain item.",
-    "Complete the independent two-annotator geometry pilot, compute per-class agreement, and adjudicate disagreements; do not train on draft annotations."
+    "Complete the independent two-annotator geometry pilot, compute per-class agreement, and adjudicate disagreements; do not train on draft annotations.",
+    "Cluster-level Arabic annotations are drafts; automated integrity checks do not certify visual or linguistic correctness."
   ],
-  "recommended_next_step": "Complete exact per-file font rights approvals, then run batch HarfBuzz across at least three distinct approved families. Generate and visually inspect target crops and build a two-annotator pilot. Other model, paired-data, hardware, and checkpoint gates remain blocked.",
+  "recommended_next_step": "Continue automated data expansion and validation without requiring manual user review; exclude assets and labels whose training rights or correctness remain unverified.",
   "generated_date": "2026-11-19"
 }
