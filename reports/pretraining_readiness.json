@@ -26,14 +26,15 @@
     },
     {
       "id": "family_safe_data_integrity",
-      "status": "UNKNOWN",
+      "status": "PASS",
       "evidence": [
         "docs/DATA_SPECIFICATION.md",
         "docs/ARABIC_GLYPH_DATASET.md",
         "scripts/audit_training_corpus.py",
-        "docs/TRAINING_CORPUS_AUDIT.md"
+        "docs/TRAINING_CORPUS_AUDIT.md",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44476157196"
       ],
-      "notes": "The repository documents family-level splits; the local agent must verify the actual downloaded release, hashes, duplicate families, and split disjointness. A fail-closed local audit tool is now available, but no audit report from the actual local corpus has been supplied; status remains UNKNOWN."
+      "notes": "GitHub Actions downloaded and audited the actual published font and glyph release archives. Result: 7,904 samples, 52 font files, 20 families, family splits train=14/validation=3/test=3, all 7,904 referenced images verified, zero audit errors. The prior duplicate warning was a false positive caused by the audit tool reading target_index instead of target_index_logical; fixed and covered by a regression test."
     },
     {
       "id": "arabic_target_glyph_crops",
@@ -172,7 +173,7 @@
         ".github/workflows/test-glyph-adapter.yml",
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44469089468"
       ],
-      "notes": "Fail-closed local audit tool and tests are implemented. This PASS covers tool implementation only; the actual user corpus has not yet been audited, so family_safe_data_integrity remains UNKNOWN. CI compiled the audit script and passed all 29 repository tests."
+      "notes": "Fail-closed audit tool and tests are implemented. GitHub Actions run 44476157196 downloaded the published release archives and audited the actual published corpus successfully; all 30 repository unit tests passed."
     }
   ],
   "upstream": {
@@ -184,13 +185,13 @@
     "compatibility_note": "Upstream train_MX.py uses CUDA APIs and NCCL; Windows/device compatibility is not established."
   },
   "data": {
-    "existing_raster_dataset_description": "Repository handoff documentation reports 7,904 contextual raster samples; the local agent must verify the release archive and actual contents.",
+    "existing_raster_dataset_description": "Verified published release corpus: 7,904 contextual raster samples, 52 font files, 20 font families; all 7,904 referenced image files exist in the extracted dataset. This does not establish asset-level ML-training permission or visual quality.",
     "isolated_target_crops": "not_ready",
     "paired_prompt_geometry_records": "not_verified",
     "asset_level_training_permission": "not_fully_audited"
   },
   "tests": {
-    "repository_tests": "29 unit tests passed in GitHub Actions run 44469089468",
+    "repository_tests": "30 unit tests passed in GitHub Actions run 44476157196",
     "image_route": "not_verified",
     "prompt_route": "not_verified",
     "hybrid_route": "not_verified",
@@ -208,7 +209,6 @@
     "reason": "Requires actual hardware and completed model/data implementation."
   },
   "blockers": [
-    "Run scripts/audit_training_corpus.py on the extracted local corpus with font-root and image-root; inspect reports/local/dataset_audit.json. Do not treat tool CI as an audit of private local files.",
     "Populate and independently review the per-file font rights manifest with authoritative license evidence and exact SHA-256 values; run batch HarfBuzz only after the gate passes.",
     "Run the isolated-crop builder on the downloaded licensed font corpus and review generated crops; this adapter is not contextual joining/ligature supervision.",
     "Complete per-font asset-level ML-training rights review.",
@@ -220,6 +220,6 @@
     "Run HarfBuzz regression suite against legally cleared font families and review cluster mappings, contextual joins, lam-alef, ZWJ/ZWNJ, and mark attachment.",
     "Create independently annotated glyph-instance samples with two annotators and adjudication; annotation schema alone is not training data."
   ],
-  "recommended_next_step": "Run the local corpus integrity audit, complete exact per-file font rights approvals, and run batch HarfBuzz across at least three distinct approved families. Then generate and inspect crops and build a two-annotator pilot. Other model, paired-data, hardware, and checkpoint gates remain blocked.",
+  "recommended_next_step": "Complete exact per-file font rights approvals, then run batch HarfBuzz across at least three distinct approved families. Generate and visually inspect target crops and build a two-annotator pilot. Other model, paired-data, hardware, and checkpoint gates remain blocked.",
   "generated_date": "2026-11-19"
 }
