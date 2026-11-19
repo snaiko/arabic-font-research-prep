@@ -126,12 +126,19 @@ def audit(manifest, crop_root, font_root, cases_path, samples_path):
         seen.add(ident)
     for family,splits in family_splits.items():
         if len(splits)>1: errors.append(f"family split leakage: {family}")
-    return {"schema_version":1,"status":"PASS" if rows and not errors else "FAIL",
-            "cluster_samples":len(rows),"font_case_pairs_reshaped":len(cache),
+    expected_pairs={(digest,case_id) for digest,split in split_by_hash.items() if split in {"train","validation","test"} for case_id in cases}
+    observed_pairs={(r.get("font_sha256"),r.get("case_id")) for r in rows}
+    missing_pairs=sorted(expected_pairs-observed_pairs)
+    status="FAIL" if not rows or errors else "PARTIAL" if missing_pairs else "PASS"
+    return {"schema_version":1,"status":status,
+            "cluster_samples":len(rows),"font_case_pairs_expected":len(expected_pairs),
+            "font_case_pairs_observed":len(observed_pairs),"font_case_pairs_missing":len(missing_pairs),
+            "missing_font_case_pairs":[{"font_sha256":h,"case_id":case} for h,case in missing_pairs],
+            "font_case_pairs_reshaped":len(cache),
             "independent_harfbuzz_mapping_checks":sum(1 for r in rows if (str(resolve_font(r.get("font_file",""),font_root)),r.get("case_id")) in cache),
             "multi_codepoint_clusters":sum(1 for r in rows if len(r.get("logical_text",""))>1),
             "errors":errors,
-            "scope":"Checks canonical source spans, Unicode mapping, independent HarfBuzz glyph-ID reproduction, source-font hashes, split provenance, image readability/dimensions/nonblank status and duplicate clusters. Does not establish artistic/visual correctness or legal training permission."}
+            "scope":"Checks canonical source spans, Unicode mapping, independent HarfBuzz glyph-ID reproduction, source-font hashes, split provenance, context-level omitted controls/separators, image readability/dimensions/nonblank status, duplicate clusters and explicit font/case coverage gaps. PARTIAL means unsupported font/case pairs are reported, not silently treated as covered. Does not establish artistic/visual correctness or legal training permission."}
 
 def main():
     p=argparse.ArgumentParser()
@@ -146,5 +153,5 @@ def main():
     out=Path(a.output); out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(report,ensure_ascii=False,indent=2))
-    raise SystemExit(0 if report["status"]=="PASS" else 2)
+    raise SystemExit(0 if report["status"] in {"PASS","PARTIAL"} else 2)
 if __name__=="__main__": main()
