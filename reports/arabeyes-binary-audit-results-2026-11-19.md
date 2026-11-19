@@ -67,3 +67,8 @@ A separate Debian Sources listing for the older `ttf-arabeyes 2.0-5` source expo
 ## Conclusion
 
 The Arabeyes archive has now been downloaded, checksum-verified, extracted, and technically screened. This replaces the previous status of “download failed / no binary inspection.” It does **not** clear the GPL assets for ML training. Keep them in the candidate-only evidence artifact until explicit written permission or a reliable license interpretation covers training and distribution of the resulting model and fonts.
+
+
+## Reproducible outline audit added
+
+The exact-outline screen is now implemented as `scripts/audit_font_outline_duplicates.py` and integrated into `.github/workflows/arabeyes-candidate-audit.yml`. The workflow was rerun successfully in [run 44527813202](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44527813202). Its refreshed artifact includes `outline_duplicate_audit.json` and the updated summary. The reproduced result is 36 unique whole-font fingerprints, zero exact whole-font duplicate groups, and 288 font pairs sharing at least one exact normalized glyph outline.
