@@ -2,9 +2,9 @@
 
 ## One-download data package
 
-Download the GitHub Actions artifact named **arabic-font-training-handoff** from the latest successful [training-handoff workflow run](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44536155715). The verified archive is 9.95 MB with SHA-256:
+Download the GitHub Actions artifact named **arabic-font-training-handoff** from the latest successful [training-handoff workflow run](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44537037099). The verified archive is 9.95 MB with SHA-256:
 
-`30cb94b9218ff0444dcf63c4910ea55d855cbc14c7064bf55908a11d8923c84e`
+`43e11ee1ea64361a443721001171036c75790ea6df7493d6e278a83edb80f6cc`
 
 Extract the artifact contents into the root of a fresh clone of this repository. Do not rename or rearrange the folders. It provides:
 
