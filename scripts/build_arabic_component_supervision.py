@@ -52,7 +52,7 @@ def components(image_path, threshold=245):
 def build(manifest,crop_root,registry_path,output):
     rows=load_jsonl(manifest)
     registry=json.loads(Path(registry_path).read_text(encoding="utf-8"))
-    lookup={r["codepoint"]:r for r in registry["records"]}
+    lookup={r["codepoint"]:r for r in registry["records"]}\n    context_lookup={r["codepoint"]:r for r in registry.get("contextual_joining_properties",[])}
     root=Path(crop_root).resolve(); out=Path(output); out.parent.mkdir(parents=True,exist_ok=True)
     seen=set(); count=0; caption_rows=0; component_total=0
     with out.open("w",encoding="utf-8") as dst:
@@ -67,14 +67,14 @@ def build(manifest,crop_root,registry_path,output):
             logical=row["logical_text"]; cps=[f"U+{ord(ch):04X}" for ch in logical]
             semantic=[]
             for ch,cp in zip(logical,cps):
-                record=lookup.get(cp)
+                record=lookup.get(cp) or context_lookup.get(cp)
                 semantic.append({
                   "codepoint":cp,"character":ch,
                   "unicode_name":record["unicode_name"] if record else unicodedata.name(ch,"UNKNOWN"),
                   "general_category":record["general_category"] if record else unicodedata.category(ch),
                   "script_registry_role":record["role"] if record else "not_in_arabic_script_registry",
-                  "joining_type":record["joining_type"] if record else "not_applicable",
-                  "joining_group":record["joining_group"] if record else "not_applicable",
+                  "joining_type":record["joining_type"] if record else ("T" if unicodedata.category(ch) in {"Mn","Me","Cf"} else "U"),
+                  "joining_group":record["joining_group"] if record else "No_Joining_Group",
                   "is_combining_mark":bool(record["is_combining_mark"]) if record else unicodedata.category(ch).startswith("M")
                 })
             marks=sum(1 for x in semantic if x["is_combining_mark"])
