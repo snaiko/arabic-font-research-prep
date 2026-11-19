@@ -12,9 +12,16 @@ from torch import nn
 
 class UnicodeSequenceEncoder(nn.Module):
     """Character-level Unicode encoder; no pretrained linguistic semantics."""
-    def __init__(self, vocab_size: int, embedding_dim: int, latent_dim: int):
+    def __init__(
+        self, vocab_size: int, embedding_dim: int, latent_dim: int,
+        embedding: nn.Embedding | None = None,
+    ):
         super().__init__()
-        self.embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx=0)
+        self.embedding = embedding or nn.Embedding(
+            vocab_size, embedding_dim, padding_idx=0
+        )
+        if self.embedding.embedding_dim != embedding_dim:
+            raise ValueError("shared Unicode embedding dimension mismatch")
         self.gru = nn.GRU(
             embedding_dim, latent_dim, batch_first=True, bidirectional=True
         )
@@ -75,14 +82,19 @@ class ArabicMultimodalGlyphModel(nn.Module):
       text: target_ids + style_prompt_ids
       hybrid: target_ids + reference_images + style_prompt_ids
     """
-    def __init__(self, latent_dim=256, vocab_size=0x110000, embedding_dim=32):
+    def __init__(self, latent_dim=256, vocab_size=0x110000, embedding_dim=16):
         super().__init__()
+        # Both target text and style prompts are Unicode sequences, so share
+        # one embedding table instead of allocating two 1.1M-row matrices.
+        self.unicode_embedding = nn.Embedding(
+            vocab_size, embedding_dim, padding_idx=0
+        )
         self.content_encoder = UnicodeSequenceEncoder(
-            vocab_size, embedding_dim, latent_dim
+            vocab_size, embedding_dim, latent_dim, self.unicode_embedding
         )
         self.image_style_encoder = ImageStyleEncoder(latent_dim)
         self.text_style_encoder = UnicodeSequenceEncoder(
-            vocab_size, embedding_dim, latent_dim
+            vocab_size, embedding_dim, latent_dim, self.unicode_embedding
         )
         self.confidence_gate = nn.Sequential(
             nn.Linear(latent_dim * 2, latent_dim), nn.Sigmoid()
