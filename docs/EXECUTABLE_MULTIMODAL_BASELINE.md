@@ -1,14 +1,20 @@
-# Experimental multimodal glyph baseline
+# Experimental content-and-style conditioned glyph baseline
 
-`models/arabic_multimodal_glyph.py` implements one shared raster decoder with three executable conditioning routes:
+`models/arabic_multimodal_glyph.py` now separates **what character to draw** from **what style to draw it in**. Every route requires a target Unicode sequence, and all routes share one raster decoder.
 
-- **Image:** encode one or more reference glyph images.
-- **Text:** encode a Unicode codepoint sequence with a bidirectional GRU.
-- **Hybrid:** confidence-gated fusion of the image and Unicode-prompt latents.
+- **Image-style route:** target codepoints + one or more reference glyph images.
+- **Text-style route:** target codepoints + an Arabic/English textual style description.
+- **Hybrid route:** target codepoints + reference images + textual style description; the two style latents are confidence-gated before fusion.
 
-The prompt encoder is a trainable character/codepoint encoder, **not** a pretrained Arabic language model and not a semantic natural-language understanding system. The model is an experimental baseline and is not the upstream MX-Font implementation or a verified MX-Font adapter.
+This corrects the earlier prototype's missing target-identity input on the image route. Without target codepoints, a reference-only model cannot know which glyph it is expected to generate.
 
-The model returns a 128×128 grayscale glyph raster, latent representation, and a learned uncertainty scalar. Unit tests exercise forward/backward on all three routes and checkpoint save/load. These smoke tests prove executable tensor paths only; they do not establish generation quality, convergence, font-style fidelity, or safe training data.
+## Current limitations
+
+The target-character encoder and text-style encoder are trainable Unicode-codepoint GRUs. The text-style encoder is **not** a pretrained Arabic language model and does not yet understand style semantics. The current dataset has factual synthetic captions, not human-reviewed calligraphic style descriptions. Therefore the text-only and hybrid style-prompt routes are executable architecture paths, not validated style-following systems.
+
+The image style encoder is a small experimental CNN, not the upstream MX-Font architecture or a verified native MX-Font adapter. No generation-quality claim is made.
+
+The model returns a 128×128 grayscale glyph raster, content/style/combined latents, and an uncertainty scalar. Unit tests cover all three routes, required target identity, target-condition differentiation, forward/backward gradient flow, and checkpoint/optimizer resume.
 
 Run on CPU:
 
@@ -17,4 +23,4 @@ python -m pip install torch
 python -m unittest tests.test_multimodal_model_smoke -v
 ```
 
-Full training remains disabled until the data-rights manifest contains approved exact assets, data review gates pass, and a separate training run is explicitly authorized.
+Full training remains disabled until the upstream dependency/native-loader work, data review, tiny-subset overfit, held-out-family evaluation, and hardware preflight are complete. The conditional OFL rights manifest separately requires generated font files based on the 52 approved source files to remain under SIL OFL 1.1.
