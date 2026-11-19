@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "updated-after-upstream-source-audit-2026-11-19",
+  "repository_commit": "daf2f16c78ce2dbe28e839c78f7e55c9348e04ce",
   "training_allowed": false,
   "overall_status": "BLOCKED",
   "gates": [
@@ -155,9 +155,10 @@
         "data/manifests/font_rights.template.json",
         "scripts/validate_font_rights_manifest.py",
         "scripts/run_batch_shaping_regression.py",
-        "docs/FONT_RIGHTS_AND_BATCH_SHAPING.md"
+        "docs/FONT_RIGHTS_AND_BATCH_SHAPING.md",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44468103067"
       ],
-      "notes": "Per-file rights manifest schema, fail-closed validator, and batch HarfBuzz runner are implemented. The template is intentionally empty; no font-specific ML-training permissions have been reviewed or approved yet."
+      "notes": "Per-file rights manifest schema, fail-closed validator, and batch HarfBuzz runner are implemented. The batch runner requires at least three distinct approved font families and exact SHA-256 matches. CI compiled the tools and passed 25 unit tests. The template is intentionally empty; no font-specific ML-training permissions have been reviewed or approved yet."
     }
   ],
   "upstream": {
@@ -175,7 +176,7 @@
     "asset_level_training_permission": "not_fully_audited"
   },
   "tests": {
-    "repository_tests": "not_run_in_this_preparation_update",
+    "repository_tests": "25 unit tests passed in GitHub Actions run 44468103067",
     "image_route": "not_verified",
     "prompt_route": "not_verified",
     "hybrid_route": "not_verified",
