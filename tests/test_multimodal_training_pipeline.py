@@ -113,7 +113,7 @@ class MultimodalTrainingPipelineTests(unittest.TestCase):
             episode = self.make_episode(target_root, ref_root)
             Image.new("L", (128, 128), 0).save(target_root / "images/target.png")
             path = root / "train.jsonl"
-            path.write_text(json.dumps(episode) + "\\n", encoding="utf-8")
+            path.write_text(json.dumps(episode) + "\n", encoding="utf-8")
             dataset = ContextualEpisodeDataset(path, target_root, ref_root)
             with self.assertRaisesRegex(ValueError, "target image hash mismatch"):
                 dataset[0]
@@ -125,7 +125,7 @@ class MultimodalTrainingPipelineTests(unittest.TestCase):
             episode = self.make_episode(target_root, ref_root)
             Image.new("L", (128, 128), 0).save(ref_root / "images/ref0.png")
             path = root / "train.jsonl"
-            path.write_text(json.dumps(episode) + "\\n", encoding="utf-8")
+            path.write_text(json.dumps(episode) + "\n", encoding="utf-8")
             dataset = ContextualEpisodeDataset(path, target_root, ref_root)
             with self.assertRaisesRegex(ValueError, "style reference image hash mismatch"):
                 dataset[0]
