@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "preparation-baseline-before-local-agent-audit",
+  "repository_commit": "updated-after-upstream-source-audit-2026-11-19",
   "training_allowed": false,
   "overall_status": "BLOCKED",
   "gates": [
@@ -8,10 +8,11 @@
       "id": "upstream_pin_and_license",
       "status": "BLOCKED",
       "evidence": [
-        "docs/MODEL_ARCHITECTURE.md",
+        "docs/UPSTREAM_BASELINE.md",
+        "https://github.com/clovaai/fewshot-font-generation/commit/9d2b6ace3e23199e2a896de329d4c16489b09a96",
         "docs/AI_AGENT_EXECUTION_SPEC.md"
       ],
-      "notes": "Exact immutable upstream commit, full license/notice audit, and reproducible baseline run are not yet recorded."
+      "notes": "Immutable upstream revision is now pinned to 9d2b6ace3e23199e2a896de329d4c16489b09a96. The top-level README identifies FUNIT/ and base/modules/modules.py as third-party exceptions; dependency-closure license audit and reproducible baseline execution remain incomplete, so this gate remains BLOCKED."
     },
     {
       "id": "asset_rights_and_provenance",
@@ -83,8 +84,11 @@
   ],
   "upstream": {
     "repository": "https://github.com/clovaai/fewshot-font-generation",
-    "commit": "NOT_PINNED",
-    "license_status": "REQUIRES_AUDIT"
+    "commit": "9d2b6ace3e23199e2a896de329d4c16489b09a96",
+    "pin_verified_date": "2026-11-19",
+    "license_status": "PARTIAL_AUDIT_BLOCKED",
+    "baseline_reproduction": "NOT_RUN",
+    "compatibility_note": "Upstream train_MX.py uses CUDA APIs and NCCL; Windows/device compatibility is not established."
   },
   "data": {
     "existing_raster_dataset_description": "Repository handoff documentation reports 7,904 contextual raster samples; the local agent must verify the release archive and actual contents.",
@@ -111,7 +115,7 @@
     "reason": "Requires actual hardware and completed model/data implementation."
   },
   "blockers": [
-    "Pin and audit the upstream implementation and reproduce its baseline.",
+    "Complete the MX-Font dependency-closure license audit and reproduce its baseline in a supported environment; source revision is pinned.",
     "Complete asset-by-asset rights review and provenance manifests.",
     "Build and visually audit target-glyph crops using actual HarfBuzz cluster mappings.",
     "Populate paired style descriptions and measured geometry labels.",
@@ -120,5 +124,5 @@
     "Run local hardware preflight and produce a resource/runtime estimate."
   ],
   "recommended_next_step": "The local AI agent should execute docs/AI_AGENT_EXECUTION_SPEC.md and docs/PRETRAINING_COMPLETION_PLAN.md in order, update this report with evidence, and stop for user review. Do not start training.",
-  "generated_date": "2026-11-18"
+  "generated_date": "2026-11-19"
 }
