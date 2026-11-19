@@ -112,7 +112,7 @@ def build(manifest,crop_root,registry_path,output):
                 "training_eligible":False
               }
             }
-            dst.write(json.dumps(record,ensure_ascii=False,sort_keys=True)+"\\n")
+            dst.write(json.dumps(record,ensure_ascii=False,sort_keys=True)+"\n")
             count+=1; caption_rows+=2
     return {"status":"PASS" if count else "FAIL","records":count,"paired_captions":caption_rows,
       "component_candidates":component_total,"unicode_registry_version":registry.get("unicode_version"),
