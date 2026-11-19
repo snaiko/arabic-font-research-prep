@@ -80,6 +80,18 @@
         "scripts/preflight_local_training.py"
       ],
       "notes": "The local Windows preflight must be run on the actual machine; current GPU, VRAM, RAM, disk, backend compatibility, and runtime estimates are not established here."
+    },
+    {
+      "id": "isolated_crop_and_episode_adapter",
+      "status": "PASS",
+      "evidence": [
+        "scripts/build_isolated_glyph_crops.py",
+        "scripts/build_mxfont_episodes.py",
+        "tests/test_episode_sampler.py",
+        ".github/workflows/test-glyph-adapter.yml",
+        "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44463443539"
+      ],
+      "notes": "Intermediate adapter code is committed. GitHub Actions successfully compiled both scripts and passed four deterministic episode-sampler unit tests. The crop builder has not been run against the user's local font archive; this PASS covers code compilation and sampler tests only."
     }
   ],
   "upstream": {
@@ -115,14 +127,14 @@
     "reason": "Requires actual hardware and completed model/data implementation."
   },
   "blockers": [
-    "Complete the MX-Font dependency-closure license audit and reproduce its baseline in a supported environment; source revision is pinned.",
-    "Complete asset-by-asset rights review and provenance manifests.",
-    "Build and visually audit target-glyph crops using actual HarfBuzz cluster mappings.",
-    "Populate paired style descriptions and measured geometry labels.",
-    "Implement image, prompt, and hybrid conditioning through one shared generator.",
-    "Pass data, model, leakage, smoke, checkpoint, and evaluation tests.",
-    "Run local hardware preflight and produce a resource/runtime estimate."
+    "Run the isolated-crop builder on the downloaded licensed font corpus and review generated crops; this adapter is not contextual joining/ligature supervision.",
+    "Complete per-font asset-level ML-training rights review.",
+    "Implement and test an adapter to the pinned upstream MX-Font native loader; current project episodes are an intermediate schema.",
+    "Develop and audit Arabic decomposition/component labels required for MX-Font weak component supervision, or document a justified alternative objective.",
+    "Complete the upstream dependency/license audit and reproduce the baseline in a supported environment; CUDA/NCCL Windows compatibility remains unverified.",
+    "Populate provenance-reviewed prompt/geometry pairs and implement image, prompt, and hybrid model paths sharing one generator.",
+    "Pass leakage, model forward/backward, checkpoint round-trip/resume, held-out-family evaluation, and local hardware/resource gates."
   ],
-  "recommended_next_step": "The local AI agent should execute docs/AI_AGENT_EXECUTION_SPEC.md and docs/PRETRAINING_COMPLETION_PLAN.md in order, update this report with evidence, and stop for user review. Do not start training.",
+  "recommended_next_step": "The local agent should run the crop builder and audit its outputs, then implement the native MX-Font data adapter and Arabic component-label strategy. Do not start training.",
   "generated_date": "2026-11-19"
 }
