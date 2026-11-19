@@ -146,6 +146,18 @@
         "https://github.com/snaiko/arabic-font-research-prep/actions/runs/44466347309"
       ],
       "notes": "Per-component polygon agreement analyzer and unit tests passed. This validates the comparison tool, not actual human agreement; no real double-annotated pilot has yet been created."
+    },
+    {
+      "id": "font_level_ml_training_rights_manifest",
+      "status": "BLOCKED",
+      "evidence": [
+        "schemas/font_rights_manifest.schema.json",
+        "data/manifests/font_rights.template.json",
+        "scripts/validate_font_rights_manifest.py",
+        "scripts/run_batch_shaping_regression.py",
+        "docs/FONT_RIGHTS_AND_BATCH_SHAPING.md"
+      ],
+      "notes": "Per-file rights manifest schema, fail-closed validator, and batch HarfBuzz runner are implemented. The template is intentionally empty; no font-specific ML-training permissions have been reviewed or approved yet."
     }
   ],
   "upstream": {
@@ -181,6 +193,7 @@
     "reason": "Requires actual hardware and completed model/data implementation."
   },
   "blockers": [
+    "Populate and independently review the per-file font rights manifest with authoritative license evidence and exact SHA-256 values; run batch HarfBuzz only after the gate passes.",
     "Run the isolated-crop builder on the downloaded licensed font corpus and review generated crops; this adapter is not contextual joining/ligature supervision.",
     "Complete per-font asset-level ML-training rights review.",
     "Implement and test an adapter to the pinned upstream MX-Font native loader; current project episodes are an intermediate schema.",
@@ -191,6 +204,6 @@
     "Run HarfBuzz regression suite against legally cleared font families and review cluster mappings, contextual joins, lam-alef, ZWJ/ZWNJ, and mark attachment.",
     "Create independently annotated glyph-instance samples with two annotators and adjudication; annotation schema alone is not training data."
   ],
-  "recommended_next_step": "The local agent should run HarfBuzz regression on at least three legally cleared Arabic fonts, then two independent annotators should label the same stratified pilot glyph instances. Use compare_glyph_annotations.py to measure per-component agreement and adjudicate disagreements. Training remains blocked.",
+  "recommended_next_step": "On the local Windows machine, complete the per-file font rights manifest for at least three distinct Arabic font families, run the rights validator and batch HarfBuzz regression, then create the stratified glyph-instance pilot for two independent annotators. Training remains blocked.",
   "generated_date": "2026-11-19"
 }
