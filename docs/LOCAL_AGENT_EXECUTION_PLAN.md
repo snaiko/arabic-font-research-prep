@@ -196,3 +196,93 @@ When finished, tell the user:
 6. The exact next prerequisite, if any.
 
 Never describe the project as 100% training-ready unless the evidence actually supports that conclusion.
+
+
+# Training-first execution addendum
+
+This addendum supersedes the earlier test-only framing. The user's goal is to reach a genuine local training run, not to stop after unit tests. However, a real training run is permitted only when the actual model, training objective, and correctly paired training data exist.
+
+## Verified starting facts from the repository at the time this plan was updated
+
+- `models/mxfont_unicode_adapter.py` is an optional adapter, not a complete MX-Font training system.
+- `docs/MXFONT_UNICODE_BRIDGE.md` explicitly states that the adapter is not wired into the MX-Font trainer.
+- The native-pair builder produces pairing manifests only. It explicitly marks decomposition as missing and says its output is not directly trainable by the full upstream MX-Font trainer until reviewed Arabic decomposition/primals labels are supplied.
+- Existing adapter tests use synthetic tensors. Even the gradient test only proves gradients can flow after manually opening zero-initialized projections; it does not train on real glyph images or demonstrate improved font generation.
+- The pinned upstream MX-Font Generator/checkpoint/data pipeline must be located and verified before claiming end-to-end integration. Do not assume it exists in this repository or that a similarly named package is compatible.
+
+## Required objective: advance toward actual training
+
+After the initial machine inventory and repository inspection, do not spend the session merely expanding unit tests. Build a concrete training-readiness decision and proceed as follows:
+
+### A. Locate the real MX-Font implementation
+
+- Identify the exact upstream source revision used by this project.
+- Determine whether the real Generator, factorization/defactorization path, dataset loader, training loop, loss functions, and checkpoint-loading code are available locally.
+- If not present, report the exact missing source components and propose the smallest reproducible way to obtain the pinned upstream source. Do not silently clone arbitrary forks or use an unpinned latest version.
+- Verify real tensor shapes by executing the real Generator on a real compatible batch, not only synthetic tensors.
+
+### B. Audit training data
+
+- Inventory available glyph images, font files, manifests, labels, splits, and licensing metadata.
+- Verify Arabic coverage: isolated/initial/medial/final forms where applicable, ligatures such as lam-alef, combining marks/diacritics, and multi-codepoint sequences. Do not equate Unicode codepoint coverage with correct Arabic shaping.
+- Verify every training sample's image, text/Unicode sequence, font identity, family identity, and split mapping.
+- Ensure no family/font leakage between train, validation, and test.
+- Determine whether the upstream decomposition/primals supervision is available and correct. Never synthesize or guess decomposition labels.
+- Report actual counts and missing categories. Do not claim completeness from filenames alone.
+
+### C. Decide whether a scientifically valid training objective exists
+
+Preferred route: reproduce the pinned MX-Font objective with its required supervision and integrate the Unicode adapter at the documented content-factor location.
+
+If the required decomposition labels or upstream trainer are missing:
+- Do not run a fake MX-Font training job.
+- Investigate whether a documented, technically valid alternative objective can train the adapter against real target glyph rasters while retaining MX-Font's style/content separation.
+- Any alternative must specify exactly how style references, content references, target glyph, Unicode IDs, and held-out families are used; how leakage is prevented; and how style preservation and Arabic correctness are evaluated.
+- Do not invent an objective ad hoc merely to produce a checkpoint. If no defensible objective can be justified from the actual available code/data, stop and report the precise blocker.
+
+### D. Implement integration before training
+
+If and only if A–C establish a valid route:
+- Implement the smallest end-to-end integration on the experiment branch only.
+- Recover Unicode IDs from the actual target text/codepoint mapping; never pass MX-Font dataset-local `trg_cids` as Unicode.
+- Apply the adapter only to the intended batch-aggregated content factors, not style factors.
+- Keep original MX-Font baseline code and checkpoint immutable.
+- Add an executable end-to-end smoke test using a real batch and the actual Generator.
+- Add a deterministic training configuration with explicit seeds, split manifests, batch size, checkpoint cadence, validation cadence, and early stopping.
+- Add resume-from-checkpoint support and save optimizer/scheduler/RNG state.
+- Record all configuration and data hashes with each run.
+
+### E. Run a real but bounded training experiment
+
+If hardware, real data, and objective are ready:
+1. Run a baseline forward/validation pass with the unmodified MX-Font checkpoint.
+2. Run a short genuine adapter-training experiment on the local machine using actual glyph images and the approved objective. This must perform optimizer steps and update adapter weights; a forward/backward smoke test alone is not training.
+3. Evaluate on a held-out font-family validation set after each configured interval.
+4. Save the best adapter checkpoint separately from the baseline.
+5. Save loss curves, validation metrics, representative generated glyph images, and run metadata.
+6. Confirm the saved checkpoint differs from initialization and that the weights actually changed.
+7. Do not start a long/full run automatically. The bounded experiment should be sized to available VRAM/RAM and stop cleanly on resource pressure.
+
+The first run should be a pilot, not a claim of model success. Report step count, wall time, peak memory, loss trends, validation results, and failure cases.
+
+### F. If actual training cannot start
+
+Do not substitute more synthetic tests and call the task complete. Produce a short blocker report that names the exact missing item(s), for example:
+- pinned upstream MX-Font implementation,
+- compatible pretrained baseline checkpoint,
+- real glyph image corpus,
+- reviewed decomposition labels,
+- verified Unicode-to-target mapping,
+- valid training objective,
+- sufficient local compute.
+
+Where possible, complete safe preparatory implementation work that does not fabricate data or labels. Then stop at the first hard blocker and clearly state what must be supplied or built before training can genuinely begin.
+
+## Definition of success
+
+This task is successful only if the local agent either:
+
+1. completes a real bounded training run on actual glyph data with optimizer updates and produces a verifiable checkpoint plus held-out validation evidence; OR
+2. proves training cannot honestly begin and provides a precise, evidence-backed blocker report plus the minimum concrete next action.
+
+Passing unit tests, compiling files, building synthetic pairs, or creating a checkpoint with unchanged weights does NOT count as training.
