@@ -55,8 +55,18 @@ def audit(candidate_path, output_dir, fetcher=fetch):
         digest=sha256(body)
         filename=f"license-{index:02d}-{assets[0]['family_id']}.txt"
         (licenses_dir/filename).write_bytes(body)
-        copyright_lines=[line.strip() for line in text.splitlines() if line.strip().lower().startswith("copyright")]
-        reserved=sorted(set(re.findall(r'Reserved Font Names? [\\\"“”\']+([^\\\"“”\']+)',text,re.I)))
+        header=text.split(OFL_MARKER,1)[0]
+        copyright_lines=[line.strip() for line in header.splitlines() if line.strip().lower().startswith('copyright')]
+        reserved=[]
+        for line in header.splitlines():
+            if 'Reserved Font Name' not in line: continue
+            tail=line.split('Reserved Font Name',1)[1].strip()
+            quoted=re.findall(r"[\"“']([^\"”']+)[\"”']",tail)
+            if quoted: reserved.extend(name.strip() for name in quoted if name.strip())
+            else:
+                value=re.sub(r'^s\\s+','',tail,flags=re.I).strip().rstrip('.,;')
+                if value: reserved.append(value)
+        reserved=sorted(set(reserved))
         license_records.append({
             "family_id":assets[0]["family_id"],"asset_count":len(assets),
             "license_name_claimed":assets[0].get("license_name"),
