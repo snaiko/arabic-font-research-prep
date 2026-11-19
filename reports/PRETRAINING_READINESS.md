@@ -41,6 +41,7 @@ The episode sampler groups by exact font hash and inherited family split, select
 | Upstream revision pin | PASS |
 | Full upstream license/dependency audit and baseline reproduction | BLOCKED |
 | Isolated crop/episode adapter code + CI tests | PASS (limited scope) |
+| Published archive integrity audit (7,904 samples / 7,904 images) | PASS |
 | Crop quality review on local corpus | UNKNOWN |
 | Contextual joining/ligature/mark supervision | FAIL |
 | Asset-level training permissions | BLOCKED |
@@ -69,4 +70,6 @@ The episode sampler groups by exact font hash and inherited family split, select
 - Added a separate per-font rights gate and batch HarfBuzz runner; the batch runner requires at least three distinct approved families and exact file-hash matches.
 - GitHub Actions run [44469089468](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44469089468) passed script compilation, Unicode registry generation/validation, and all 29 unit tests.
 
-**Important:** these are verified tooling milestones only. The private local font archive has not been audited by this run. No font rights manifest approvals, real HarfBuzz reports, visual crop review, two-person annotation pilot, paired prompt/geometry corpus, executable unified model paths, upstream baseline reproduction, or local hardware report have been supplied. Those evidence-dependent gates remain BLOCKED/UNKNOWN/FAIL as recorded in `reports/pretraining_readiness.json`. Training remains disabled.
+**Published corpus audit completed:** GitHub Actions run [44476157196](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44476157196) downloaded both published release archives and audited their actual contents. It verified 7,904 samples, 52 font files, 20 families, family splits of 14 train / 3 validation / 3 test families, and all 7,904 referenced images; the audit returned `errors: []`. All 30 unit tests passed. The earlier duplicate-sample failure was a false positive in the audit script: it used `target_index` instead of the dataset's `target_index_logical`. That bug is fixed and covered by a regression test.
+
+This PASS verifies corpus structure and file integrity only. It does not approve font ML-training rights or establish visual quality, contextual crop correctness, or Arabic shaping supervision. No font rights approvals, real HarfBuzz reports, visual crop review, two-person annotation pilot, paired prompt/geometry corpus, executable unified model paths, upstream baseline reproduction, or local hardware report have been supplied. Those gates remain BLOCKED/UNKNOWN/FAIL as recorded in `reports/pretraining_readiness.json`. Training remains disabled.
