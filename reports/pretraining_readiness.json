@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository_commit": "81ae3c6fb9aa5b7d2d82ab61bdf7d1e7dc415bdc",
+  "repository_commit": "c69b7c66f3fcc6a8438527e6b7d7111ab05e0122",
   "training_allowed": false,
   "overall_status": "BLOCKED",
   "gates": [
@@ -190,9 +190,12 @@
       "status": "BLOCKED",
       "evidence": [
         "scripts/build_harfbuzz_contextual_crops.py",
-        "docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md"
+        "docs/ARABIC_SCRIPT_AND_VISUAL_SYSTEM_V2.md",
+        "scripts/build_arabic_review_pack.py",
+        "docs/ARABIC_HUMAN_REVIEW_PROTOCOL.md",
+        "tests/test_review_pack.py"
       ],
-      "notes": "No complete expert-reviewed visual/linguistic gold set exists. Representative visual inspection is not a full review; HarfBuzz agreement does not prove glyph appearance, orthographic correctness, or rendering equivalence."
+      "notes": "A stratified review-pack builder and review rubric are now implemented, but creating a package is not a review result. Two qualified human reviewers must independently inspect the visual/linguistic sample, compare independent renderings, and adjudicate every failure/uncertainty. This gate remains BLOCKED."
     },
     {
       "id": "component_geometry_annotation_dataset",
@@ -201,9 +204,23 @@
         "schemas/glyph_visual_annotation.schema.json",
         "scripts/validate_glyph_visual_annotation.py",
         "scripts/compare_glyph_annotations.py",
-        "tests/test_glyph_visual_annotation.py"
+        "tests/test_glyph_visual_annotation.py",
+        "scripts/build_arabic_review_pack.py",
+        "docs/ARABIC_HUMAN_REVIEW_PROTOCOL.md",
+        "tests/test_review_pack.py"
       ],
-      "notes": "No populated, independently double-annotated and adjudicated glyph-component dataset exists. Geometry validator now rejects degenerate/self-intersecting polygons and invalid references; passing structural checks cannot prove component boundaries are correct."
+      "notes": "A 40-item (target) geometry pilot is prepared from single-codepoint/single-glyph clusters with separate blank templates for two independent annotators and an adjudication tracker. No human annotations or adjudications have been submitted yet; this gate remains BLOCKED."
+    },
+    {
+      "id": "human_review_pack_generation",
+      "status": "PENDING_CI",
+      "evidence": [
+        "scripts/build_arabic_review_pack.py",
+        "docs/ARABIC_HUMAN_REVIEW_PROTOCOL.md",
+        "tests/test_review_pack.py",
+        ".github/workflows/test-glyph-adapter.yml"
+      ],
+      "notes": "CI is configured to create a deterministic stratified review pack with 10 samples per shaping case and up to 40 geometry pilot samples, then upload it as arabic-human-review-pack. This checks pack generation only; it does not clear human review."
     }
   ],
   "upstream": {
@@ -221,7 +238,9 @@
     "asset_level_training_permission": "not_fully_audited",
     "contextual_cluster_dataset": "1,736 clusters integrity-audited; not visually/linguistically cleared and not rights-cleared",
     "component_geometry_annotations": "no adjudicated annotation dataset",
-    "font_ml_training_rights": "blocked; per-file approval manifest remains empty"
+    "font_ml_training_rights": "blocked; per-file approval manifest remains empty",
+    "visual_linguistic_review_pack": "generation implemented; CI verification pending; human review not performed",
+    "geometry_pilot": "independent annotation templates and adjudication tracker implemented; no human labels submitted"
   },
   "tests": {
     "repository_tests": "30 unit tests passed in GitHub Actions run 44476157196",
@@ -254,7 +273,9 @@
     "Create independently annotated glyph-instance samples with two annotators and adjudication; annotation schema alone is not training data.",
     "Complete expert visual and linguistic review of representative and stratified contextual clusters using independently rendered comparisons; adjudicate all errors.",
     "Create two independent component annotations per selected glyph instance, compute per-kind agreement, adjudicate disagreements, and promote only adjudicated labels.",
-    "Populate exact per-file font rights records with authoritative license evidence and ML-training permission; keep all unapproved font-derived data excluded from training."
+    "Populate exact per-file font rights records with authoritative license evidence and ML-training permission; keep all unapproved font-derived data excluded from training.",
+    "Complete the generated visual/linguistic review pack with two independent human reviews and adjudicate every fail/uncertain item.",
+    "Complete the independent two-annotator geometry pilot, compute per-class agreement, and adjudicate disagreements; do not train on draft annotations."
   ],
   "recommended_next_step": "Complete exact per-file font rights approvals, then run batch HarfBuzz across at least three distinct approved families. Generate and visually inspect target crops and build a two-annotator pilot. Other model, paired-data, hardware, and checkpoint gates remain blocked.",
   "generated_date": "2026-11-19"
