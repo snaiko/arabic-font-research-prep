@@ -50,6 +50,28 @@ jobs:
         run: python scripts/validate_arabic_script_registry.py
       - name: Run all unit tests
         run: python -m unittest discover -s tests -v
+      - name: Download published font and glyph datasets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p .audit/font .audit/glyph
+          gh release download arabic-font-corpus-v1 --repo "${GITHUB_REPOSITORY}" --pattern "arabic-font-corpus.zip" --dir .audit/font
+          gh release download arabic-glyph-dataset-v1 --repo "${GITHUB_REPOSITORY}" --pattern "arabic-glyph-training-dataset.zip" --dir .audit/glyph
+          unzip -oq .audit/font/arabic-font-corpus.zip -d .
+          unzip -oq .audit/glyph/arabic-glyph-training-dataset.zip -d data/training_samples
+      - name: Audit the actual published training corpus
+        run: |
+          python scripts/audit_training_corpus.py \\
+            --samples data/training_samples/samples.jsonl \\
+            --font-root data/raw_fonts \\
+            --image-root data/training_samples \\
+            --output reports/local/dataset_audit.json
+      - name: Upload corpus audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-training-corpus-audit
+          path: reports/local/dataset_audit.json
+          if-no-files-found: error
       - name: Upload generated Unicode registry
         uses: actions/upload-artifact@v4
         with:
