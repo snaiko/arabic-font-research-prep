@@ -54,6 +54,20 @@ if not exist "%RIGHTS_MANIFEST%" (
   echo Extract the conditional-ofl-font-rights-manifest artifact there.
   goto :failed
 )
+if not exist "reports\local\machine_preflight.json" (
+  echo ERROR: Run START_LOCAL_TRAINING.bat first. Hardware/data preflight is missing.
+  goto :failed
+)
+where py >nul 2>nul
+if %errorlevel%==0 (
+  py -3 -c "import json,sys; d=json.load(open('reports/local/machine_preflight.json',encoding='utf-8')); sys.exit(0 if d.get('status')=='READY_FOR_EXPERIMENTAL_IMAGE_ROUTE' and d.get('training_allowed') else 1)"
+) else (
+  python -c "import json,sys; d=json.load(open('reports/local/machine_preflight.json',encoding='utf-8')); sys.exit(0 if d.get('status')=='READY_FOR_EXPERIMENTAL_IMAGE_ROUTE' and d.get('training_allowed') else 1)"
+)
+if errorlevel 1 (
+  echo ERROR: The latest local preflight is not READY. Rerun START_LOCAL_TRAINING.bat and inspect blockers.
+  goto :failed
+)
 
 echo IMPORTANT LICENSE CONDITION:
 echo Generated font files based on these sources must be released under SIL OFL 1.1.
