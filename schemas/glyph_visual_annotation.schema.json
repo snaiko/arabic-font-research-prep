@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/snaiko/arabic-font-research-prep/blob/main/schemas/glyph_visual_annotation.schema.json",
+  "title": "Arabic glyph-instance visual annotation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","annotation_id","glyph_instance","annotator","status","components","relations","provenance"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "annotation_id": {"type":"string","minLength":1},
+    "glyph_instance": {
+      "type":"object","additionalProperties":false,
+      "required":["codepoint","font_sha256","glyph_id","shaping_engine","direction","script","language","features","render_sha256","canvas"],
+      "properties":{
+        "codepoint":{"type":"string","pattern":"^U\\+[0-9A-F]{4,6}$"},
+        "context_codepoints":{"type":"array","items":{"type":"string","pattern":"^U\\+[0-9A-F]{4,6}$"}},
+        "actual_form":{"enum":["isol","init","medi","fina","not_applicable","unknown"]},
+        "font_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+        "glyph_id":{"type":"integer","minimum":0},
+        "shaping_engine":{"type":"string","minLength":1},
+        "direction":{"enum":["rtl","ltr","ttb"]},
+        "script":{"type":"string","minLength":4},
+        "language":{"type":"string","minLength":2},
+        "features":{"type":"array","items":{"type":"string"}},
+        "render_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+        "canvas":{"type":"object","required":["width","height"],"properties":{"width":{"type":"integer","minimum":1},"height":{"type":"integer","minimum":1}}}
+      }
+    },
+    "annotator":{"type":"object","required":["id","tool_version"],"properties":{"id":{"type":"string","minLength":1},"tool_version":{"type":"string","minLength":1}}},
+    "status":{"enum":["draft","independently_reviewed","adjudicated","rejected","uncertain"]},
+    "components":{"type":"array","items":{
+      "type":"object","additionalProperties":false,
+      "required":["component_id","kind","geometry","confidence"],
+      "properties":{
+        "component_id":{"type":"string","minLength":1},
+        "kind":{"enum":["body","dot","hamza","diacritic","other_mark","counter","join_region","stroke_segment","ornament","uncertain"]},
+        "geometry":{"type":"object","required":["type","points"],"properties":{"type":{"const":"polygon"},"points":{"type":"array","minItems":3,"items":{"type":"array","prefixItems":[{"type":"number","minimum":0,"maximum":1},{"type":"number","minimum":0,"maximum":1}],"minItems":2,"maxItems":2}}}},
+        "confidence":{"type":"number","minimum":0,"maximum":1},
+        "parent_component_id":{"type":["string","null"]},
+        "notes":{"type":"string"}
+      }
+    }},
+    "relations":{"type":"array","items":{"type":"object","required":["source","target","type"],"properties":{"source":{"type":"string"},"target":{"type":"string"},"type":{"enum":["attached_to","above","below","inside","overlaps","joins","part_of","ambiguous_with"]}}}},
+    "provenance":{"type":"object","required":["dataset_id","source_image_sha256","annotation_guideline_version","created_at"],"properties":{"dataset_id":{"type":"string"},"source_image_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"annotation_guideline_version":{"type":"string"},"created_at":{"type":"string","format":"date-time"},"license_id":{"type":"string"},"adjudication_note":{"type":"string"}}}
+  }
+}
