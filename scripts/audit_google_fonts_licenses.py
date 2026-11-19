@@ -9,7 +9,7 @@ OFL_MARKER = "SIL OPEN FONT LICENSE Version 1.1"
 REQUIRED_TERMS = (
     "used, studied, modified and",
     "redistributed freely",
-    "cannot be sold by itself",
+    "not sold by themselves",
     "Reserved Font Name",
 )
 
