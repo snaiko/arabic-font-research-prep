@@ -1,0 +1,291 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/snaiko/arabic-font-research-prep/blob/main/schemas/arabic_cluster_visual_annotation.schema.json",
+  "title": "Arabic shaped-cluster visual annotation draft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "annotation_id",
+    "status",
+    "cluster",
+    "image",
+    "image_sha256",
+    "assessment",
+    "annotator",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "annotation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "reviewed",
+        "adjudicated",
+        "rejected",
+        "uncertain"
+      ]
+    },
+    "cluster": {
+      "type": "object",
+      "required": [
+        "font_file",
+        "font_sha256",
+        "case_id",
+        "cluster_index",
+        "logical_start",
+        "logical_end",
+        "source_text",
+        "logical_text",
+        "logical_codepoints",
+        "glyph_ids",
+        "glyph_count",
+        "direction",
+        "script",
+        "language",
+        "features",
+        "canvas"
+      ],
+      "properties": {
+        "font_file": {
+          "type": "string"
+        },
+        "font_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "family": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "split": {
+          "enum": [
+            "train",
+            "validation",
+            "test",
+            null
+          ]
+        },
+        "case_id": {
+          "type": "string"
+        },
+        "cluster_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "logical_start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "logical_end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_text": {
+          "type": "string"
+        },
+        "logical_text": {
+          "type": "string"
+        },
+        "logical_codepoints": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^U\\\\+[0-9A-F]{4,6}$"
+          }
+        },
+        "glyph_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "glyph_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nonrendering_source_codepoints": {
+          "type": "array"
+        },
+        "direction": {
+          "enum": [
+            "rtl",
+            "ltr",
+            "ttb"
+          ]
+        },
+        "script": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "canvas": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "integer",
+              "minimum": 1
+            }
+          ],
+          "minItems": 2,
+          "maxItems": 2
+        }
+      }
+    },
+    "image": {
+      "type": "string",
+      "minLength": 1
+    },
+    "image_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "assessment": {
+      "type": "object",
+      "required": [
+        "cluster_readable",
+        "text_mapping",
+        "joining_continuity",
+        "ligature_formation",
+        "mark_attachment",
+        "dot_completeness",
+        "bidi_order",
+        "clipping_or_render_defect",
+        "issue_tags",
+        "notes"
+      ],
+      "properties": {
+        "cluster_readable": {
+          "enum": [
+            "pending",
+            "pass",
+            "fail",
+            "uncertain"
+          ]
+        },
+        "text_mapping": {
+          "enum": [
+            "pending",
+            "pass",
+            "fail",
+            "uncertain"
+          ]
+        },
+        "joining_continuity": {
+          "enum": [
+            "pending",
+            "pass",
+            "fail",
+            "uncertain"
+          ]
+        },
+        "ligature_formation": {
+          "enum": [
+            "pending",
+            "pass",
+            "fail",
+            "uncertain"
+          ]
+        },
+        "mark_attachment": {
+          "enum": [
+            "pending",
+            "pass",
+            "fail",
+            "uncertain"
+          ]
+        },
+        "dot_completeness": {
+          "enum": [
+            "pending",
+            "pass",
+            "fail",
+            "uncertain"
+          ]
+        },
+        "bidi_order": {
+          "enum": [
+            "pending",
+            "pass",
+            "fail",
+            "uncertain"
+          ]
+        },
+        "clipping_or_render_defect": {
+          "enum": [
+            "pending",
+            "pass",
+            "fail",
+            "uncertain"
+          ]
+        },
+        "issue_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "annotator": {
+      "type": "object",
+      "required": [
+        "id",
+        "tool_version"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "tool_version": {
+          "type": "string"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "dataset_id",
+        "source_image",
+        "created_at"
+      ],
+      "properties": {
+        "dataset_id": {
+          "type": "string"
+        },
+        "source_image": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}
