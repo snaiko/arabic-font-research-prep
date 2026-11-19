@@ -67,3 +67,16 @@ The preflight report explicitly records:
 - `checkpoint_created=false`
 
 This proves the real data and image-reference forward path can be loaded together under the conditional OFL rights gate. It is not a training run and does not establish generation quality.
+
+
+## Latest full-image integrity pass
+
+The later run [44530432867](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530432867) repeated the build with image hashes pinned and then iterated every split through the training dataset loader.
+
+- Target images verified by SHA-256: **1,732 / 1,732**.
+- Style-reference images verified by SHA-256: **6,928 / 6,928**.
+- All 52 conditional OFL font hashes validated.
+- One real batch passed the model's 128×128 forward path.
+- No optimizer, backward pass, weight update, checkpoint, or training occurred.
+
+Artifact: [arabic-contextual-style-episodes](https://github.com/snaiko/arabic-font-research-prep/actions/runs/44530432867/artifacts/14533013474).
