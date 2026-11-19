@@ -22,6 +22,7 @@ from models.arabic_multimodal_glyph import (
     ArabicMultimodalGlyphModel,
     encode_unicode_batch,
     save_training_checkpoint,
+    restore_training_checkpoint,
 )
 
 
@@ -193,6 +194,7 @@ def main():
     parser.add_argument("--save-every", type=int, default=250)
     parser.add_argument("--seed", type=int, default=20261119)
     parser.add_argument("--device", default="auto")
+    parser.add_argument("--resume", default=None, help="optional checkpoint path; --max-steps remains the total target step count")
     args = parser.parse_args()
 
     if args.max_steps < 1 or args.batch_size < 1:
@@ -247,6 +249,14 @@ def main():
     checkpoint_path = checkpoints / "last.pt"
 
     step = 0
+    resumed_from = None
+    if args.resume:
+        state = restore_training_checkpoint(args.resume, model, optimizer, map_location=device)
+        step = state["step"]
+        resumed_from = str(Path(args.resume))
+        if step >= args.max_steps:
+            raise ValueError(f"checkpoint step {step} is already at or beyond --max-steps {args.max_steps}")
+    start_step = step
     train_losses = []
     while step < args.max_steps:
         for batch in train_loader:
@@ -290,6 +300,8 @@ def main():
         "status": "COMPLETED",
         "training_started_explicitly": True,
         "steps": step,
+        "start_step": start_step,
+        "resumed_from": resumed_from,
         "device": str(device),
         "latent_dim": args.latent_dim,
         "batch_size": args.batch_size,
